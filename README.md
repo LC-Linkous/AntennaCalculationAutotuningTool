@@ -2,7 +2,7 @@
 
 
 <p align="center">
- <img src="https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/blob/master/media\antennaCAT-icons\transparent-antennaCAT-logo.png" height="400" >
+ <img src="https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/blob/main/media/antennaCAT-icons/transparent-antennaCAT-logo.png" height="400" >
 </p>
 
 
