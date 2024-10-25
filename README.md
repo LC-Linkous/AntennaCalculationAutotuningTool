@@ -21,7 +21,7 @@ Where are we so far? (Oct. 21, 2024)
 
 
 What does that mean for the code release?
-* The code will be released before the journal/magazine publication (which can take a year or more, still targeting before the end of 2024.
+* The code will be released independent from the journal/magazine publication, still targeting before the end of 2024.
 * Post release 1, updates and code examples will be found at https://lc-linkous.github.io/projects/antennaCAT 
 * Documentation of usage examples will be posted in the Wiki on this page. The full explanation of all of the details that did not fit in the dissertation will begin appearing, but this may take some time
 
