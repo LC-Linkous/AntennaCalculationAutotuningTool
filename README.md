@@ -16,7 +16,7 @@ Where are we so far? (Oct. 21, 2024)
 * The dissertation based on the AntennaCAT software has been released at https://scholarscompass.vcu.edu/etd/7841/
 * The Individual optimizers have been released for unit testing
 * The objective function library has been posted
-* The journal/magazine article for AntennaCAT has been accepted with revisions
+* The journal/magazine article for AntennaCAT is under review
 
 
 
