@@ -8,6 +8,17 @@
 
 Antenna Calculation and Autotuning (AntennaCAT) is a comprehensive implementation of machine learning to automate, evaluate, and optimize the antenna design process using EM simulation software. It utilizes a combined antenna designer and internal calculator to accelerate the CAD condsturction and EM simulation of several common topologies, while eliminating model disparity for automated data collection.
 
+## Wiki and Documentation
+
+See the [Release Schedule](#release-schedule) below for code roll out updates.
+
+As we prepare for the first code release, we're sharing information on the Wiki of how to download, setup and use AntennaCAT.
+
+You can [Start Here](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/wiki) for general project information.
+
+Pages are being updated daily, so check back in a few days if the information you're looking for hasn't been posted yet.
+
+
 
 ## Release Schedule 
 
@@ -39,7 +50,8 @@ Stages of major revision roll out:
   * The first round of bending and custom layers added back in. This works differently for different EM simulation software, so the templates are more intricate for these steps
   * At this point, that's 99.9% of the functionality released open-source. Major revisions after this point will be due to feature additions not originally planned.
  
-  
+
+ 
 
 
 ## Publications and Repositories
