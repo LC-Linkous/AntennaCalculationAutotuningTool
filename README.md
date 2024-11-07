@@ -52,7 +52,68 @@ Stages of major revision roll out:
   * At this point, that's 99.9% of the functionality released open-source. Major revisions after this point will be due to feature additions not originally planned.
  
 
- 
+
+## Requirements
+Library requirements for locally run Python code are included in requirements.txt and can be 
+installed using 'pip install -r requirements.txt'
+
+
+```python
+cairocffi==0.9.0
+cffi==1.15.1
+colour==0.1.5
+contourpy==1.0.7
+cycler==0.11.0
+dxfgrabber==1.0.1
+ezdxf==1.0.3
+fonttools==4.39.4
+importlib-resources==5.12.0
+kiwisolver==1.4.4
+matplotlib==3.7.1
+numpy==1.24.3
+packaging==23.1
+pandas==2.0.1
+pcb-tools==0.1.6
+pcb-tools-extension==0.9.3
+Pillow==9.5.0
+Pint==0.21
+pycparser==2.21
+pyparsing==3.0.9
+python-dateutil==2.8.2
+pytz==2023.3
+six==1.16.0
+typing_extensions==4.5.0
+tzdata==2023.3
+wxPython==4.2.0
+zipp==3.15.0
+```
+
+## Organization
+
+The siplified projct structure is shown below.  Full file structure will be updated in the documentation for future collaboration efforts. 
+```python
+.
+├── AntennaCalculationAndAutotuning
+|
+├── .src                                # dir for source code of GeneticCAT
+│   │
+│   ├── ...                             # root of the project code.
+│   │
+│   └── main.py                         # main program file. The project entry point.
+|
+├── README.md                           # this README
+└── requirements.txt                    #project requirement minimum
+```
+
+
+## Running
+
+AntennaCAT and derivatives should be run from main.py, either in an IDE or with 'python main.py'. 
+
+While there are unit testing artifacts in some code files, entry at other points in the program will cause some features to not work. 
+
+It is recomended to run AntennaCAT in a virtual enviornment, but it is not a requirement. 
+
 
 
 ## Related Publications and Repositories
