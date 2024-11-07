@@ -106,7 +106,7 @@ The siplified projct structure is shown below.  Full file structure will be upda
 .
 ├── AntennaCalculationAndAutotuning
 |
-├── .src                                # dir for source code of GeneticCAT
+├── .src                                # dir for source code of AntennaCAT
 │   │
 │   ├── ...                             # root of the project code.
 │   │
