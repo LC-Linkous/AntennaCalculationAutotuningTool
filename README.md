@@ -2,7 +2,7 @@
 
 
 <p align="center">
- <img src="https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/blob/main/media/antennaCAT-icons/transparent-antennaCAT-logo.png" height="400" >
+ <img src="https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/blob/main/media/antennaCAT-icons/transparent-antennaCAT-logo.png" height="200" >
 </p>
 
 
@@ -50,11 +50,11 @@ What does that mean for the code release?
 
 
 Stages of major revision roll out:
-* AntennaCAT v. 2024.1
-  * All of the core antennaCAT features - a stable first release so collaborators can find bugs while I document the newer updates. This release includes the calculator, a couple of the replication studies, the load/detect script features, optimizers WITHOUT the hyperparameter suggestion network. This version will be fully integrated with Ansys HFSS, with the template framework for the other EM simulation software included. Why not all of them hooked up? Licensing issue being handled over the academic Winter break. 
+* AntennaCAT v. 2024.0
+  * All of the core antennaCAT features - a stable first release so collaborators can find bugs while I document the newer updates. This release includes the calculator, a couple of the replication studies, the load/detect script features, optimizers WITHOUT the hyperparameter suggestion network. This version will be fully integrated with Ansys HFSS, with the template framework for the other EM simulation software included. Why not all of them hooked up? Licensing issue being handled over the academic Winter break so we can test on non-code development systems. 
 
 * AntennaCAT v. 2025.1
-  * (or maybe 2024.2, the difference is 3 free weekends to document code)
+  * (or maybe 2024.1, the difference is 3 free weekends to document code)
   * The rest of the replication study set. The hyperparameter suggestion network added in and documented.
   * Start phasing in the other EM simulation softwares.  
 
