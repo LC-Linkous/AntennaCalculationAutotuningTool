@@ -6,7 +6,7 @@
 </p>
 
 
-Antenna Calculation and Autotuning (AntennaCAT) is a comprehensive implementation of machine learning to automate, evaluate, and optimize the antenna design process using EM simulation software. It utilizes a combined antenna designer and internal calculator to accelerate the CAD condsturction and EM simulation of several common topologies, while eliminating model disparity for automated data collection.
+Antenna Calculation and Autotuning (AntennaCAT) is a comprehensive implementation of machine learning to automate, evaluate, and optimize the antenna design process using EM simulation software. It utilizes a combined antenna designer and internal calculator to accelerate the CAD construction and EM simulation of several common topologies, while eliminating model disparity for automated data collection.
 
 
 
@@ -51,12 +51,12 @@ What does that mean for the code release?
 
 Stages of major revision roll out:
 * AntennaCAT v. 2024.0
-  * All of the core antennaCAT features - a stable first release so collaborators can find bugs while I document the newer updates. This release includes the calculator, a couple of the replication studies, the load/detect script features, optimizers WITHOUT the hyperparameter suggestion network. This version will be fully integrated with Ansys HFSS, with the template framework for the other EM simulation software included. Why not all of them hooked up? Licensing issue being handled over the academic Winter break so we can test on non-code development systems. 
+  * All core AntennaCAT features - a stable first release so collaborators can find bugs while I document the newer updates. This release includes the calculator, several of the replication studies, the load/detect script features, optimizers WITHOUT the hyperparameter suggestion network. This version will be fully integrated with Ansys HFSS, with the template framework for the other EM simulation software included. Why not all of them hooked up? Licensing issue being handled over the academic Winter break so we can test on non-code development systems. 
 
 * AntennaCAT v. 2025.1
   * (or maybe 2024.1, the difference is 3 free weekends to document code)
   * The rest of the replication study set. The hyperparameter suggestion network added in and documented.
-  * Start phasing in the other EM simulation softwares.  
+  * Start phasing in the other EM simulation software(s).  
 
 * AntennaCAT v. 2025.2
   * The first round of bending and custom layers added back in. This works differently for different EM simulation software, so the templates are more intricate for these steps
@@ -101,7 +101,7 @@ zipp==3.15.0
 
 ## Organization
 
-The siplified projct structure is shown below.  Full file structure will be updated in the documentation for future collaboration efforts. 
+The simplified project structure is shown below.  Full file structure will be updated in the documentation for future collaboration efforts. 
 ```python
 .
 ├── AntennaCalculationAndAutotuning
@@ -123,7 +123,7 @@ AntennaCAT and derivatives should be run from main.py, either in an IDE or with 
 
 While there are unit testing artifacts in some code files, entry at other points in the program will cause some features to not work. 
 
-It is recomended to run AntennaCAT in a virtual enviornment, but it is not a requirement. 
+It is recommended to run AntennaCAT in a virtual environment, but it is not a requirement. 
 
 
 
@@ -153,8 +153,8 @@ It is recomended to run AntennaCAT in a virtual enviornment, but it is not a req
 | [cat_swarm_python](https://github.com/LC-Linkous/cat_swarm_python) | [sand_cat_python](https://github.com/LC-Linkous/cat_swarm_python/tree/sand_cat_python)| [cat_swarm_quantum](https://github.com/LC-Linkous/cat_swarm_python/tree/cat_swarm_quantum) | |
 | [chicken_swarm_python](https://github.com/LC-Linkous/chicken_swarm_python) | - | [chicken_swarm_quantum](https://github.com/LC-Linkous/chicken_swarm_python/tree/chicken_swarm_quantum)  | |
 | [sweep_python](https://github.com/LC-Linkous/sweep_python)  | *alternates in base repo | -  | - |
-| [bayesian optimization_python](https://github.com/LC-Linkous/bayesian_optimization_python)  | -| - | *interchangable surrogate models <br> included in base repo |
+| [bayesian optimization_python](https://github.com/LC-Linkous/bayesian_optimization_python)  | -| - | *interchangeable surrogate models <br> included in base repo |
 | [multi_glods_python](https://github.com/LC-Linkous/multi_glods_python)| - | - | |
 
 
-The [Objective Function Test Suite](https://github.com/LC-Linkous/objective_function_suite) is now public
+The [Objective Function Test Suite](https://github.com/LC-Linkous/objective_function_suite)used to collect performance data on the individual optimizers is now public.
