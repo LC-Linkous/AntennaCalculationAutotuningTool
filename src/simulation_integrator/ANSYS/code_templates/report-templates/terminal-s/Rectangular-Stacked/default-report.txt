@@ -1,0 +1,13 @@
+oModule.CreateReport("INSERT_REPORT_NAME", "Terminal Solution Data", "Rectangular Stacked Plot",
+                     "Setup1 : Sweep",
+                     [
+                         "Domain:="	, "Sweep"
+                     ],
+                     [
+                        "Freq:="	, ["All"],
+		                INSERT_PARAMETER_BASE
+                     ],
+                     [
+                         "X Component:="		, "Freq",
+                         "Y Component:="		, ["dB(St(port_T1,port_T1))"]
+                     ])

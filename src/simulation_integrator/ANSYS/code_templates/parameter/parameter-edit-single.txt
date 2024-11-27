@@ -1,0 +1,19 @@
+
+oProject.ChangeProperty(
+	[
+		"NAME:AllTabs",
+		[
+			"NAME:ProjectVariableTab",
+			[
+				"NAME:PropServers", 
+				"ProjectVariables"
+			],
+			[
+				"NAME:ChangedProps",
+				[
+					"NAME: INSERT_PARAM_NAME ",
+					"Value:="		, "INSERT_PARAM_VALUE"
+				]
+			]
+		]
+	])

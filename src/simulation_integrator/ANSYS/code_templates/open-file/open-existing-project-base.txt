@@ -1,0 +1,7 @@
+import ScriptEnv
+ScriptEnv.Initialize("Ansoft.ElectronicsDesktop")
+oDesktop.RestoreWindow()
+oDesktop.OpenProject(r"INSERT_PROJECT_PATH")
+oProject = oDesktop.SetActiveProject("INSERT_PROJECT_NAME")
+oDesign = oProject.SetActiveDesign("HFSSDesign1")
+oEditor = oDesign.SetActiveEditor("3D Modeler") 

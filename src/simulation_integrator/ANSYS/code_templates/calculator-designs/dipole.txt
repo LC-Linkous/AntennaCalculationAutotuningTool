@@ -1,0 +1,173 @@
+import ScriptEnv
+ScriptEnv.Initialize("Ansoft.ElectronicsDesktop")
+oDesktop.RestoreWindow()
+oProject = oDesktop.NewProject()
+INSERT_DESIGN_NETWORK_TYPE
+oProject.SaveAs(r"INSERT_PROJECT_NAME", True)
+oProject.ChangeProperty(
+	[
+		"NAME:AllTabs",
+		[
+			"NAME:ProjectVariableTab",
+			[
+				"NAME:PropServers", 
+				"ProjectVariables"
+			],
+			[
+				"NAME:NewProps",
+				[
+					"NAME:$length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_LENGTH_VALUE"
+				],
+				[
+					"NAME:$feedgap",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_FEEDGAP_VALUE"
+				],
+				[
+					"NAME:$radius",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_RADIUS_VALUE"
+				]
+			]
+		]
+	])
+
+oDesign = oProject.SetActiveDesign("HFSSDesign1")
+
+oEditor = oDesign.SetActiveEditor("3D Modeler")
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "0mm",
+		"YCenter:="		, "0mm",
+		"ZCenter:="		, "$feedgap/2",
+		"Radius:="		, "$radius",
+		"Height:="		, "$length/4-$feedgap/2",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "TopConductor",
+		"Flags:="		, "",
+		"Color:="		, "(255 128 0)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "0mm",
+		"YCenter:="		, "0mm",
+		"ZCenter:="		, "-$feedgap/2",
+		"Radius:="		, "$radius",
+		"Height:="		, "-$length/4+$feedgap/2",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "BottomConductor",
+		"Flags:="		, "",
+		"Color:="		, "(255 128 0)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+#create lumped port
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "0mm",
+		"YStart:="		, "-$radius",
+		"ZStart:="		, "$feedgap/2",
+		"Width:="		, "2*$radius",
+		"Height:="		, "-$feedgap",
+		"WhichAxis:="		, "X"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "port",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateBox(
+	[
+		"NAME:BoxParameters",
+		"XPosition:="		, "-$length/2",
+		"YPosition:="		, "-$length/2",
+		"ZPosition:="		, "-$length/2",
+		"XSize:="		, "$length",
+		"YSize:="		, "$length",
+		"ZSize:="		, "$length"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "air_box",
+		"Flags:="		, "",
+		"Color:="		, "(128 255 255)",
+		"Transparency:="	, 0.95,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+			
+oModule = oDesign.GetModule("BoundarySetup")
+
+oModule.AssignRadiation(
+	[
+		"NAME:Rad1",
+		"Objects:="		, ["air_box"]
+	])
+
+
+INSERT_PORT_SETUP
+
+oProject.Save()
+#end antenna generation
+

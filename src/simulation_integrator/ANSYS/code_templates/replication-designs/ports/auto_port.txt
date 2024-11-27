@@ -1,0 +1,10 @@
+oModule.AutoIdentifyPorts(
+	[
+		"NAME:Faces", 
+		105 #sometimes 148
+	], False, 
+	[
+		"NAME:ReferenceConductors", 
+		"ground_plane"
+	], "1", False)
+	

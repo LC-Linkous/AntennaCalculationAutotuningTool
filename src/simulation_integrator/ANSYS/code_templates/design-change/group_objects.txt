@@ -1,0 +1,8 @@
+oEditor.CreateGroup(
+	[
+		"NAME:GroupParameter",
+		"ParentGroupID:="	, "Model",
+		"Parts:="		, INSERT_NAME_LIST ,
+		"SubmodelInstances:="	, "",
+		"Groups:="		, ""
+	])

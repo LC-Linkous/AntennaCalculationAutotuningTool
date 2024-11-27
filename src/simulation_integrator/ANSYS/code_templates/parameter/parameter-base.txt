@@ -1,0 +1,16 @@
+oProject.ChangeProperty(
+	[
+		"NAME:AllTabs",
+		[
+			"NAME:ProjectVariableTab",
+			[
+				"NAME:PropServers", 
+				"ProjectVariables"
+			],
+			[
+				"NAME:ChangedProps",
+                INSERT_PROPERTY_CHANGES
+			]
+		]
+	])
+

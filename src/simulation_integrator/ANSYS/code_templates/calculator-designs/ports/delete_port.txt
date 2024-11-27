@@ -1,0 +1,2 @@
+oModule = oDesign.GetModule("BoundarySetup")
+oModule.DeleteBoundaries(["INSERT_PORT_ID"])

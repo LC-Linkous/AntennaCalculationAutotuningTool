@@ -1,0 +1,330 @@
+import ScriptEnv
+ScriptEnv.Initialize("Ansoft.ElectronicsDesktop")
+oDesktop.RestoreWindow()
+oProject = oDesktop.NewProject()
+INSERT_DESIGN_NETWORK_TYPE
+oProject.SaveAs(r"INSERT_PROJECT_NAME", True)
+oProject.ChangeProperty(
+	[
+		"NAME:AllTabs",
+		[
+			"NAME:ProjectVariableTab",
+			[
+				"NAME:PropServers", 
+				"ProjectVariables"
+			],
+			[
+				"NAME:NewProps",
+				[
+					"NAME:$width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_WIDTH_VALUE"
+				],
+				[
+					"NAME:$length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_LENGTH_VALUE"
+				],
+				[
+					"NAME:$depth",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_DEPTH_VALUE"
+				],
+				[
+					"NAME:$strip_width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_STRIP_WIDTH_VALUE"
+				],
+				[
+					"NAME:$x0",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_X0_VALUE"
+				],				
+				[
+					"NAME:$y0",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_Y0_VALUE"
+				],
+				[
+					"NAME:$gap",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_GAP_VALUE"
+				],
+				[
+					"NAME:$ground_plane",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_GROUND_PLANE_VALUE"
+				]				
+			]
+		]
+	])
+oDesign = oProject.SetActiveDesign("HFSSDesign1")
+oEditor = oDesign.SetActiveEditor("3D Modeler")
+
+# create ground plane
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "-$ground_plane/2",
+		"YStart:="		, "-$ground_plane/2",
+		"ZStart:="		, "-$depth",
+		"Width:="		, "$ground_plane",
+		"Height:="		, "$ground_plane",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "ground_plane",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_GROUND_PLANE_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# create substrate
+oEditor.CreateBox(
+	[
+		"NAME:BoxParameters",
+		"XPosition:="		, "-$ground_plane/2",
+		"YPosition:="		, "-$ground_plane/2",
+		"ZPosition:="		, "-$depth",
+		"XSize:="		, "$ground_plane",
+		"YSize:="		, "$ground_plane",
+		"ZSize:="		, "$depth"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "substrate",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_SUBSTRATE_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# create patch
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "-$width/2",
+		"YStart:="		, "-$length/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "$width",
+		"Height:="		, "$length",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "patch",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	,  "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+#create offset
+oEditor = oDesign.SetActiveEditor("3D Modeler")
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "-$strip_width/2-$gap",
+		"YStart:="		, "$length/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "$strip_width+2*$gap",
+		"Height:="		, "-$x0",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "offset",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+oEditor = oDesign.SetActiveEditor("3D Modeler")
+oEditor.Subtract(
+	[
+		"NAME:Selections",
+		"Blank Parts:="		, "patch",
+		"Tool Parts:="		, "offset"
+	],
+	[
+		"NAME:SubtractParameters",
+		"KeepOriginals:="	, False
+	])
+#create strip
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "-$strip_width/2",
+		"YStart:="		, "$ground_plane/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "$strip_width",
+		"Height:="		, "-(($ground_plane-$length)/2+$x0)",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "strip_line",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	,  "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+#unite strip and patch
+oEditor.Unite(
+	[
+		"NAME:Selections",
+		"Selections:="		, "patch,strip_line"
+	], 
+	[
+		"NAME:UniteParameters",
+		"KeepOriginals:="	, False,
+		"TurnOnNBodyBoolean:="	, True
+	])
+
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "-$strip_width/2",
+		"YStart:="		, "$ground_plane/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "-$depth",
+		"Height:="		, "$strip_width",
+		"WhichAxis:="		, "Y"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "port",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateBox(
+	[
+		"NAME:BoxParameters",
+		"XPosition:="		, "-$ground_plane",
+		"YPosition:="		, "-$ground_plane",
+		"ZPosition:="		, "-$ground_plane",
+		"XSize:="		, "$ground_plane*2",
+		"YSize:="		, "$ground_plane*2",
+		"ZSize:="		, "$ground_plane*2"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "air_box",
+		"Flags:="		, "",
+		"Color:="		, "(128 255 255)",
+		"Transparency:="	, 0.95,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+
+oModule = oDesign.GetModule("BoundarySetup")
+oModule.AssignFiniteCond(
+	[
+		"NAME:FiniteCond1",
+		"Objects:="		, ["patch","ground_plane"],
+		"UseMaterial:="		, True,
+		"Material:="		, "INSERT_CONDUCTOR_BOUNDARY_MATERIAL" ,
+		"UseThickness:="	, False,
+		"Roughness:="		, "0um",
+		"InfGroundPlane:="	, False,
+		"IsTwoSided:="		, False,
+		"IsInternal:="		, True
+	])
+
+
+oModule.AssignRadiation(
+	[
+		"NAME:Rad1",
+		"Objects:="		, ["air_box"]
+	])
+	
+oModule = oDesign.GetModule("BoundarySetup")
+
+INSERT_PORT_SETUP
+
+oProject.Save()
+#end antenna generation
+

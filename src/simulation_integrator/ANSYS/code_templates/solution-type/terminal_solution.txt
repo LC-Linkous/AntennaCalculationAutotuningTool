@@ -1,0 +1,5 @@
+oDesign.SetSolutionType("HFSS Terminal Network", 
+	[
+		"NAME:Options",
+		"EnableAutoOpen:="	, False
+	])

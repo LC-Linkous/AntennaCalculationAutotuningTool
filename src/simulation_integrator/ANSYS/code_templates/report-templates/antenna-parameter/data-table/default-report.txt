@@ -1,0 +1,12 @@
+oModule.CreateReport("INSERT_REPORT_NAME", "Antenna Parameters", "Data Table", "Setup1 : LastAdaptive", 
+	[
+		"Context:="		, "Infinite Sphere1"
+	], 
+	[
+		"Freq:="		, ["All"],
+		INSERT_PARAMETER_BASE
+	], 
+	[
+		"X Component:="		, "Freq",
+		"Y Component:="		, ["dB(PeakDirectivity)","dB(PeakGain)","TotalEfficiency", "BeamArea"]
+	])

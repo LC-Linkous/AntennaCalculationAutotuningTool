@@ -1,0 +1,213 @@
+import ScriptEnv
+ScriptEnv.Initialize("Ansoft.ElectronicsDesktop")
+oDesktop.RestoreWindow()
+oProject = oDesktop.NewProject()
+INSERT_DESIGN_NETWORK_TYPE
+oProject.SaveAs(r"INSERT_PROJECT_NAME", True)
+oProject.ChangeProperty(
+	[
+		"NAME:AllTabs",
+		[
+			"NAME:ProjectVariableTab",
+			[
+				"NAME:PropServers", 
+				"ProjectVariables"
+			],
+			[
+				"NAME:NewProps",
+				[
+					"NAME:$length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_LENGTH_VALUE"
+				],
+				[
+					"NAME:$wire_radius",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_WIRE_RAD_VALUE"
+				],
+				[
+					"NAME:$ground_plane_radius",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_GP_RAD_VALUE"
+				],
+				[
+					"NAME:$feed_gap",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_FEEDGAP_VALUE"
+				]
+			]
+		]
+	])
+
+oDesign = oProject.SetActiveDesign("HFSSDesign1")
+
+oEditor = oDesign.SetActiveEditor("3D Modeler")
+# create the monopole 
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "0mm",
+		"YCenter:="		, "0mm",
+		"ZCenter:="		, "$feed_gap",
+		"Radius:="		, "$wire_radius",
+		"Height:="		, "$length",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "300"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "monopole",
+		"Flags:="		, "",
+		"Color:="		, "(255 128 0)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# create ground plane
+oEditor.CreateEllipse(
+	[
+		"NAME:EllipseParameters",
+		"IsCovered:="		, True,
+		"XCenter:="		, "0mm",
+		"YCenter:="		, "0mm",
+		"ZCenter:="		, "0mm",
+		"MajRadius:="		, "$ground_plane_radius",
+		"Ratio:="		, "1",
+		"WhichAxis:="		, "Z",
+		"NumSegments:="		, "500"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "ground_plane",
+		"Flags:="		, "",
+		"Color:="		, "(255 128 0)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# create the rectangle for the lumped port
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "-0mm",
+		"YStart:="		, "-$wire_radius",
+		"ZStart:="		, "0mm",
+		"Width:="		, "2*$wire_radius",
+		"Height:="		, "$feed_gap",
+		"WhichAxis:="		, "X"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "port",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+# create the airbox
+oEditor.CreateBox(
+	[
+		"NAME:BoxParameters",
+		"XPosition:="		, "-(5mm+$ground_plane_radius)",
+		"YPosition:="		, "-(5mm+$ground_plane_radius)",
+		"ZPosition:="		, "-5mm",
+		"XSize:="		, "10mm+$ground_plane_radius",
+		"YSize:="		, "10mm+$ground_plane_radius",
+		"ZSize:="		, "15mm + $feed_gap + $length"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "air_box",
+		"Flags:="		, "",
+		"Color:="		, "(128 255 255)",
+		"Transparency:="	, 0.95,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+# Boundaries and excitation
+
+oModule = oDesign.GetModule("BoundarySetup")
+oModule.AssignFiniteCond(
+	[
+		"NAME:FiniteCond1",
+		"Objects:="		, ["ground_plane"],
+		"UseMaterial:="		, True,
+		"Material:="		, "INSERT_CONDUCTOR_BOUNDARY_MATERIAL",
+		"UseThickness:="	, False,
+		"Roughness:="		, "0um",
+		"InfGroundPlane:="	, False,
+		"IsTwoSided:="		, False,
+		"IsInternal:="		, True
+	])
+
+# generic lumped approach
+
+INSERT_PORT_SETUP
+
+
+oModule.AssignRadiation(
+	[
+		"NAME:Rad1",
+		"Objects:="		, ["air_box"],
+		"IsFssReference:="	, False,
+		"IsForPML:="		, False
+	])
+
+
+oProject.Save()
+#end antenna generation
+
+

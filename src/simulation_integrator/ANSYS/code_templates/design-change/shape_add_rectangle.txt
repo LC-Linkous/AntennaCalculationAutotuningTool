@@ -1,0 +1,28 @@
+oEditor.CreateRectangle( 
+[ 
+"NAME:RectangleParameters", 
+"IsCovered:=" , True, 
+"XStart:=" , INSERT_X , 
+"YStart:=" , INSERT_Y , 
+"ZStart:=" , "0mm", 
+"Width:=" , "$particle_x", 
+"Height:=" , "$particle_y", 
+"WhichAxis:=" , "Z" 
+], 
+[ 
+"NAME:Attributes", 
+"Name:=" , INSERT_NAME , 
+"Flags:=" , "", 
+"Color:=" , "(128 255 128)", 
+"Transparency:=" , 0, 
+"PartCoordinateSystem:=", "Global", 
+"UDMId:=" , "", 
+"MaterialValue:=" , INSERT_CONDUCTOR_MATERIAL , 
+"SurfaceMaterialValue:=", "\"\"", 
+"SolveInside:=" , True, 
+"ShellElement:=" , False, 
+"ShellElementThickness:=", "0mm", 
+"IsMaterialEditable:=" , True, 
+"UseMaterialAppearance:=", False, 
+"IsLightweight:=" , False 
+]) 

@@ -1,0 +1,14 @@
+oModule.AddTraces("INSERT_REPORT_NAME", "Setup1 : LastAdaptive", 
+	[
+		"Context:="		, "Infinite Sphere1"
+	], 
+	[
+		"Theta:="		, ["All"],
+		"Phi:="			, ["All"],
+		"Freq:="		, ["INSERT_FREQUENCY"],
+		INSERT_PARAMETER_BASE
+	], 
+	[
+		"Ang Component:="	, "Theta",
+		"Mag Component:="	, ["GainTotal"]
+	])

@@ -1,0 +1,11 @@
+oModule.CreateReport("INSERT_REPORT_NAME", "Terminal Solution Data", "3D Rectangular Plot",
+                     "Setup1 : Sweep", [],
+                     [
+                        "Freq:="	, ["All"],
+		                INSERT_PARAMETER_BASE
+                     ],
+                     [
+                         "X Component:="		, "Freq",
+                         "Y Component:="		, "$width",
+                         "Z Component:="		, ["dB(St(port_T1,port_T1))"]
+                     ])

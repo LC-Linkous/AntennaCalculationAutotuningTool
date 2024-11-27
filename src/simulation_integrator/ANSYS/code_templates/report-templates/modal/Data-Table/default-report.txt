@@ -1,0 +1,12 @@
+oModule.CreateReport("INSERT_REPORT_NAME", "Modal Solution Data", "Data Table", "Setup1 : Sweep",
+                     [
+                         "Domain:="	, "Sweep"
+                     ],
+                     [
+                        "Freq:="	, ["All"],
+		                INSERT_PARAMETER_BASE
+                     ],
+                     [
+                         "X Component:="		, "Freq",
+                         "Y Component:="		, ["dB(S(1,1))"]
+                     ])

@@ -1,0 +1,844 @@
+
+import ScriptEnv
+ScriptEnv.Initialize("Ansoft.ElectronicsDesktop")
+oDesktop.RestoreWindow()
+oProject = oDesktop.NewProject()
+INSERT_DESIGN_NETWORK_TYPE
+oProject.SaveAs(r"INSERT_PROJECT_NAME", True)
+
+oProject.ChangeProperty(
+	[
+		"NAME:AllTabs",
+		[
+			"NAME:ProjectVariableTab",
+			[
+				"NAME:PropServers", 
+				"ProjectVariables"
+			],
+			[
+				"NAME:NewProps",
+				[
+					"NAME:$depth",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_DEPTH_VALUE"
+				],
+				[
+					"NAME:$Ps1",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_PS1_VALUE"
+				],
+				[
+					"NAME:$Ws1",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_WS1_VALUE"
+				],
+				[
+					"NAME:$Ls1",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_LS1_VALUE"
+				],
+				[
+					"NAME:$Ps2",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_PS2_VALUE"
+				],
+				[
+					"NAME:$Ws2",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_WS2_VALUE"
+				],
+				[
+					"NAME:$Ls2",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_LS2_VALUE"
+				],
+				[
+					"NAME:$Ps3",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_PS3_VALUE"
+				],
+				[
+					"NAME:$Ws3",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_WS3_VALUE"
+				],
+				[
+					"NAME:$Ls3",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_LS3_VALUE"
+				],
+				[
+					"NAME:$Ps4",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_PS4_VALUE"
+				],
+				[
+					"NAME:$Ws4",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_WS4_VALUE"
+				],
+				[
+					"NAME:$Ls4",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_LS4_VALUE"
+				],
+				[
+					"NAME:$fy",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_FY_VALUE"
+				],
+				[
+					"NAME:$fx",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "(($Ps4-($Ws4/2))+($Ps3+($Ws3/2)))/2"
+				],
+				[
+					"NAME:$Px",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_PX_VALUE"
+				],
+				[
+					"NAME:$Py",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_PY_VALUE"
+				],
+				[
+					"NAME:$Lp",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_LP_VALUE"
+				],
+				[
+					"NAME:$Wp",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_WP_VALUE"
+				],
+				[
+					"NAME:$Lsub",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_LSUB_VALUE"
+				],
+				[
+					"NAME:$Wsub",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_WSUB_VALUE"
+				],
+                [
+					"NAME:$Lc",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_LC_VALUE"
+				],
+                [
+					"NAME:$Xc",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "-10.75mm"
+				],
+				[
+					"NAME:$Yc",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "-11mm"
+				],
+				[
+					"NAME:$PinH",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "3mm"
+				],
+				[
+					"NAME:$PinRad",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "(0.85/2) mm"
+				],
+				[
+					"NAME:$PTFERad",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "(4.19/2) mm"
+				],
+				[
+					"NAME:$FittingRad",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "(5.19/2) mm"
+				]
+			]
+		]
+	])
+
+
+# make the top patch
+
+oDesign = oProject.SetActiveDesign("HFSSDesign1")
+oEditor = oDesign.SetActiveEditor("3D Modeler")
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$Xc",
+		"YStart:="		, "$Yc",
+		"ZStart:="		, "0mm",
+		"Width:="		, "$Wp",
+		"Height:="		, "$Lp",
+		"WhichAxis:="		, "Z"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "patch",
+		"Flags:="		, "",
+		"Color:="		, "(255 255 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor = oDesign.SetActiveEditor("3D Modeler")
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$Ps1-($Ws1/2)",
+		"YStart:="		, "$Yc+$Lp",
+		"ZStart:="		, "0mm",
+		"Width:="		, "$Ws1",
+		"Height:="		, "-$Ls1",
+		"WhichAxis:="		, "Z"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "cut1",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$Ps2-$Ws2",
+		"YStart:="		, "$Yc",
+		"ZStart:="		, "0mm",
+		"Width:="		, "$Ws2",
+		"Height:="		, "$Ls2",
+		"WhichAxis:="		, "Z"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "cut2",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$Ps3 - ($Ws3/2)",
+		"YStart:="		, "$Yc + $Lp",
+		"ZStart:="		, "0mm",
+		"Width:="		, "$Ws3",
+		"Height:="		, "-$Ls3",
+		"WhichAxis:="		, "Z"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "cut3",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$Ps4-$Ws4/2",
+		"YStart:="		, "$Yc",
+		"ZStart:="		, "0mm",
+		"Width:="		, "$Ws4",
+		"Height:="		, "$Ls4",
+		"WhichAxis:="		, "Z"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "cut4",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$Ps4 + $Ws4/2",
+		"YStart:="		, "$Yc",
+		"ZStart:="		, "0mm",
+		"Width:="		, "$Wp/2",
+		"Height:="		, "$Lc",
+		"WhichAxis:="		, "Z"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "cut_Lc",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.Subtract(
+	[
+		"NAME:Selections",
+		"Blank Parts:="		, "patch",
+		"Tool Parts:="		, "cut1,cut2,cut3,cut4,cut_Lc"
+	], 
+	[
+		"NAME:SubtractParameters",
+		"KeepOriginals:="	, False,
+		"TurnOnNBodyBoolean:="	, True
+	])
+
+
+# make ground plane
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "-$Lsub/2",
+		"YStart:="		, "-$Wsub/2",
+		"ZStart:="		, "-$depth",
+		"Width:="		, "$LSub",
+		"Height:="		, "$Wsub",
+		"WhichAxis:="		, "Z"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "ground_plane",
+		"Flags:="		, "",
+		"Color:="		, "(255 255 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_GROUND_PLANE_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# make the substrate
+oEditor.CreateBox(
+	[
+		"NAME:BoxParameters",
+		"XPosition:="		, "-$Lsub/2",
+		"YPosition:="		, "-$Wsub/2",
+		"ZPosition:="		, "-$depth",
+		"XSize:="		, "$Lsub",
+		"YSize:="		, "$Wsub",
+		"ZSize:="		, "$depth"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "substrate",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	,  "\"INSERT_SUBSTRATE_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])	
+
+# make the shorting pin (and cut)
+# this pin is half the size of the coax
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "$Ps3-$Ws3/2-$Px",
+		"YCenter:="		, "$Lp/2-$Py",
+		"ZCenter:="		, "-$depth",
+		"Radius:="		, "$PinRad/2",
+		"Height:="		, "$depth",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "shorting_pin",
+		"Flags:="		, "",
+		"Color:="		, "(255 255 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"copper\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "$Ps3-$Ws3/2-$Px",
+		"YCenter:="		, "$Lp/2-$Py",
+		"ZCenter:="		, "-$depth",
+		"Radius:="		, "$PinRad/2",
+		"Height:="		, "$depth",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "shorting_cut",
+		"Flags:="		, "",
+		"Color:="		, "(255 255 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"copper\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+oEditor.Subtract(
+	[
+		"NAME:Selections",
+		"Blank Parts:="		, "substrate",
+		"Tool Parts:="		, "shorting_cut"
+	], 
+	[
+		"NAME:SubtractParameters",
+		"KeepOriginals:="	, False
+	])
+
+# make the feed pin and connector (and cut)
+# make the fitting and create the port
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "$fx",
+		"YCenter:="		, "$fy",
+		"ZCenter:="		, "-$depth",
+		"Radius:="		, "$FittingRad",
+		"Height:="		, "-$PinH",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "RFFitting",
+		"Flags:="		, "",
+		"Color:="		, "(255 255 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"copper\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+	
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "$fx",
+		"YCenter:="		, "$fy",
+		"ZCenter:="		, "-$depth",
+		"Radius:="		, "$PTFERad",
+		"Height:="		, "-$PinH",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "Cylinder3",
+		"Flags:="		, "",
+		"Color:="		, "(255 255 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"copper\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.Subtract(
+	[
+		"NAME:Selections",
+		"Blank Parts:="		, "RFFitting,ground_plane",
+		"Tool Parts:="		, "Cylinder3"
+	], 
+	[
+		"NAME:SubtractParameters",
+		"KeepOriginals:="	, False
+	])
+
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "$fx",
+		"YCenter:="		, "$fy",
+		"ZCenter:="		, "-$depth",
+		"Radius:="		, "$PTFERad",
+		"Height:="		, "-$PinH",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "RFFittingDielectric",
+		"Flags:="		, "",
+		"Color:="		, "(192 192 192)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"Teflon (tm)\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "$fx",
+		"YCenter:="		, "$fy",
+		"ZCenter:="		, "-$depth",
+		"Radius:="		, "$PinRad",
+		"Height:="		, "-$PinH",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "Cylinder4",
+		"Flags:="		, "",
+		"Color:="		, "(255 255 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"copper\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+oEditor.Subtract(
+	[
+		"NAME:Selections",
+		"Blank Parts:="		, "RFFittingDielectric",
+		"Tool Parts:="		, "Cylinder4"
+	], 
+	[
+		"NAME:SubtractParameters",
+		"KeepOriginals:="	, False
+	])
+
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "$fx",
+		"YCenter:="		, "$fy",
+		"ZCenter:="		, "-$depth-$PinH",
+		"Radius:="		, "$PinRad",
+		"Height:="		, "$depth+$PinH",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "RFFittingPin",
+		"Flags:="		, "",
+		"Color:="		, "(255 255 0)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"copper\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# draw the pin for the port 
+oEditor.CreateCircle(
+	[
+		"NAME:CircleParameters",
+		"IsCovered:="		, True,
+		"XCenter:="		, "$fx",
+		"YCenter:="		, "$fy",
+		"ZCenter:="		, "-$depth-$PinH",
+		"Radius:="		, "$FittingRad",
+		"WhichAxis:="		, "Z",
+		"NumSegments:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "port",
+		"Flags:="		, "",
+		"Color:="		, "(225 128 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+# cut a hole in the substrate for the pin
+
+## copy the cut
+oEditor.CreateCylinder(
+	[
+		"NAME:CylinderParameters",
+		"XCenter:="		, "$fx",
+		"YCenter:="		, "$fy",
+		"ZCenter:="		, "-$depth-$PinH",
+		"Radius:="		, "$PinRad",
+		"Height:="		, "$depth+$PinH",
+		"WhichAxis:="		, "Z",
+		"NumSides:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "pin_cut",
+		"Flags:="		, "",
+		"Color:="		, "(255 255 0)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"copper\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+oEditor.Subtract(
+	[
+		"NAME:Selections",
+		"Blank Parts:="		, "substrate",
+		"Tool Parts:="		, "pin_cut"
+	], 
+	[
+		"NAME:SubtractParameters",
+		"KeepOriginals:="	, False
+	])
+		
+
+# draw the airbox
+
+oEditor.CreateBox(
+	[
+		"NAME:BoxParameters",
+		"XPosition:="		, "-$Lsub/2",
+		"YPosition:="		, "-$Wsub/2",
+		"ZPosition:="		, "-$Wsub/2",
+		"XSize:="		, "$Lsub",
+		"YSize:="		, "$Wsub",
+		"ZSize:="		, "$Wsub"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "air_box",
+		"Flags:="		, "",
+		"Color:="		, "(128 255 255)",
+		"Transparency:="	, 0.95,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+oModule = oDesign.GetModule("BoundarySetup")
+oModule.AssignFiniteCond(
+	[
+		"NAME:FiniteCond1",
+		"Objects:="		, ["ground_plane"],
+		"UseMaterial:="		, True,
+		"Material:="		, "INSERT_CONDUCTOR_BOUNDARY_MATERIAL", 
+		"UseThickness:="	, False,
+		"Roughness:="		, "0um",
+		"InfGroundPlane:="	, False,
+		"IsTwoSided:="		, False,
+		"IsInternal:="		, True
+	])
+
+oModule.AssignFiniteCond(
+	[
+		"NAME:FiniteCond2",
+		"Objects:="		, ["patch"],
+		"UseMaterial:="		, True,
+		"Material:="		, "INSERT_CONDUCTOR_BOUNDARY_MATERIAL",
+		"UseThickness:="	, False,
+		"Roughness:="		, "0um",
+		"InfGroundPlane:="	, False,
+		"IsTwoSided:="		, False,
+		"IsInternal:="		, True
+	])
+
+
+# generic lumped approach 
+
+INSERT_PORT_SETUP
+
+
+oModule.AssignRadiation(
+	[
+		"NAME:Rad1",
+		"Objects:="		, ["air_box"]
+	])
+
+
+#oProject.Save()
+#end antenna generation
+
+
+
+

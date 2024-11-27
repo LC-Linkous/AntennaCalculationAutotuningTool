@@ -1,0 +1,14 @@
+oModule.CreateReport("INSERT_REPORT_NAME", "Far Fields", "Rectangular Plot", "Setup1 : LastAdaptive",
+	[
+		"Context:="		, "Infinite Sphere1"
+	],
+	[
+		"Theta:="		, ["All"],
+		"Phi:="			, ["All"],
+		"Freq:="		, ["INSERT_FREQUENCY"],
+		INSERT_PARAMETER_BASE
+	],
+	[
+		"X Component:="		, "Theta",
+		"Y Component:="		, [INSERT_COMPONENTS]
+	])

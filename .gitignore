@@ -1,0 +1,246 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+#   For a library or package, you might want to ignore these files since the code is
+#   intended to run in multiple environments; otherwise, check them in:
+# .python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# poetry
+#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   commonly ignored for libraries.
+#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+#poetry.lock
+
+# pdm
+#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#pdm.lock
+#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
+#   in version control.
+#   https://pdm.fming.dev/#use-with-ide
+.pdm.toml
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# project specific dirs and files
+
+.venv/
+logs/
+output/
+src/__pycache__
+src/AntennaCalculator/__pycache__
+src/batch/__pycache__/
+src/config/__pycache__
+src/data_processing/__pycache__
+src/gui/__pycache__
+src/gui/gui_main/__pycache__
+src/gui/page_batch/__pycache__
+src/gui/page_batch/notebook_scripts/__pycache__
+src/gui/page_batch/notebook_summary/__pycache__
+src/gui/page_batch/panel_paramDetection/__pycache__
+src/gui/page_design/__pycache__
+src/gui/page_design/calculator/__pycache__
+src/gui/page_design/calculator/input_panels/__pycache__
+src/gui/page_design/advanced_options/__pycache__
+src/gui/page_design/generator/__pycache__
+src/gui/page_design/generator/input_panels/__pycache__
+src/gui/page_design/generator/input_panels/calculator/__pycache__
+src/gui/page_design/generator/input_panels/replication/__pycache__
+src/gui/page_design/geometry_calculator/__pycache__
+src/gui/page_design/canvas_draw/__pycache__
+src/gui/page_design/geometry_calculator/__pycache__
+src/gui/page_design/layers/__pycache__
+src/gui/page_design/load_dxf/__pycache__
+src/gui/page_design/load_dxf/notebook_settings/__pycache__
+src/gui/page_design/load_dxf/notebook_settings/arrayAndFSS/__pycache__
+src/gui/page_design/load_project/__pycache__
+src/gui/page_design/load_script/__pycache__
+src/gui/page_design/load_script/parsers/__pycache__
+src/gui/page_genetic/__pycache__
+src/gui/page_optimizer/__pycache__
+src/gui/page_optimizer/notebook_optimizer/__pycache__
+src/gui/page_optimizer/notebook_optimizer/optimizer_panels/__pycache__
+src/gui/page_optimizer/notebook_params/__pycache__
+src/gui/page_optimizer/notebook_scripts/__pycache__
+src/gui/page_optimizer/notebook_summary/__pycache__
+src/gui/page_optimizer/panel_paramDetection/__pycache__
+src/gui/page_project/__pycache__
+src/gui/page_project/notebook_recent/__pycache__
+src/gui/page_settings/__pycache__
+src/gui/page_settings/em_software/__pycache__
+src/gui/page_settings/project_information/__pycache__
+src/gui/page_settings/project_settings/__pycache__
+src/gui/page_settings/user_settings/__pycache__
+src/gui/page_simulation/__pycache__
+src/gui/page_simulation/notebook_reports/__pycache__
+src/gui/page_simulation/notebook_solution/__pycache__
+src/gui/page_simulation/__pycache__
+src/gui/page_tuning/__pycache__
+src/helper_func/__pycache__
+src/old/__pycache__
+src/old/page_exports/__pycache__
+src/old/page_material/__pycache__
+src/optimizers/__pycache__
+src/optimizers/data_interpretation/__pycache__
+src/optimizers/genetic/PSO/__pycache__
+src/optimizers/CAT_SWARM/__pycache__
+src/optimizers/CAT_SWARM/multi_glods_python/__pycache__
+src/optimizers/GLODS/__pycache__
+src/optimizers/GLODS/multi_glods_python/__pycache__
+src/optimizers/particle/__pycache__
+src/optimizers/PSO1/__pycache__
+src/optimizers/PSO1/pso_python/__pycache__
+src/optimizers/QUANTUM_CAT_SWARM/__pycache__
+src/optimizers/QUANTUM_CAT_SWARM/multi_glods_python/__pycache__
+src/optimizers/SWEEP/__pycache__
+src/optimizers/SWEEP/sweep_parameters/__pycache__
+src/optimizers/selection/__pycache__
+src/optimizers/tuning/__pycache__
+src/optimizers/tuning/tuning_ML/__pycache__
+src/optimizers/tuning/tuning_ML/models/__pycache__
+src/optimizers/tuning/tuning_rules/__pycache__
+src/project/__pycache__
+src/project/config/__pycache__
+src/simulation_integrator/__pycache__
+src/simulation_integrator/ANSYS/__pycache__
+src/simulation_integrator/ANSYS/code-templates/__pycache__
+src/simulation_integrator/ANSYS/data_interpretation/__pycache__
+src/simulation_integrator/COMSOL/__pycache__
+src/simulation_integrator/CST/__pycache__
+src/simulation_integrator/EMPIRE/__pycache__
+src/simulation_integrator/FEKO/__pycache__
+.vscode
+.vscode/settings.json
+src/optimizers/GLODS/multi_glods_python/himmelblau/__pycache__/configs_F.cpython-39.pyc
+src/optimizers/GLODS/multi_glods_python/himmelblau/__pycache__/constr_F.cpython-39.pyc
+src/optimizers/GLODS/multi_glods_python/himmelblau/__pycache__/func_F.cpython-39.pyc

@@ -1,0 +1,78 @@
+oModule = oDesign.GetModule("RadField")
+oModule.InsertInfiniteSphereSetup(
+	[
+		"NAME:Infinite Sphere1",
+		"UseCustomRadiationSurface:=", False,
+		"CSDefinition:="	, "Theta-Phi",
+		"Polarization:="	, "Linear",
+		"ThetaStart:="		, "0deg",
+		"ThetaStop:="		, "180deg",
+		"ThetaStep:="		, "2deg",
+		"PhiStart:="		, "-180deg",
+		"PhiStop:="		, "180deg",
+		"PhiStep:="		, "2deg",
+		"UseLocalCS:="		, False
+	])
+oModule = oDesign.GetModule("AnalysisSetup")
+oModule.InsertSetup("HfssDriven",
+	[
+		"NAME:Setup1",
+		"SolveType:="		, "Single",
+		"Frequency:="		, "INSERT_FREQUENCY",
+		"MaxDeltaS:="		, INSERT_DELTA,
+		"UseMatrixConv:="	, False,
+		"MaximumPasses:="	, INSERT_NUM_PASSES,
+		"MinimumPasses:="	, 1,
+		"MinimumConvergedPasses:=", 1,
+		"PercentRefinement:="	, 30,
+		"IsEnabled:="		, True,
+		[
+			"NAME:MeshLink",
+			"ImportMesh:="		, False
+		],
+		"BasisOrder:="		, 1,
+		"DoLambdaRefine:="	, True,
+		"DoMaterialLambda:="	, True,
+		"SetLambdaTarget:="	, False,
+		"Target:="		, 0.3333,
+		"UseMaxTetIncrease:="	, False,
+		"PortAccuracy:="	, 2,
+		"UseABCOnPort:="	, False,
+		"SetPortMinMaxTri:="	, False,
+		"DrivenSolverType:="	, "Direct Solver",
+		"EnhancedLowFreqAccuracy:=", False,
+		"SaveRadFieldsOnly:="	, False,
+		"SaveAnyFields:="	, True,
+		"IESolverType:="	, "Auto",
+		"LambdaTargetForIESolver:=", 0.15,
+		"UseDefaultLambdaTgtForIESolver:=", True,
+		"IE Solver Accuracy:="	, "Balanced",
+		"InfiniteSphereSetup:="	, ""
+	])
+oModule.InsertFrequencySweep("Setup1",
+	[
+		"NAME:Sweep",
+		"IsEnabled:="		, True,
+		"RangeType:="		, "LinearCount",
+		"RangeStart:="		, "INSERT_MIN_RANGE",
+		"RangeEnd:="		, "INSERT_MAX_RANGE",
+		"RangeCount:="		, INSERT_NUM_POINTS,
+		"Type:="		, "Interpolating",
+		"SaveFields:="		, True,
+		"SaveRadFields:="	, False,
+		"InterpTolerance:="	, 0.5,
+		"InterpMaxSolns:="	, 250,
+		"InterpMinSolns:="	, 0,
+		"InterpMinSubranges:="	, 1,
+		"InterpUseS:="		, True,
+		"InterpUsePortImped:="	, True,
+		"InterpUsePropConst:="	, True,
+		"UseDerivativeConvergence:=", False,
+		"InterpDerivTolerance:=", 0.2,
+		"UseFullBasis:="	, True,
+		"EnforcePassivity:="	, True,
+		"PassivityErrorTolerance:=", 0.0001,
+		"EnforceCausality:="	, False,
+		"SMatrixOnlySolveMode:=", "Auto"
+	])
+	

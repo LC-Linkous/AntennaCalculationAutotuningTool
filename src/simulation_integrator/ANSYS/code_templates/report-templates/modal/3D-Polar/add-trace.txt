@@ -1,0 +1,10 @@
+oModule.AddTraces("INSERT_REPORT_NAME", "Setup1 : Sweep", [], 
+	[
+		"Freq:="		, ["All"],
+		INSERT_PARAMETER_BASE
+	], 
+	[
+		"Phi Component:="	, "Freq",
+		"Theta Component:="	, "$width",
+		"Mag Component:="	, ["dB(S(1,1))"]
+	])

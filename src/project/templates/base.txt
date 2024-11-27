@@ -1,0 +1,90 @@
+[software]
+software = ANTENNACAT
+version = INSERT_VERSION
+
+[title]
+title = INSERT_PROJECT_TITLE
+
+[properties]
+path =  INSERT_PROJECT_PATH
+created =  INSERT_DATE_CREATED
+last_modified =  INSERT_LAST_MODIFIED
+
+[user]
+author = test
+author_comments = test
+
+[emsoftware]
+default = ansys
+
+[em_software.ANSYS]
+exe_path = test
+
+[em_software.ANSYS.nextKey]
+exe_path = test
+max_num_licenses = test test test
+limit_one_license = test
+use_as_default = test
+
+[emsoftware.COMSOL]
+exe_path = test
+max_num_licenses = test
+limit_one_license = test
+use_as_default = test
+
+[emsoftware.CST]
+exe_path = test
+max_num_licenses = test
+limit_one_license = test
+use_as_default = test
+
+[emsoftware.EMPIRE]
+exe_path = test
+max_num_licenses = test
+limit_one_license = test
+use_as_default = test
+
+[emsoftware.FEKO]
+exe_path = test
+max_num_licenses = test
+limit_one_license = test
+use_as_default = test
+
+[simulation_control]
+ex1 = test
+
+[save]
+ex2 = test
+
+[project]
+ex3 = test
+
+[project.design]
+config_created = test
+script_created = test
+script_path = test
+file_name = test
+
+[project.script]
+config_created = test
+script_path = test
+file_name = test
+
+[project.edit]
+config_created = test
+script_path = test
+file_name = test
+
+[project.report]
+config_created = test
+script_path = test
+file_name = test
+
+[project.imported]
+project_path =  test
+dxf_path = test
+
+[project.calculator]
+use_conductor = test
+use_imported = test
+

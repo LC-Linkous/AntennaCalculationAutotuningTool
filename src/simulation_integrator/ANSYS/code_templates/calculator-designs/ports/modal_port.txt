@@ -1,0 +1,25 @@
+oModule.AssignLumpedPort(
+	[
+		"NAME:1",
+		"Objects:="		, ["port"],
+		"LumpedPortType:="	, "Default",
+		"DoDeembed:="		, False,
+		[
+			"NAME:Modes",
+			[
+				"NAME:Mode1",
+				"ModeNum:="		, 1,
+				"UseIntLine:="		, True,
+				[
+					"NAME:IntLine",
+					"Coordinate System:="	, "Global",
+					"Start:="		, ["INSERT_START_X","INSERT_START_Y","INSERT_START_Z"],
+					"End:="			, ["INSERT_STOP_X","INSERT_STOP_Y","INSERT_STOP_Z"]
+				],
+				"AlignmentGroup:="	, 0,
+				"CharImp:="		, "Zpi",
+				"RenormImp:="		, "50ohm"
+			]
+		],
+		"Impedance:="		, "50ohm"
+	])

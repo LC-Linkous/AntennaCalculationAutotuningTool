@@ -1,0 +1,5 @@
+oEditor.Delete(
+	[
+		"NAME:Selections",
+		"Selections:="		, "particle_Group"
+	])

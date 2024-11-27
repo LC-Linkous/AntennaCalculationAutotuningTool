@@ -1,0 +1,131 @@
+oProject.ChangeProperty(
+	[
+		"NAME:AllTabs",
+		[
+			"NAME:ProjectVariableTab",
+			[
+				"NAME:PropServers", 
+				"ProjectVariables"
+			],
+			[
+				"NAME:ChangedProps",
+				[
+					"NAME:$width",
+					"Value:="		, INSERT_WIDTH
+				],
+				[
+					"NAME:$length",
+					"Value:="		, INSERT_LENGTH
+				],
+				[
+					"NAME:$depth",
+					"Value:="		, INSERT_DEPTH
+				],
+				[
+					"NAME:$x_0",
+					"Value:="		, INSERT_X0
+				]
+			]
+		]
+	])
+oDesign.AnalyzeAll() 
+oModule = oDesign.GetModule("ReportSetup")
+oModule.CreateReport("Terminal S Parameter Plot 1", "Terminal Solution Data", "Rectangular Plot", "Setup1 : Sweep", 
+	[
+		"Domain:="		, "Sweep"
+	], 
+	[
+		"Freq:="		, ["All"],
+		"$width:="		, ["Nominal"],
+		"$length:="		, ["Nominal"],
+		"$depth:="		, ["Nominal"]
+	], 
+	[
+		"X Component:="		, "Freq",
+		"Y Component:="		, ["dB(St(port_T1,port_T1))"]
+	])
+oModule.CreateReport("Gain Plot 1", "Far Fields", "3D Polar Plot", "Setup1 : LastAdaptive", 
+	[
+		"Context:="		, "Infinite Sphere1"
+	], 
+	[
+		"Phi:="			, ["All"],
+		"Theta:="		, ["All"],
+		"Freq:="		, [ INSERT_FREQUENCY ],
+		"$width:="		, ["Nominal"],
+		"$length:="		, ["Nominal"],
+		"$depth:="		, ["Nominal"]
+	], 
+	[
+		"Phi Component:="	, "Phi",
+		"Theta Component:="	, "Theta",
+		"Mag Component:="	, ["dB(GainTotal)"]
+	])
+oModule.CreateReport("Directivity Plot 1", "Far Fields", "3D Polar Plot", "Setup1 : LastAdaptive", 
+	[
+		"Context:="		, "Infinite Sphere1"
+	], 
+	[
+		"Phi:="			, ["All"],
+		"Theta:="		, ["All"],
+		"Freq:="		, [ INSERT_FREQUENCY ],
+		"$width:="		, ["Nominal"],
+		"$length:="		, ["Nominal"],
+		"$depth:="		, ["Nominal"]
+	], 
+	[
+		"Phi Component:="	, "Phi",
+		"Theta Component:="	, "Theta",
+		"Mag Component:="	, ["dB(DirTotal)"]
+	])
+oModule.CreateReport("Terminal S Parameter Table 1", "Terminal Solution Data", "Data Table", "Setup1 : Sweep", 
+	[
+		"Domain:="		, "Sweep"
+	], 
+	[
+		"Freq:="		, ["All"],
+		"$width:="		, ["Nominal"],
+		"$length:="		, ["Nominal"],
+		"$depth:="		, ["Nominal"]
+	], 
+	[
+		"X Component:="		, "Freq",
+		"Y Component:="		, ["dB(St(port_T1,port_T1))"]
+	])
+oModule.CreateReport("Variables Table 1", "Terminal Solution Data", "Data Table", "Setup1 : Sweep", 
+	[
+		"Domain:="		, "Sweep"
+	], 
+	[
+		"Freq:="		, ["All"],
+		"$width:="		, ["Nominal"],
+		"$length:="		, ["Nominal"],
+		"$depth:="		, ["Nominal"]
+	], 
+	[
+		"X Component:="		, "Freq",
+		"Y Component:="		, ["Freq","$width","$length","$depth","$ground_plane","$x_0"]
+	])
+
+oModule.CreateReport("Param Report 1", "Antenna Parameters", "Data Table", "Setup1 : LastAdaptive", 
+	[
+		"Context:="		, "Infinite Sphere1"
+	], 
+	[
+		"Freq:="		, ["All"],
+		"$width:="		, ["Nominal"],
+		"$length:="		, ["Nominal"],
+		"$depth:="		, ["Nominal"]
+	], 
+	[
+		"X Component:="		, "Freq",
+		"Y Component:="		, ["PeakDirectivity","PeakGain","TotalEfficiency"]
+	])
+
+oModule.ExportToFile("Variables Table 1", INSERT_VAR_TABLES_PATH , False)
+oModule.ExportToFile("Terminal S Parameter Table 1", INSERT_TERMINAL_TABLE_PATH , False)
+oModule.ExportToFile("Directivity Plot 1", INSERT_DIRECTIVITY_PATH )
+oModule.ExportToFile("Gain Plot 1", INSERT_GAIN_PATH )
+oModule.ExportToFile("Terminal S Parameter Plot 1", INSERT_TERMINAL_PARAM_PLOT_PATH , False)
+oModule.ExportToFile("Param Report 1", INSERT_PARAM_REPORT_PATH , False)
+oModule.DeleteAllReports()

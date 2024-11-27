@@ -1,0 +1,6 @@
+
+			[
+				"NAME:AdaptAt",
+				"Frequency:="		, "INSERT_FREQUENCY",
+				"Delta:="		, INSERT_DELTA
+			],

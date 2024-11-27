@@ -1,0 +1,26 @@
+# MODAL PORT FOR TEMPORARY DEBUG
+oModule.AssignLumpedPort(
+	[
+		"NAME:1",
+		"Objects:="		, ["port"],
+		"LumpedPortType:="	, "Default",
+		"DoDeembed:="		, False,
+		[
+			"NAME:Modes",
+			[
+				"NAME:Mode1",
+				"ModeNum:="		, 1,
+				"UseIntLine:="		, True,
+				[
+					"NAME:IntLine",
+					"Coordinate System:="	, "Global",
+					"Start:="		, ["-3.46944695195361e-16mm","29.4423612179361mm","-1.6mm"],
+					"End:="			, ["0mm","29.4423612179361mm","-2.80962294113563e-16mm"]
+				],
+				"AlignmentGroup:="	, 0,
+				"CharImp:="		, "Zpi",
+				"RenormImp:="		, "50ohm"
+			]
+		],
+		"Impedance:="		, "50ohm"
+	])

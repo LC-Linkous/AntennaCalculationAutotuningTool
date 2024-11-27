@@ -1,0 +1,9 @@
+oModule.CreateReport("INSERT_REPORT_NAME", "Terminal Solution Data", "Polar Plot", "Setup1 : Sweep",
+                     [],
+                     [
+                        "Freq:="	, ["All"],
+		                INSERT_PARAMETER_BASE
+                     ],
+                     [
+                         "Polar Component:="	, ["dB(St(port_T1,port_T1))"]
+                     ])

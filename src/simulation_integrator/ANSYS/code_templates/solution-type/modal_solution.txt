@@ -1,0 +1,6 @@
+oDesign.SetSolutionType("HFSS Modal Network", 
+	[
+		"NAME:Options",
+		"EnableAutoOpen:="	, False
+	])
+    

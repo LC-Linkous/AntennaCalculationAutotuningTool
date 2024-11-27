@@ -1,0 +1,15 @@
+oModule.CreateReport("INSERT_REPORT_NAME", "Far Fields", "3D Polar Plot", "Setup1 : LastAdaptive",
+	[
+		"Context:="		, "Infinite Sphere1"
+	],
+	[
+		"Phi:="			, ["All"],
+		"Theta:="		, ["All"],
+		"Freq:="		, ["INSERT_FREQUENCY"],
+		INSERT_PARAMETER_BASE
+	],
+	[
+		"Phi Component:="	, "Phi",
+		"Theta Component:="	, "Theta",
+		"Mag Component:="	, [INSERT_COMPONENTS]
+	])

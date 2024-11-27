@@ -1,0 +1,11 @@
+oModule.CreateReport("INSERT_REPORT_NAME", "Modal Solution Data", "Smith Contour Plot",
+                             "Setup1 : Sweep", [],
+                             [
+                                "Freq:="	, ["All"],
+                                INSERT_PARAMETER_BASE
+                             ],
+                             [
+                                 "Phi Component:="	, "Freq",
+                                 "Theta Component:="	, "$width",
+                                 "Mag Component:="	, [INSERT_COMPONENTS]
+                             ])
