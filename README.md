@@ -6,7 +6,6 @@
 
 Antenna Calculation and Autotuning Tool (AntennaCAT) is a comprehensive implementation of machine learning to automate, evaluate, and optimize the antenna design process using EM simulation software. It utilizes a combined antenna designer and internal calculator to accelerate the CAD construction and EM simulation of several common topologies, while eliminating model disparity for automated data collection.
 
-
 ## Table of contents
 * [Wiki and Documentation](#wiki-and-documentation)
 * [Current Release](#current-release)
@@ -20,18 +19,16 @@ Antenna Calculation and Autotuning Tool (AntennaCAT) is a comprehensive implemen
 
 See the [Release Schedule](#release-schedule) below for code roll out updates.
 
-As we prepare for the first code release, we're sharing information on the Wiki of how to download, setup and use AntennaCAT.
+As we prepare for the first code release, we're sharing information on the Wiki of how to download, set up and use AntennaCAT.
 
 You can [Start Here](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/wiki) for general project information.
 
 Pages are being updated daily, so check back in a few days if the information you're looking for hasn't been posted yet.
 
 
-
 ## Current Release
 
 First code drop! AntennaCAT 2024.0 is live, and stripped down so we can start lining up some versions with the released literature.
-
 
 This version is close to the early 2023 lit:
 * the [AntennaCalculator](https://github.com/Dollarhyde/AntennaCalculator)
@@ -44,13 +41,11 @@ This version is close to the early 2023 lit:
 * Ansys HFSS integration
 * ANCAT project creation, basic save functionality (a newer feature, but not worth removing)
 
-
 Why are we not matching the literature exactly? 
 * The driving goal behind the development of this software is for it to be useful and to encourage experimentation. Holding back features/functionality to be truer to the publications goes against that. 
 
 Why not release it all at once?
 * The goal of several major releases close together is to have some roll-back points as collaborators join in and want to implement their own features. We won't wait to release what's already been implemented in recent publications, but there will be links to these 'check points' should anyone wish to download an earlier version.
-
 
 
 ## Release Schedule 
@@ -63,8 +58,6 @@ Where are we so far? (Nov. 7, 2024)
 * The journal/magazine article for AntennaCAT is under review
 * The [Wiki](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/wiki) is being updated daily 
 * AntennaCAT 2024.0 is live
-* 
-
 
 What does that mean for code releases?
 * The code will always be released independently from the journal/magazine publication. While publications are awesome and we want to share what we're up to, sometimes we might move a little faster than planned. Or slower, because code takes time.
@@ -92,33 +85,38 @@ installed using 'pip install -r requirements.txt'
 
 ```python
 cairocffi==0.9.0
-cffi==1.15.1
-colour==0.1.5
-contourpy==1.0.7
-cycler==0.11.0
+cffi==1.17.1
+contourpy==1.3.1
+cycler==0.12.1
 dxfgrabber==1.0.1
-ezdxf==1.0.3
-fonttools==4.39.4
-importlib-resources==5.12.0
-kiwisolver==1.4.4
-matplotlib==3.7.1
-numpy==1.24.3
-packaging==23.1
-pandas==2.0.1
+ezdxf==1.3.4
+flexcache==0.3
+flexparser==0.4
+fonttools==4.55.0
+kiwisolver==1.4.7
+matplotlib==3.9.2
+numpy==2.1.3
+packaging==24.2
+pandas==2.2.3
 pcb-tools==0.1.6
 pcb-tools-extension==0.9.3
-Pillow==9.5.0
-Pint==0.21
-pycparser==2.21
-pyparsing==3.0.9
-python-dateutil==2.8.2
-pytz==2023.3
+pillow==11.0.0
+Pint==0.24.4
+platformdirs==4.3.6
+pycparser==2.22
+pyparsing==3.2.0
+python-dateutil==2.9.0.post0
+pytz==2024.2
 six==1.16.0
-typing_extensions==4.5.0
-tzdata==2023.3
-wxPython==4.2.0
-zipp==3.15.0
+typing_extensions==4.12.2
+tzdata==2024.2
+wxPython==4.2.2
 ```
+
+Optionally, requirements can be installed manually with:
+
+pip install wxPython, matplotlib, pandas, numpy, ezdxf, Pint, pcb-tools, pcb-tools-extension 
+
 
 ## Organization
 
@@ -145,7 +143,6 @@ While there are unit testing artifacts in some code files, entry at other points
 
 It is recommended to run AntennaCAT in a virtual environment, but it is not a requirement. 
 
-
 ## Related Publications and Repositories
 
 1. L. Linkous, “Machine Learning Assisted Optimization for Calculation and Automated Tuning of Antennas,” VCU Scholars Compass, 2024. https://scholarscompass.vcu.edu/etd/7841/ (accessed Oct. 21, 2024).
@@ -159,7 +156,6 @@ It is recommended to run AntennaCAT in a virtual environment, but it is not a re
 5. E. Karincic, E. Topsakal, and L. Linkous.  "Patch Antenna Calculations and Fabrication Made Simple for Cyber Security Research,"  2023 ASEE Annual Conference & Exposition, Baltimore , Maryland, 2023, June.  ASEE Conferences, 2023. [Online:] https://peer.asee.org/43974 
 
 6. L. Linkous, E. Karincic, J. Lundquist and E. Topsakal, "Automated Antenna Calculation, Design and Tuning Tool for HFSS," 2023 United States National Committee of URSI National Radio Science Meeting (USNC-URSI NRSM), Boulder, CO, USA, 2023, pp. 229-230, doi: 10.23919/USNC-URSINRSM57470.2023.10043119.  [Online:] https://ieeexplore.ieee.org/abstract/document/10043119
-
 
 
 **Individual Optimizer Repositories:**
