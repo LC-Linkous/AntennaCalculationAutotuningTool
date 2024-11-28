@@ -58,8 +58,6 @@ class CONTROLLER_GLODS():
 #######################################################
 
     def unpackOptimizerParameters(self, optimizerParams, func_F):
-        print("controller_GLODS unpack optimizer parameters")
-
         NO_OF_VARS = float(optimizerParams['num_input'][0])    # Number of input variables (x-values)
         TOL = float(optimizerParams['tolerance'][0])           # Convergence Tolerance (This is a radius 
                                                                # based tolerance, not target based tolerance)

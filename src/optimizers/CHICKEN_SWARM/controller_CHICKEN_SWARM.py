@@ -57,9 +57,6 @@ class CONTROLLER_CHICKEN_SWARM():
 #######################################################
 
     def unpackOptimizerParameters(self, optimizerParams, func_F):
-        print("controller_CHICKEN_SWARM unpack optimizer parameters")
-
-
         LB = [list(optimizerParams['lower_bounds'][0])]                    # Lower boundaries
         UB = [list(optimizerParams['upper_bounds'][0])]                    # Upper Boundaries
         OUT_VARS = int(optimizerParams['num_output'][0])                   # Number of output variables
