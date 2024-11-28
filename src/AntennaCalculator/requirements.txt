@@ -1,4 +1,0 @@
-numpy~=1.23.2
-Pint~=0.19.2
-ezdxf~=0.18
-pcb-tools-extension~=0.9.3
