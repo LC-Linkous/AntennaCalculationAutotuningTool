@@ -25,6 +25,7 @@ sys.path.insert(0, './project/')
 from project.antennaCAT_project import AntennaCATProject
 
 MAIN_BACKGROUND_COLOR= c.MAIN_BACKGROUND_COLOR
+DEBUG = c.DEBUG
 
 class SettingsPage(wx.Panel):
     def __init__(self, parent, DC, PC, SO):
@@ -140,7 +141,8 @@ class SettingsPage(wx.Panel):
         acp = AntennaCATProject(self.DC, self.PC, self.SO)
         acp.saveProject()
 
-        print("EM software saved in page_settings.py")    
+        if DEBUG == True:
+            print("EM software saved in page_settings.py")    
 
     def applyLoadedProjectSettings(self, PC):
         self.notebook_softwareSettings.applyLoadedProjectSettings(PC)

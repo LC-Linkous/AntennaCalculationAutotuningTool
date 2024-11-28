@@ -57,7 +57,6 @@ class CONTROLLER_CAT_SWARM():
 #######################################################
 
     def unpackOptimizerParameters(self, optimizerParams, func_F):
-        print("controller_CAT_SWARM unpack optimizer parameters")
 
         NO_OF_PARTICLES = int(optimizerParams['num_particles'][0])         # Number of particles in swarm
         LB = [list(optimizerParams['lower_bounds'][0])]                    # Lower boundaries

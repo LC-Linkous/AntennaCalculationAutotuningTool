@@ -55,8 +55,6 @@ class CONTROLLER_SAND_CAT():
 #######################################################
 
     def unpackOptimizerParameters(self, optimizerParams, func_F):
-        print("controller_SANDCAT unpack optimizer parameters")
-
         NO_OF_PARTICLES = int(optimizerParams['num_particles'][0])         # Number of particles in swarm
         LB = [list(optimizerParams['lower_bounds'][0])]                    # Lower boundaries
         UB = [list(optimizerParams['upper_bounds'][0])]                    # Upper Boundaries

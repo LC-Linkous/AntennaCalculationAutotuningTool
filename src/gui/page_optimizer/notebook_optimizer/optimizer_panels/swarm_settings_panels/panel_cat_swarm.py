@@ -145,8 +145,6 @@ class Cat_Swarm_Panel(wx.Panel):
 
     def getOptimizerInputs(self):
         noError = self.getInputFields()
-        print("NO ERROR IN PANEL_CAT_SWARM")
-        print(noError)
         df = pd.DataFrame({})
         if noError == True:   
             df['num_particles'] = pd.Series(self.numParticles)
