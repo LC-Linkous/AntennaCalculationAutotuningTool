@@ -237,9 +237,6 @@ class swarm:
             self.Gb = np.array(self.M[particle])
         
         if np.linalg.norm(Flist) < np.linalg.norm(self.F_Pb[particle]):
-            print("PSO_PYTHON Flist")
-            print(Flist)
-
             self.F_Pb[particle] = np.squeeze(Flist)
             self.Pb[particle] = self.M[particle]
 

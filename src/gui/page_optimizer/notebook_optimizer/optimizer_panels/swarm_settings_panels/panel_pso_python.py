@@ -117,9 +117,9 @@ class PSO_Python_Panel(wx.Panel):
         noError = True
         try:
             self.numParticles = self.fieldnumParticles.GetValue()
-            self.weights = [np.float(self.fieldWeights1.GetValue()),
-                            np.float(self.fieldWeights2.GetValue()), 
-                            np.float(self.fieldWeights3.GetValue())]
+            self.weights = [self.fieldWeights1.GetValue(),
+                            self.fieldWeights2.GetValue(), 
+                            self.fieldWeights3.GetValue()]
             self.vlim = self.fieldVlim.GetValue()
             self.tMod = self.fieldTMod.GetValue()
             self.toleranceVal = self.fieldTolerance.GetValue()
