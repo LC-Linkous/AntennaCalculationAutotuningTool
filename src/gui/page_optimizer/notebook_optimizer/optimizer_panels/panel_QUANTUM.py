@@ -61,8 +61,7 @@ class QUANTUMPage(wx.Panel):
         self.notebook_settings = SettingsNotebook(self)
 
         boxSelect = wx.StaticBox(self, label='Select an Optimizer:', size=(300, -1))
-#        optimizerTypes = ['quantum_PSO', 'quantum_cat_swarm', 'quantum_chicken_swarm']
-        optimizerTypes = ['quantum_PSO', 'quantum_chicken_swarm']
+        optimizerTypes = ['quantum_PSO', 'quantum_cat_swarm', 'quantum_chicken_swarm']
         self.optimizerDropDown = wx.ComboBox(boxSelect, choices=optimizerTypes, id=1,style=wx.CB_READONLY, size=(280, -1))
         self.optimizerDropDown.SetValue(optimizerTypes[0])
         self.optimizerDropDown.Bind(wx.EVT_COMBOBOX, self.optimizerDesignSelectionChange)
