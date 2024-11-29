@@ -53,10 +53,10 @@ class PSO_Python_Panel(wx.Panel):
 
         stVlim = wx.StaticText(boxTuning, label="Initial Velocity Limit")
         self.fieldVlim = wx.TextCtrl(boxTuning, value=str(self.vlim), size=(self.defaultBoxWidth,-1))
-        stTolerance = wx.StaticText(boxTuning, label="Tolerance") 
-        self.fieldTolerance = wx.TextCtrl(boxTuning, value=str(self.toleranceVal), size=(self.defaultBoxWidth,-1))
         stTMod = wx.StaticText(boxTuning, label="Time Step Modifier")
         self.fieldTMod = wx.TextCtrl(boxTuning, value=str(self.tMod), size=(self.defaultBoxWidth,-1))
+        stTolerance = wx.StaticText(boxTuning, label="Tolerance") 
+        self.fieldTolerance = wx.TextCtrl(boxTuning, value=str(self.toleranceVal), size=(self.defaultBoxWidth,-1))
         stMaxIter = wx.StaticText(boxTuning, label="Max Iterations")
         self.fieldMaxIter = wx.TextCtrl(boxTuning, value=str(self.maxIter), size=(self.defaultBoxWidth,-1)) 
 
@@ -84,16 +84,16 @@ class PSO_Python_Panel(wx.Panel):
 
         col3TuningSizer = wx.BoxSizer(wx.VERTICAL)
         col3TuningSizer.AddSpacer(10)
-        col3TuningSizer.Add(stTolerance, 0, wx.ALL, border=5)
+        col3TuningSizer.Add(stTMod, 0, wx.ALL, border=5)    
         col3TuningSizer.AddSpacer(4)
-        col3TuningSizer.Add(stTMod, 0, wx.ALL, border=5)
+        col3TuningSizer.Add(stTolerance, 0, wx.ALL, border=5)
         col3TuningSizer.AddSpacer(4)
         col3TuningSizer.Add(stMaxIter, 0, wx.ALL, border=5)
 
         col4TuningSizer = wx.BoxSizer(wx.VERTICAL)
         col4TuningSizer.AddSpacer(10)
-        col4TuningSizer.Add(self.fieldTolerance, 0, wx.ALL, border=3)
         col4TuningSizer.Add(self.fieldTMod, 0, wx.ALL, border=3)
+        col4TuningSizer.Add(self.fieldTolerance, 0, wx.ALL, border=3)
         col4TuningSizer.Add(self.fieldMaxIter, 0, wx.ALL, border=3)   
 
 

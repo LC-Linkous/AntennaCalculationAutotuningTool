@@ -4,7 +4,7 @@
 #   Class interfacing with the GLODS optimizer
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu), Jonathan Lundquist
-#   Last update: July 06, 2024
+#   Last update: November 27, 2024
 ##--------------------------------------------------------------------\
 
 
@@ -56,36 +56,23 @@ class CONTROLLER_CHICKEN_QUANTUM():
 #######################################################
 
     def unpackOptimizerParameters(self, optimizerParams, func_F):
-        print("controller_CHICKEN_QUANTUM unpack optimizer parameters")
 
-        NO_OF_PARTICLES = int(optimizerParams['num_particles'][0])         # Number of particles in swarm
         LB = [list(optimizerParams['lower_bounds'][0])]                    # Lower boundaries
         UB = [list(optimizerParams['upper_bounds'][0])]                    # Upper Boundaries
-        WEIGHTS = [list(optimizerParams['weights'][0])]                    # Update vector weights
-        VLIM = float(optimizerParams['velocity_limit'][0])                 # Initial velocity limit
         OUT_VARS = int(optimizerParams['num_output'][0])                   # Number of output variables
         TARGETS = list(optimizerParams['target_values'][0])                # Target values for output
-        T_MOD = float(optimizerParams['time_modulus'][0])                  # Variable time-step extinction coefficient
         E_TOL = float(optimizerParams['tolerance'][0])                     # Convergence Tolerance (This is a radius)       
         MAXIT = float(optimizerParams['max_iterations'][0])                # Maximum allowed iterations 
         BOUNDARY = int(optimizerParams['boundary'][0])                     # int boundary 1 = random,      2 = reflecting
-                                                                           #              3 = absorbing,   4 = invisible
+        RN = int(optimizerParams['rooster_number'][0])                # Target values for output
+        HN = int(optimizerParams['hen_number'][0])                  # Variable time-step extinction coefficient
+        MN = int(optimizerParams['mother_number'][0])                     # Convergence Tolerance (This is a radius)       
+        CN = int(optimizerParams['chick_number'][0])                # Maximum allowed iterations 
+        G = int(optimizerParams['generation'][0])
+        BETA = float(optimizerParams['beta'][0])                                                                              #              3 = absorbing,   4 = invisible
+        QUANTUM_ROOSTERS = optimizerParams['quantum_roosters'][0]                                                                   #              3 = absorbing,   4 = invisible
 
-
-        # chicken swarm specific
-        RN = 10                       # Total number of roosters
-        HN = 20                       # Total number of hens
-        MN = 15                       # Number of mother hens in total hens
-        CN = 20                       # Total number of chicks
-        G = 70                        # Reorganize groups every G steps 
         NO_OF_PARTICLES = RN + HN + MN + CN       # Number of particles in swarm
-
-        # quantum swarm variables
-        BETA = 0.5                  #Float constant controlling influence 
-                                        #between the personal and global best positions
-        QUANTUM_ROOSTERS = True     # Boolean. Use quantum rooster or classical movement
-
-
 
         targetMetrics = optimizerParams['target_metrics']
         F = np.zeros((np.prod(np.shape(TARGETS)), 1))
@@ -94,10 +81,9 @@ class CONTROLLER_CHICKEN_QUANTUM():
         self.optimizer = swarm(NO_OF_PARTICLES, LB, UB,
                     OUT_VARS, TARGETS,
                     E_TOL, MAXIT, BOUNDARY, 
-                    func_F=func_F, constr_func=constr_default,
+                    obj_func=func_F, constr_func=constr_default,
                     RN=RN, HN=HN, MN=MN, CN=CN, G=G,
-                    beta=BETA, quantum_roosters= QUANTUM_ROOSTERS,
-                    input_size=len(LB),
+                    beta=BETA, quantum_roosters=QUANTUM_ROOSTERS,
                     parent=self)  
 
 

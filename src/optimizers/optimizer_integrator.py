@@ -34,7 +34,7 @@ from optimizers.CHICKEN_SWARM_QUANTUM.controller_CHICKEN_QUANTUM import CONTROLL
 #BAYESIAN OPTIMIZERS
 from optimizers.BAYESIAN.controller_BAYESIAN import CONTROLLER_BAYESIAN
 ## MULTI GLODS
-from optimizers.MULTI_GLODS.controller_GLODS import CONTROLLER_GLODS
+from optimizers.MULTI_GLODS.controller_MULTI_GLODS import CONTROLLER_MULTI_GLODS
 #from optimizers.GLODS_SURROGATE.controller_GLODS_SURROGATE import CONTROLLER_GLODS_SURROGATE
 ## OTHERS
 from optimizers.SWEEP_PYTHON.controller_SWEEP import CONTROLLER_SWEEP
@@ -226,8 +226,8 @@ class OptimizerIntegrator():
             OO = CONTROLLER_CHICKEN_SWARM(self)
         elif optimizerSelection == "CHICKEN_QUANTUM":
             OO = CONTROLLER_CHICKEN_QUANTUM(self)
-        elif optimizerSelection == "GLODS":
-           OO = CONTROLLER_GLODS(self)
+        elif optimizerSelection == "MULTI_GLODS":
+           OO = CONTROLLER_MULTI_GLODS(self)
         elif optimizerSelection == "BAYESIAN":
             OO = CONTROLLER_BAYESIAN(self)
         elif optimizerSelection == "SWEEP":

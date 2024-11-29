@@ -123,7 +123,7 @@ class swarm:
             self.Pb = sys.maxsize*np.ones(np.shape(self.M))                 
             self.F_Pb = sys.maxsize*np.ones((NO_OF_PARTICLES,output_size))  
             self.weights = np.array(weights)                     
-            self.targets = np.array(targets)                 
+            self.targets = np.array(targets).reshape(-1, 1)                     
             self.maxit = maxit                                             
             self.E_TOL = E_TOL                                              
             self.obj_func = obj_func                                             
@@ -145,7 +145,7 @@ class swarm:
             # call the objective function. If there's an issue with the function execution, 'noError' returns False
             newFVals, noError = self.obj_func(self.M[self.current_particle], self.output_size)
             if noError == True:
-                self.Fvals = newFVals
+                self.Fvals = np.array(newFVals).reshape(-1, 1)
                 if allow_update:
                     self.Flist = abs(self.targets - self.Fvals)
                     self.iter = self.iter + 1

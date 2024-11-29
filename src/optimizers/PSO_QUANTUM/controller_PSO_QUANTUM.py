@@ -57,12 +57,10 @@ class CONTROLLER_PSO_QUANTUM():
 #######################################################
 
     def unpackOptimizerParameters(self, optimizerParams, func_F, internalOptimizerParams=None):
-        print("controller_PSO_BASIC unpack optimizer parameters")
-
         NO_OF_PARTICLES = int(optimizerParams['num_particles'][0])         # Number of particles in swarm
         LB = [list(optimizerParams['lower_bounds'][0])]                    # Lower boundaries
         UB = [list(optimizerParams['upper_bounds'][0])]                    # Upper Boundaries
-        WEIGHTS = [list(optimizerParams['weights'][0])]                    # Update vector weights
+        WEIGHTS = [list(map(float, optimizerParams['weights'][0]))]        # Update vector weights
         OUT_VARS = int(optimizerParams['num_output'][0])                   # Number of output variables
         TARGETS = list(optimizerParams['target_values'][0])                # Target values for output
         E_TOL = float(optimizerParams['tolerance'][0])                     # Convergence Tolerance (This is a radius)       

@@ -4,17 +4,16 @@
 #   chicken_swarm_quantum
 #   './chicken_swarm_quantum/src/chicken_swarm.py'
 #   A quantum-inspired chicken swarm optimization class. This class follows the same 
-#       format as pso_python and pso_basic to make them interchangeable
-#       in function calls. 
 #
-#   This approach mimics a general and very simple probablistic approach.
+#   This approach mimics a general and very simple probabilistic approach.
 #       It is not meant to directly mimic qiskit or other libraries.
 #       This is a snapshot of some of the most basic behavior found in
-#       literature. #       
+#       literature.     
 #
-#   Author(s): Lauren Linkous, Jonathan Lundquist
-#   Last update: June 18, 2024
+#   Author(s): Lauren Linkous
+#   Last update: November 28, 2024
 ##--------------------------------------------------------------------\
+#! /usr/bin/python3
 
 
 import numpy as np
@@ -37,10 +36,10 @@ class swarm:
     def __init__(self, NO_OF_PARTICLES, 
                  lbound, ubound,
                  output_size, targets,
-                 E_TOL, maxit, boundary, obj_func, constr_func,
-                 RN=3, HN=12, MN=8, CN=15, G = 150,
-                 beta=0.5, quantum_roosters = False,
-                 input_size=3,
+                 E_TOL, maxit, boundary, 
+                 obj_func, constr_func,
+                 RN=3, HN=12, MN=8, CN=15, G=150,
+                 beta=0.5, quantum_roosters=False,
                  parent=None, detailedWarnings=False,
                  runningWithSim=True):  
 
@@ -244,13 +243,13 @@ class swarm:
             self.quantum_roosters = quantum_roosters
             self.beta = beta
             self.output_size = output_size
-            self.input_size = input_size
+            self.input_size = len(lbound)
             self.Active = np.ones((NO_OF_PARTICLES))                        
             self.Gb = sys.maxsize*np.ones((1,np.max([heightl, widthl])))   
             self.F_Gb = sys.maxsize*np.ones((1,output_size))                
             self.Pb = sys.maxsize*np.ones(np.shape(self.M))                 
             self.F_Pb = sys.maxsize*np.ones((NO_OF_PARTICLES,output_size))  
-            self.targets = np.array(targets)                      
+            self.targets = np.array(targets).reshape(-1, 1)                      
             self.maxit = maxit                                             
             self.E_TOL = E_TOL                                              
             self.obj_func = obj_func                                             
@@ -273,7 +272,7 @@ class swarm:
             # call the objective function. If there's an issue with the function execution, 'noError' returns False
             newFVals, noError = self.obj_func(self.M[self.current_particle], self.output_size)
             if noError == True:
-                self.Fvals = np.array(newFVals).reshape(1,-1)
+                self.Fvals = np.array(newFVals).reshape(-1, 1)
                 if allow_update:
                     self.Flist = abs(self.targets - self.Fvals)
                     self.iter = self.iter + 1
@@ -283,7 +282,6 @@ class swarm:
             return noError# return is for error reporting purposes only
    
     # MOVEMENT MODELS
-
     def move_rooster(self, particle):
         # roosters in this class can exhibit classical or quantum behavior based on a user-set bool
 
@@ -454,27 +452,14 @@ class swarm:
                 update = i+1        
         return update
 
-    def validate_obj_function(self, particle):
-        if self.runningWithSim==True:
-            return True
-        # checks the the objective function resolves with the current particle.
-        # It is possible (and likely) that obj funcs without proper error handling
-        # will throw over/underflow errors.
-        # e.g.: numpy does not support float128()
-        newFVals, noError = self.obj_func(particle, self.output_size)
-        if noError == False:
-            #print("!!!!")
-            pass
-        return noError
-
     def random_bound(self, particle):
         # If particle is out of bounds, bring the particle back in bounds
         # The first condition checks if constraints are met, 
         # and the second determins if the values are to large (positive or negitive)
         # and may cause a buffer overflow with large exponents (a bug that was found experimentally)
-        update = self.check_bounds(particle) or not self.constr_func(self.M[particle]) or not self.validate_obj_function(self.M[self.current_particle])
+        update = self.check_bounds(particle) or not self.constr_func(self.M[particle])
         if update > 0:
-            while(self.check_bounds(particle)>0) or (self.constr_func(self.M[particle])==False) or (self.validate_obj_function(self.M[particle])==False): 
+            while(self.check_bounds(particle)>0) or (self.constr_func(self.M[particle])==False): 
                 variation = self.ubound-self.lbound
                 self.M[particle] = \
                     np.squeeze(self.rng.random() * 
@@ -501,7 +486,7 @@ class swarm:
             self.random_bound(particle)
 
     def invisible_bound(self, particle):
-        update = self.check_bounds(particle) or not self.constr_func(self.M[particle]) or not self.validate_obj_function(self.M[particle])
+        update = self.check_bounds(particle) or not self.constr_func(self.M[particle])
         if update > 0:
             self.Active[particle] = 0  
         else:

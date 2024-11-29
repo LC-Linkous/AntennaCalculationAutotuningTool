@@ -5,7 +5,7 @@
 #       Contains widgets for optimizer settings and exports
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: November 27, 2024
 ##--------------------------------------------------------------------\
 
 import wx
@@ -17,7 +17,9 @@ from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_parameterSumma
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_optimizationMetric import OptimizationMetricPanel
 
 
-from gui.page_optimizer.notebook_optimizer.optimizer_panels.multiglods_settings_panels.panel_multiglods import MultiGLODS_Panel
+
+# other GLODS algorithms to be added
+from gui.page_optimizer.notebook_optimizer.optimizer_panels.glods_settings_panels.panel_multiglods import MultiGLODS_Panel
 
 #directories
 
@@ -37,14 +39,32 @@ class GLODSPage(wx.Panel):
         #UI vars
         self.defaultBoxWidth = 115
         #data management
-        self.optimizerName = "GLODS"
+        self.optimizerName = "MULTI_GLODS"
         #
         self.paramInput = pd.DataFrame({})
+
+        #local vars
+        self.lowerBoundsArr = None
+        self.upperBoundsArr = None
+        self.metricArr = None
+        self.targetArr = None
+        self.outputVariables = None
+        self.boundary = 1
+
+
 
         # widgets
         self.paramSummary = ParameterSummaryPanel(self)
         self.optimizerMetrics = OptimizationMetricPanel(self)
         self.notebook_settings = SettingsNotebook(self)
+
+
+        boxSelect = wx.StaticBox(self, label='Select an Optimizer:', size=(300, -1))
+        optimizerTypes = ['MultiGLODS']
+        self.optimizerDropDown = wx.ComboBox(boxSelect, choices=optimizerTypes, id=1,style=wx.CB_READONLY, size=(280, -1))
+        self.optimizerDropDown.SetValue(optimizerTypes[0])
+        self.optimizerDropDown.Bind(wx.EVT_COMBOBOX, self.optimizerDesignSelectionChange)
+
 
 
         ## buttons
@@ -56,17 +76,32 @@ class GLODSPage(wx.Panel):
         self.btnExport.Bind(wx.EVT_BUTTON, self.btnExportClicked)
 
 
+       # add the dropdown to  boxSelect
+        boxSelectSizer = wx.BoxSizer(wx.VERTICAL)
+        boxSelectSizer.AddSpacer(10)
+        boxSelectSizer.Add(self.optimizerDropDown, 0, wx.ALL|wx.EXPAND, border=7)
+        boxSelect.SetSizer(boxSelectSizer)
+
+
+        # last column vert sizer
+        rightSizeSizer = wx.BoxSizer(wx.VERTICAL)
+        rightSizeSizer.Add(boxSelect, 0, wx.ALL|wx.EXPAND, border=7)
+        rightSizeSizer.Add(self.notebook_settings, 0, wx.ALL, border=10)
+        
+
+
         # panel sizer
         panelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=10)
-        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=10)
-        panelSizer.Add(self.notebook_settings, 0, wx.ALL|wx.EXPAND, border=10)
+        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=7)
+        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=7)
+        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=10)
 
         # btn sizer
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
         btnSizer.Add(self.btnOpen, 0, wx.ALL, border=10)
         btnSizer.Add(self.btnSelect, 0, wx.ALL, border=10)
         btnSizer.Add(self.btnExport, 0, wx.ALL, border=10)
+        btnSizer.AddSpacer(7)
 
         # main sizer
         pageSizer = wx.BoxSizer(wx.VERTICAL)
@@ -107,7 +142,16 @@ class GLODSPage(wx.Panel):
 
     def btnExportClicked(self, evt=None):
         self.parent.btnExportClicked()
-        
+
+
+    def optimizerDesignSelectionChange(self, evt):
+            boxText = evt.GetEventObject().GetValue()
+            self.optimizerName = self.notebook_settings.set_optimizer_tuning_panel(boxText)
+            
+            self.Layout() 
+    
+
+
 #######################################################
 # Status update to main page
 #######################################################
@@ -240,8 +284,13 @@ class TuningPage(wx.Panel):
         self.SetSizer(pageSizer)
 
 
-    def set_optimizer_tuning_panel(self, txt="GLODS"):
-        optimizerName = "GLODS"
+    def set_optimizer_tuning_panel(self, txt="MultiGLODS"):
+        # add if/else here when adding more options
+        if txt == "MultiGLODS":
+            optimizerName = "MULTI_GLODS"
+        else:
+            print("ERROR in panel_glods.py unknown optimizer selected")
+
         return optimizerName
     
     def getOptimizerInputs(self, optimizerName):
@@ -249,7 +298,9 @@ class TuningPage(wx.Panel):
         df = None
 
         # call the optimizer inputs from the child class
-        if optimizerName == "GLODS":
+        # adding more GLODS-based optimizers
+
+        if optimizerName == "MULTI_GLODS":
             df, noError = self.multiglods_panel.getOptimizerInputs()
         else:
             print("ERROR: optimizer name not recognized in panel_GLODS. Select an option from the dropdown menu to continue!")

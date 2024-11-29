@@ -161,8 +161,6 @@ class SWARMPage(wx.Panel):
     def optimizerDesignSelectionChange(self, evt):
             boxText = evt.GetEventObject().GetValue()
             self.optimizerName = self.notebook_settings.set_optimizer_tuning_panel(boxText)
-            # print("PANEL_SWARM.PY optimizerDesignSelectionChange() self.optimizerName")
-            # print(self.optimizerName)
             
             self.Layout() 
     

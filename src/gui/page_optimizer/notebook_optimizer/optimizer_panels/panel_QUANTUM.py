@@ -61,7 +61,8 @@ class QUANTUMPage(wx.Panel):
         self.notebook_settings = SettingsNotebook(self)
 
         boxSelect = wx.StaticBox(self, label='Select an Optimizer:', size=(300, -1))
-        optimizerTypes = ['quantum_PSO', 'quantum_cat_swarm', 'quantum_chicken_swarm']
+#        optimizerTypes = ['quantum_PSO', 'quantum_cat_swarm', 'quantum_chicken_swarm']
+        optimizerTypes = ['quantum_PSO', 'quantum_chicken_swarm']
         self.optimizerDropDown = wx.ComboBox(boxSelect, choices=optimizerTypes, id=1,style=wx.CB_READONLY, size=(280, -1))
         self.optimizerDropDown.SetValue(optimizerTypes[0])
         self.optimizerDropDown.Bind(wx.EVT_COMBOBOX, self.optimizerDesignSelectionChange)
@@ -148,19 +149,12 @@ class QUANTUMPage(wx.Panel):
         self.parent.btnSelectClicked(self.optimizerName, noError) 
 
 
-        # df, noError = self.getOptimizerInputs()
-        # self.DC.setOptimizerParameters(df)
-        # self.parent.btnSelectClicked(self.optimizerName, noError) 
-        # print(df)
-
     def btnExportClicked(self, evt=None):
         self.parent.btnExportClicked()
         
     def optimizerDesignSelectionChange(self, evt):
             boxText = evt.GetEventObject().GetValue()
             self.optimizerName = self.notebook_settings.set_optimizer_tuning_panel(boxText)
-            print("PANEL_SWARM.PY optimizerDesignSelectionChange() self.optimizerName")
-            print(self.optimizerName)
             
             self.Layout() 
     
@@ -340,8 +334,6 @@ class TuningPage(wx.Panel):
         else:
             print("ERROR in panel_QUANTUM.py unknown optimizer selected")
 
-        print("PANEL_QUANTUM.PY self.optimizerName set based on dropdown selection")
-        print(optimizerName)
         return optimizerName
     
     def getOptimizerInputs(self, optimizerName):

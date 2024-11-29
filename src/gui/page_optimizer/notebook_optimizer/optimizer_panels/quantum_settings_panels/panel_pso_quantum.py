@@ -29,7 +29,6 @@ class PSO_Quantum_Panel(wx.Panel):
         #default swarm variables
         self.numParticles = 10              # Number of Particles in the swarm
         self.weights =  [0.7, 1.5, 0.5]     # weights for curr vec, local min vec, global min vec
-        self.vlim = 0.3                     # Limit of initialized velocity
         self.toleranceVal = 10e-6           # Convergence Tolerance
         self.maxIter = 10000                # Maximum allowed iterations
         self.boundary = 1                   # Boundary Type 1 - Random, 2 - Reflection, 3 - Absorption, 4 - Invisible Wall
@@ -45,11 +44,10 @@ class PSO_Quantum_Panel(wx.Panel):
         self.fieldWeights2 = wx.TextCtrl(boxTuning, value=str(self.weights[1]), size=(self.defaultBoxWidth,-1))
         stWeights3 = wx.StaticText(boxTuning, label="Global Min Weight")
         self.fieldWeights3 = wx.TextCtrl(boxTuning, value=str(self.weights[2]), size=(self.defaultBoxWidth,-1))
+        
+        
         stBetaVal = wx.StaticText(boxTuning, label="Beta Value")
         self.fieldBetaVal = wx.TextCtrl(boxTuning, value=str(self.betaVal), size=(self.defaultBoxWidth,-1)) 
-
-        stVlim = wx.StaticText(boxTuning, label="Initial Velocity Limit")
-        self.fieldVlim = wx.TextCtrl(boxTuning, value=str(self.vlim), size=(self.defaultBoxWidth,-1))
         stTolerance = wx.StaticText(boxTuning, label="Tolerance") 
         self.fieldTolerance = wx.TextCtrl(boxTuning, value=str(self.toleranceVal), size=(self.defaultBoxWidth,-1))
         stMaxIter = wx.StaticText(boxTuning, label="Max Iterations")
@@ -69,7 +67,6 @@ class PSO_Quantum_Panel(wx.Panel):
         col1TuningSizer.AddSpacer(4)
         col1TuningSizer.Add(stBetaVal, 0, wx.ALL, border=5)
         col1TuningSizer.AddSpacer(4)
-        col1TuningSizer.Add(stVlim, 0, wx.ALL, border=5)
 
         col2TuningSizer = wx.BoxSizer(wx.VERTICAL)
         col2TuningSizer.AddSpacer(10)
@@ -78,7 +75,6 @@ class PSO_Quantum_Panel(wx.Panel):
         col2TuningSizer.Add(self.fieldWeights2, 0, wx.ALL, border=3)
         col2TuningSizer.Add(self.fieldWeights3, 0, wx.ALL, border=3)
         col2TuningSizer.Add(self.fieldBetaVal, 0, wx.ALL, border=3)
-        col2TuningSizer.Add(self.fieldVlim, 0, wx.ALL, border=3)
 
         col3TuningSizer = wx.BoxSizer(wx.VERTICAL)
         col3TuningSizer.AddSpacer(10)
@@ -110,10 +106,9 @@ class PSO_Quantum_Panel(wx.Panel):
         noError = True
         try:
             self.numParticles = self.fieldnumParticles.GetValue()
-            self.weights = [np.float(self.fieldWeights1.GetValue()),
-                            np.float(self.fieldWeights2.GetValue()), 
-                            np.float(self.fieldWeights3.GetValue())]
-            self.vlim = self.fieldVlim.GetValue()
+            self.weights = [self.fieldWeights1.GetValue(),
+                            self.fieldWeights2.GetValue(), 
+                            self.fieldWeights3.GetValue()]
             self.toleranceVal = self.fieldTolerance.GetValue()
             self.maxIter = self.fieldMaxIter.GetValue()
             self.betaVal = self.fieldBetaVal.GetValue()
@@ -131,7 +126,6 @@ class PSO_Quantum_Panel(wx.Panel):
         if noError == True:   
             df['num_particles'] = pd.Series(self.numParticles)
             df['weights'] = pd.Series([self.weights])
-            df['velocity_limit'] = pd.Series(self.vlim)
             df['tolerance'] = pd.Series(self.toleranceVal)
             df['max_iterations'] = pd.Series(self.maxIter)
             df['beta'] = pd.Series(self.betaVal)

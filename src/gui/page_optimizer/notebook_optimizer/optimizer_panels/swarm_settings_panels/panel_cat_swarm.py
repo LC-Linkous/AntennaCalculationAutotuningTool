@@ -59,8 +59,6 @@ class Cat_Swarm_Panel(wx.Panel):
         self.fieldSRD = wx.TextCtrl(boxTuning, value=str(self.SRD), size=(self.defaultBoxWidth,-1)) 
         stCDC = wx.StaticText(boxTuning, label="Mutation Dim")
         self.fieldCDC = wx.TextCtrl(boxTuning, value=str(self.CDC), size=(self.defaultBoxWidth,-1)) 
-        # stSPC = wx.StaticText(boxTuning, label="Self Position")
-        # self.fieldSPC = wx.TextCtrl(boxTuning, value=str(self.SPC), size=(self.defaultBoxWidth,-1)) 
         SPCvals = ['True', 'False']
         stSPC = wx.StaticText(boxTuning, label="Self Position")
         self.fieldSPC = wx.ComboBox(boxTuning, choices=SPCvals, id=1,style=wx.CB_READONLY, size=(self.defaultBoxWidth, -1))

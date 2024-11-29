@@ -27,7 +27,7 @@ class Sand_Cat_Panel(wx.Panel):
         self.defaultBoxWidth = INPUT_BOX_WIDTH
 
         #default swarm variables
-        self.numParticles = 50              # Number of Particles in the swarm
+        self.numParticles = 5              # Number of Particles in the swarm
         self.toleranceVal = 10e-6           # Convergence Tolerance
         self.maxIter = 10000               # Maximum allowed iterations
 

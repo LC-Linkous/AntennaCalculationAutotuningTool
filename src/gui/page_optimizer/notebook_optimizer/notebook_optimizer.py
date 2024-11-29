@@ -46,7 +46,7 @@ class OptimizerNotebook(wx.Notebook):
         #self.page_GLODS_SURROGATE = GLODS_SURROGATE_Page(self, self.DC, self.PC, self.SO)        
         #self.page_PSO1 = PSO1Page(self, self.DC, self.PC, self.SO)
         self.page_SWARM = SWARMPage(self, self.DC, self.PC, self.SO)
-        #self.page_QUANTUM = QUANTUMPage(self, self.DC, self.PC, self.SO)
+        self.page_QUANTUM = QUANTUMPage(self, self.DC, self.PC, self.SO)
 
         self.AddPage(self.page_simulation, "Simulation Setup")
         #self.AddPage(self.page_selection, "Help Me Choose")
@@ -55,9 +55,9 @@ class OptimizerNotebook(wx.Notebook):
         #self.AddPage(self.page_PSO1, "PSO")
         self.AddPage(self.page_SWARM, "Swarm Based")
         #self.AddPage(self.page_GLODS_SURROGATE, "Bayesian")
-        self.AddPage(self.page_GLODS, "MultiGLODS")
+        self.AddPage(self.page_GLODS, "GLODS")
         #self.AddPage(self.page_GLODS_SURROGATE, "MultiGLODS SURROGATE")
-        #self.AddPage(self.page_QUANTUM, "Quantum Inspired")
+        self.AddPage(self.page_QUANTUM, "Quantum Inspired")
         #self.AddPage(self.page_SWEEP, "Sweep and Random")
 
 
@@ -106,7 +106,7 @@ class OptimizerNotebook(wx.Notebook):
         #self.page_GLODS_SURROGATE.parameterSummaryUpdate(numControllable,paramInput)
         #self.page_PSO1.parameterSummaryUpdate(paramInput)
         self.page_SWARM.parameterSummaryUpdate(numControllable,paramInput)
-        #self.page_QUANTUM.parameterSummaryUpdate(numControllable, paramInput)
+        self.page_QUANTUM.parameterSummaryUpdate(numControllable, paramInput)
 
     def updateSimulationSettingsBoxes(self):
         self.page_simulation.updateAutoGenValues()

@@ -1,6 +1,6 @@
 ##--------------------------------------------------------------------\
 #   Antenna Calculation and Autotuning Tool
-#   '.src/optimizers/GLODS/controller_GLODS.py'
+#   '.src/optimizers/GLODS/CONTROLLER_MULTI_GLODS.py'
 #   Class interfacing with the GLODS optimizer
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu), Jonathan Lundquist
@@ -14,7 +14,7 @@ from optimizers.MULTI_GLODS.multi_glods_python.constr_default import constr_defa
 
 
 
-class CONTROLLER_GLODS():
+class CONTROLLER_MULTI_GLODS():
     def __init__(self, parent): 
         self.parent = parent
 

@@ -56,31 +56,25 @@ class CONTROLLER_CAT_SWARM_QUANTUM():
 #######################################################
 
     def unpackOptimizerParameters(self, optimizerParams, func_F):
-        print("controller_CAT_QUANTUM unpack optimizer parameters")
 
         NO_OF_PARTICLES = int(optimizerParams['num_particles'][0])         # Number of particles in swarm
         LB = [list(optimizerParams['lower_bounds'][0])]                    # Lower boundaries
         UB = [list(optimizerParams['upper_bounds'][0])]                    # Upper Boundaries
         WEIGHTS = [list(optimizerParams['weights'][0])]                    # Update vector weights
-        VLIM = float(optimizerParams['velocity_limit'][0])                 # Initial velocity limit
         OUT_VARS = int(optimizerParams['num_output'][0])                   # Number of output variables
         TARGETS = list(optimizerParams['target_values'][0])                # Target values for output
-        T_MOD = float(optimizerParams['time_modulus'][0])                  # Variable time-step extinction coefficient
         E_TOL = float(optimizerParams['tolerance'][0])                     # Convergence Tolerance (This is a radius)       
         MAXIT = float(optimizerParams['max_iterations'][0])                # Maximum allowed iterations 
         BOUNDARY = int(optimizerParams['boundary'][0])                     # int boundary 1 = random,      2 = reflecting
-                                                                           #              3 = absorbing,   4 = invisible
+        BETA = float(optimizerParams['beta'][0])                           #Float constant controlling influence 
+                                                                            #between the personal and global best positions                                                   #              3 = absorbing,   4 = invisible
+        MR = float(optimizerParams['mixture_ratio'][0])         # Mixture Ratio (MR). Small value for tracing population %.
+        SMP = int(optimizerParams['seeking_pool'][0])        # Seeking memory pool. Num copies of cats made. 
+        SRD = float(optimizerParams['seeking_range'][0])        # Seeking range of the selected dimension.  
+        CDC = int(optimizerParams['mutation_dim'][0])        # Counts of dimension to change. mutation. 
+        SPC = bool(optimizerParams['self_position'][0])        # self-position consideration. boolean. 
 
-        # cat swarm specific
-        MR = .02                    # Mixture Ratio (MR). Small value for tracing population %.
-        SMP = 5                     # Seeking memory pool. Num copies of cats made.
-        SRD = .45                   # Seeking range of the selected dimension. 
-        CDC = 2                     # Counts of dimension to change. mutation.
-        SPC = True                  # self-position consideration. boolean.
-
-        # quantum swarm variables
-        BETA = 0.5                  #Float constant controlling influence 
-                                        #between the personal and global best positions
+           
 
 
         targetMetrics = optimizerParams['target_metrics']
@@ -90,10 +84,9 @@ class CONTROLLER_CAT_SWARM_QUANTUM():
         self.optimizer = swarm(NO_OF_PARTICLES, LB, UB,
                         WEIGHTS, OUT_VARS, TARGETS,
                         E_TOL, MAXIT, BOUNDARY,
-                        func_F=func_F, constr_func=constr_default,
+                        obj_func=func_F, constr_func=constr_default,
                         MR=MR, SMP=SMP, SRD=SRD, CDC=CDC, SPC=SPC,
-                        beta=BETA, input_size=len(LB), 
-                        parent=self)
+                        beta=BETA, parent=self)
 
 
 
