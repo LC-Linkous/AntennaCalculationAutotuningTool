@@ -1,21 +1,26 @@
 ##--------------------------------------------------------------------\
 #   Antenna Calculation and Autotuning Tool
-#   '.src/gui/page_optimizer/notebook_optimizer/optimizer_panels/panel_GLODS.py'
-#   Class interfacing with the GLODS optimizer
+#   '.src/gui/page_optimizer/notebook_optimizer/optimizer_panels/panel_SWEEP.py'
+#   Class interfacing with the SWEEP optimizer
 #       Contains widgets for optimizer settings and exports
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 15, 2023
+#   Last update: November 27, 2024
 ##--------------------------------------------------------------------\
 
 import wx
-import numpy as np
+import os
 import pandas as pd
-
+import numpy as np
 import project.config.antennaCAT_config as c
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_parameterSummary import ParameterSummaryPanel
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_optimizationMetric import OptimizationMetricPanel
 
+
+
+# other SWEEP algorithms to be added
+from gui.page_optimizer.notebook_optimizer.optimizer_panels.sweep_settings_panels.panel_sweep_grid import Grid_Sweep_Panel
+from gui.page_optimizer.notebook_optimizer.optimizer_panels.sweep_settings_panels.panel_sweep_random import Random_Sweep_Panel
 
 #directories
 
@@ -35,26 +40,33 @@ class SWEEPPage(wx.Panel):
         #UI vars
         self.defaultBoxWidth = 115
         #data management
-        self.optimizerName = "SWEEP"
+        self.optimizerName = "GRID_SWEEP"
         #
         self.paramInput = pd.DataFrame({})
-        #class variables
-        self.toleranceVal = 10e-3           # Search Tolerance
-        self.lowerBoundsArr = None          # Lower boundaries
-        self.upperBoundsArr = None          # Upper Boundaries
-        self.stepSize = 0.01                # Increment for variable values
-        self.outputVariables = None         # Number of output variables
-        
+
+        #local vars
+        self.lowerBoundsArr = None
+        self.upperBoundsArr = None
+        self.metricArr = None
+        self.targetArr = None
+        self.outputVariables = None
+        self.boundary = 1
+
+
+
         # widgets
         self.paramSummary = ParameterSummaryPanel(self)
-
         self.optimizerMetrics = OptimizationMetricPanel(self)
-        
-        boxTuning = wx.StaticBox(self, label="Tuning Parameters", size=(300, -1))
-        stTolerance = wx.StaticText(boxTuning, label="Tolerance") 
-        self.fieldTolerance = wx.TextCtrl(boxTuning, value=str(self.toleranceVal), size=(self.defaultBoxWidth,-1))
-        stStepSize = wx.StaticText(boxTuning, label="Step Size")
-        self.fieldStepSize = wx.TextCtrl(boxTuning, value=str(self.stepSize), size=(self.defaultBoxWidth,-1))
+        self.notebook_settings = SettingsNotebook(self)
+
+
+        boxSelect = wx.StaticBox(self, label='Select an Optimizer:', size=(300, -1))
+        optimizerTypes = ['grid_sweep', 'random_sweep']
+        self.optimizerDropDown = wx.ComboBox(boxSelect, choices=optimizerTypes, id=1,style=wx.CB_READONLY, size=(280, -1))
+        self.optimizerDropDown.SetValue(optimizerTypes[0])
+        self.optimizerDropDown.Bind(wx.EVT_COMBOBOX, self.optimizerDesignSelectionChange)
+
+
 
         ## buttons
         self.btnOpen = wx.Button(self, label="Open Saved")
@@ -65,35 +77,32 @@ class SWEEPPage(wx.Panel):
         self.btnExport.Bind(wx.EVT_BUTTON, self.btnExportClicked)
 
 
-        # sizers
-        # tuning
-        leftTuningSizer = wx.BoxSizer(wx.VERTICAL)
-        leftTuningSizer.AddSpacer(10)
-        leftTuningSizer.Add(stTolerance, 0, wx.ALL, border=5)
-        leftTuningSizer.AddSpacer(4)
-        leftTuningSizer.Add(stStepSize, 0, wx.ALL, border=5)
+       # add the dropdown to  boxSelect
+        boxSelectSizer = wx.BoxSizer(wx.VERTICAL)
+        boxSelectSizer.AddSpacer(10)
+        boxSelectSizer.Add(self.optimizerDropDown, 0, wx.ALL|wx.EXPAND, border=7)
+        boxSelect.SetSizer(boxSelectSizer)
 
-        rightTuningSizer = wx.BoxSizer(wx.VERTICAL)
-        rightTuningSizer.AddSpacer(10)
-        rightTuningSizer.Add(self.fieldTolerance, 0, wx.ALL, border=3)
-        rightTuningSizer.Add(self.fieldStepSize, 0, wx.ALL, border=3)
 
-        boxTuningSizer = wx.BoxSizer(wx.HORIZONTAL)
-        boxTuningSizer.Add(leftTuningSizer, 0, wx.ALL | wx.EXPAND, border=3)
-        boxTuningSizer.Add(rightTuningSizer, 0, wx.ALL | wx.EXPAND, border=3)
-        boxTuning.SetSizer(boxTuningSizer)
+        # last column vert sizer
+        rightSizeSizer = wx.BoxSizer(wx.VERTICAL)
+        rightSizeSizer.Add(boxSelect, 0, wx.ALL|wx.EXPAND, border=7)
+        rightSizeSizer.Add(self.notebook_settings, 0, wx.ALL, border=10)
+        
+
 
         # panel sizer
         panelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=10)
-        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=10)
-        panelSizer.Add(boxTuning, 0, wx.ALL|wx.EXPAND, border=10)
+        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=7)
+        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=7)
+        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=10)
 
         # btn sizer
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
         btnSizer.Add(self.btnOpen, 0, wx.ALL, border=10)
         btnSizer.Add(self.btnSelect, 0, wx.ALL, border=10)
         btnSizer.Add(self.btnExport, 0, wx.ALL, border=10)
+        btnSizer.AddSpacer(7)
 
         # main sizer
         pageSizer = wx.BoxSizer(wx.VERTICAL)
@@ -111,14 +120,32 @@ class SWEEPPage(wx.Panel):
         self.parent.btnOpenClicked()
     
     def btnSelectClicked(self, evt=None):
-        df, noError = self.getOptimizerInputs()
+        # call the optimizer inputs from the child class
+        df1, noError = self.notebook_settings.getOptimizerInputs(self.optimizerName)
+        # call the optimizer inputs from the page
+        df2, noERror = self.getPageOptimizerInputs()        
+
+        # merge the data frames
+        df = result = pd.concat([df1, df2], axis=1)
+
+        #assign
+
         self.DC.setOptimizerParameters(df)
         self.parent.btnSelectClicked(self.optimizerName, noError) 
-        print(df)
+
 
     def btnExportClicked(self, evt=None):
         self.parent.btnExportClicked()
-        
+
+
+    def optimizerDesignSelectionChange(self, evt):
+            boxText = evt.GetEventObject().GetValue()
+            self.optimizerName = self.notebook_settings.set_optimizer_tuning_panel(boxText)
+            
+            self.Layout() 
+    
+
+
 #######################################################
 # Status update to main page
 #######################################################
@@ -146,7 +173,8 @@ class SWEEPPage(wx.Panel):
 #######################################################
 # Setters and Getters
 #######################################################
-    def getInputFields(self):
+
+    def getPageInputFields(self):
         # get input fields and check if target selected
         # inclides basic error checking
         noError = True
@@ -171,11 +199,6 @@ class SWEEPPage(wx.Panel):
         self.targetArr = targetVals
         self.outputVariables = np.shape(targetVals)
 
-        #get from local textbxs
-        self.toleranceVal = float(self.fieldTolerance.GetValue())
-        self.stepSize =  float(self.fieldStepSize.GetValue())
-
-           
         if (self.upperBoundsArr == None):
             msg = "ERROR: apply parameter configuration to continue"
             self.updateStatusText(msg)
@@ -192,14 +215,14 @@ class SWEEPPage(wx.Panel):
         
         return noError
 
-    def getOptimizerInputs(self):
-        noError = self.getInputFields()
+
+    def getPageOptimizerInputs(self):
+        noError = self.getPageInputFields()
         df = pd.DataFrame({})
         if noError == True:   
-            df['tolerance'] = pd.Series(self.toleranceVal)
+            df['num_input'] = pd.Series(self.numInputVariables)
             df['lower_bounds'] = pd.Series([self.lowerBoundsArr])
             df['upper_bounds'] = pd.Series([self.upperBoundsArr])
-            df['search_frequency'] = pd.Series(self.stepSize)
             df['num_output'] = pd.Series(self.outputVariables)
             df['target_metrics'] = pd.Series([self.metricArr])
             df['target_values'] = pd.Series([self.targetArr])
@@ -228,13 +251,94 @@ class SWEEPPage(wx.Panel):
 
         self.lowerBoundsArr = lbArr
         self.upperBoundsArr = ubArr
-        # msg = str(len(self.lowerBoundsArr)) + " parameters selected for optimization."
-        # self.updateStatusText(msg)
+
 
         self.paramSummary.setParameterSummaryText(self.numInputVariables, \
                                                   pName, lbArr, ubArr)
        
-
     def applyLoadedProjectSettings(self, PC):
         pass
    
+
+#############################################################
+#  sub-pages. move these to another file when there's time
+# 
+# ###########################################################   
+class TuningPage(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent=parent)
+        self.parent = parent
+
+
+        self.grid_sweep_panel = Grid_Sweep_Panel(self) #default
+        self.random_sweep_panel = Random_Sweep_Panel(self)
+
+        pageSizer = wx.BoxSizer(wx.VERTICAL)
+        pageSizer.Add(self.grid_sweep_panel, 1, wx.ALL|wx.EXPAND, border=3)
+        pageSizer.Add(self.random_sweep_panel, 1, wx.ALL|wx.EXPAND, border=3)
+        self.SetSizer(pageSizer)
+
+
+        self.random_sweep_panel.Hide()
+        self.grid_sweep_panel.Show()
+
+
+
+    def set_optimizer_tuning_panel(self, txt="grid_sweep"):
+        # add if/else here when adding more options
+        if txt == "grid_sweep":
+            self.hideEverythingAndShowSinglePanel(self.grid_sweep_panel)
+            optimizerName = "GRID_SWEEP"
+        elif txt == "random_sweep":
+            self.hideEverythingAndShowSinglePanel(self.random_sweep_panel)
+            optimizerName = "RANDOM_SWEEP"
+        else:
+            print("ERROR in panel_SWEEP.py unknown optimizer selected")
+
+        return optimizerName
+    
+    def getOptimizerInputs(self, optimizerName):
+        noError = False
+        df = None
+
+        if optimizerName == "GRID_SWEEP":
+            df, noError = self.grid_sweep_panel.getOptimizerInputs()
+        elif optimizerName == "RANDOM_SWEEP":
+            df, noError = self.random_sweep_panel.getOptimizerInputs()
+        else:
+            print("ERROR: optimizer name not recognized in panel_SWEEP. Select an option from the dropdown menu to continue!")
+
+
+        if noError == False:
+            print("ERROR: error in optimizer input values. check inputs.")    
+
+
+        return df, noError
+
+    def hideEverythingAndShowSinglePanel(self, showPanel):
+        # hide everything
+        self.grid_sweep_panel.Hide()
+        self.random_sweep_panel.Hide()
+        #show the selected panel
+        showPanel.Show()
+
+        self.Layout()
+
+        
+class SettingsNotebook(wx.Notebook):
+    def __init__(self, parent):
+        wx.Notebook.__init__(self, parent=parent, size=(410, -1))
+        self.parent = parent #parent used for sizer layouts in level above
+        self.page_tuning = TuningPage(self)
+        self.AddPage(self.page_tuning, "Optimizer Parameters")
+        #NOTE: sweep&random does NOT have a surrogate model option
+       
+
+    def set_optimizer_tuning_panel(self, boxText):
+        optimizerName = self.page_tuning.set_optimizer_tuning_panel(boxText)
+        return optimizerName
+
+    def getOptimizerInputs(self, optimizerName):
+        df, noError = self.page_tuning.getOptimizerInputs(optimizerName)
+        return df, noError
+    

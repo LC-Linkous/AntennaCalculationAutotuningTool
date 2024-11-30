@@ -7,7 +7,7 @@
 #   to find the optimial solution based on target values.
 #
 #   Author(s): Lauren Linkous, Jonathan Lundquist
-#   Last update: June 26, 2024
+#   Last update: November 29, 2024
 ##--------------------------------------------------------------------\
 
 
@@ -28,11 +28,13 @@ class sweep:
     # int search_method:  1 = basic_grid, 2 = random_search
     
     def __init__(self, NO_OF_PARTICLES, lbound, ubound, 
-                 min_res, max_res, 
                  output_size, targets,
-                 E_TOL, maxit, search_method, 
-                 obj_func, constr_func, parent=None, detailedWarnings=False):  
+                 E_TOL, maxit,  
+                 obj_func, constr_func,
+                 search_method, min_res, max_res, 
+                 parent=None, detailedWarnings=False):  
         
+                 
         # Optional parent class func call to write out values that trigger constraint issues
         self.parent = parent 
         # Additional output for advanced debugging to TERMINAL. 
@@ -174,35 +176,35 @@ class sweep:
                 update = i+1        
         return update
     
-           
+            
     def grid_search(self, particle):
         # If particle is out of bounds, bring the particle back in bounds
-        # The first condition checks if constraints are met, 
-        # and the second determines if the values are to large (positive or negitive)
-        # and may cause a buffer overflow with large exponents (a bug that was found experimentally)
         # Convert to numpy arrays for easier manipulation
         current_location = np.array(self.M[particle])
         lbounds = self.lbound.flatten()
         ubounds = self.ubound.flatten()
-        resolution = self.min_search_res[0]
+        resolution = self.min_search_res[0]  # resolution is a scalar value
 
         N = len(current_location)
         new_location = current_location.copy()
-    
+
         # Start from the last dimension
         for i in range(N-1, -1, -1):
-            new_location[i] += resolution[i]
+            new_location[i] += resolution  # Add resolution to current dimension
+
             # Check if the new location exceeds the upper bound
             if new_location[i] > ubounds[i]:
-                    new_location[i] = lbounds[i]
-                    if i == 0:
-                        # the particle has hit the last iteration and is done
-                        self.Active[self.current_particle] = 0
-                        self.error_message_generator("particle # " + str(self.current_particle) + " has hit the upper bound and become inactive")
+                new_location[i] = lbounds[i]  # Wrap around to the lower bound
+                if i == 0:
+                    # If we're at the first dimension and it overflows, make the particle inactive
+                    self.Active[self.current_particle] = 0
+                    self.error_message_generator(f"particle # {self.current_particle} has hit the upper bound and become inactive")
             else:
+                # If no overflow, we break out of the loop since the rest of the dimensions don't need to be checked
                 break
-                
-        self.M[particle] = 1*new_location.tolist()
+        
+        # Update the particle's position
+        self.M[particle] = new_location.tolist()
 
 
     def random_search(self, particle):

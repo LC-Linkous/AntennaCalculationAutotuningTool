@@ -5,7 +5,7 @@
 #   Scripts are NOT written or read to file in this class
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu), Jonathan Lundquist
-#   Last update: December 29, 2023
+#   Last update: Novmber 29, 2024
 ##--------------------------------------------------------------------\
 
 import os
@@ -230,7 +230,11 @@ class OptimizerIntegrator():
            OO = CONTROLLER_MULTI_GLODS(self)
         elif optimizerSelection == "BAYESIAN":
             OO = CONTROLLER_BAYESIAN(self)
-        elif optimizerSelection == "SWEEP":
+        # these two are the same controller. 
+        # same optimizer, different panel options.
+        elif optimizerSelection == "GRID_SWEEP":
+           OO = CONTROLLER_SWEEP(self)
+        elif optimizerSelection == "RANDOM_SWEEP":
            OO = CONTROLLER_SWEEP(self)
         else:
             print("ERROR: non recognized optimizer object: " + str(optimizerSelection))
