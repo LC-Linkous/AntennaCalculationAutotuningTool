@@ -53,7 +53,7 @@ Why not release it all at once?
 Where are we so far? (Nov. 7, 2024)
 
 * The dissertation based on the AntennaCAT software has been released at https://scholarscompass.vcu.edu/etd/7841/
-* The Individual optimizers have been released for unit testing
+* The individual optimizers have been released for unit testing
 * The objective function library has been posted
 * The journal/magazine article for AntennaCAT is under review
 * The [Wiki](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/wiki) is being updated daily 
@@ -82,6 +82,8 @@ Stages of major revision roll out:
 ## Requirements
 Library requirements for locally run Python code are included in requirements.txt and can be 
 installed using 'pip install -r requirements.txt'
+
+AntennaCAT has been tested with Python 3.9 (primary development), and 3.12 (specifically 3.12.7) for the 2024.0 release. Versions of Python between 3.9 and 3.12 are probably fine, but have not been tested.
 
 ```python
 cairocffi==0.9.0
