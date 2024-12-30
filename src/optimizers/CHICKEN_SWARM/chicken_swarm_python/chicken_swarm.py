@@ -82,11 +82,13 @@ class swarm:
             self.HN = HN    # hen number
             self.MN = MN    # mother hen number
             self.CN = CN    # chick number
-            
-            self.G = G      # num steps to update chicken status
+
+            total_chickens = RN + HN + MN + CN
+
+            self.G = G                       # num full cycles before updating the 
+            self.G_steps = G*total_chickens  # how many iterations happen in a generation
  
             # error checking on population split
-            total_chickens = RN + HN + MN + CN
             if (NO_OF_PARTICLES < total_chickens):
                 self.parent.debug_message_printout("WARNING: number of chickens adds up to more \
                                                    than the expected number of particles. Attempting fix.")
@@ -551,8 +553,8 @@ class swarm:
                 # save global best
                 self.check_global_local(self.Flist,self.current_particle)
 
-                # every self.G iterations, reorganize the swarm
-                if self.iter%self.G == 0:
+                # every self.G cycle iterations, reorganize the swarm
+                if self.iter%self.G_steps == 0:
                     self.reorganize_swarm()
                     #start with the new best rooster
                     self.current_particle = 0

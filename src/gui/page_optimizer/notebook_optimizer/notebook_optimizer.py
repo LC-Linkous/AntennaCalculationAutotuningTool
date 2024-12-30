@@ -16,6 +16,7 @@ from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_SWEEP import S
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_GLODS import GLODSPage
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_SWARM import SWARMPage
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_QUANTUM import QUANTUMPage
+from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_BAYESIAN import BAYESIANPage
 
 import project.config.antennaCAT_config as c
 
@@ -42,6 +43,7 @@ class OptimizerNotebook(wx.Notebook):
         self.page_SWARM = SWARMPage(self, self.DC, self.PC, self.SO)
         self.page_QUANTUM = QUANTUMPage(self, self.DC, self.PC, self.SO)
         self.page_GLODS = GLODSPage(self, self.DC, self.PC, self.SO)
+        self.page_BAYESIAN = BAYESIANPage(self, self.DC, self.PC, self.SO)
         self.page_SWEEP = SWEEPPage(self, self.DC, self.PC, self.SO)
 
         #self.page_selection = SelectionPage(self, self.DC, self.PC, self.SO)
@@ -54,14 +56,13 @@ class OptimizerNotebook(wx.Notebook):
         self.AddPage(self.page_SWARM, "Swarm Based")
         self.AddPage(self.page_QUANTUM, "Quantum Inspired")
         self.AddPage(self.page_GLODS, "GLODS")
+        self.AddPage(self.page_BAYESIAN, "Bayesian")
         self.AddPage(self.page_SWEEP, "Sweep and Random")
+        
         #self.AddPage(self.page_selection, "Help Me Choose")
         #self.AddPage(self.page_rules, "TEST_FORMAT") 
-        # self.AddPage(self.page_SWEEP, "SWEEP")
-        #self.AddPage(self.page_PSO1, "PSO")
         
-        #self.AddPage(self.page_GLODS_SURROGATE, "Bayesian")
-        
+        #self.AddPage(self.page_GLODS_SURROGATE, "Bayesian")        
         #self.AddPage(self.page_GLODS_SURROGATE, "MultiGLODS SURROGATE")
         
         
@@ -104,10 +105,11 @@ class OptimizerNotebook(wx.Notebook):
 #######################################################
 
     def parameterSummaryUpdate(self, numControllable, paramInput):
-        self.page_SWARM.parameterSummaryUpdate(numControllable,paramInput)
+        self.page_SWARM.parameterSummaryUpdate(numControllable, paramInput)
         self.page_QUANTUM.parameterSummaryUpdate(numControllable, paramInput)       
-        self.page_GLODS.parameterSummaryUpdate(numControllable,paramInput)
-        self.page_SWEEP.parameterSummaryUpdate(numControllable,paramInput)
+        self.page_GLODS.parameterSummaryUpdate(numControllable, paramInput)
+        self.page_BAYESIAN.parameterSummaryUpdate(numControllable, paramInput)
+        self.page_SWEEP.parameterSummaryUpdate(numControllable, paramInput)
         #self.self.page_simulation.parameterSummaryUpdate(paramInput)
         #self.page_selection.parameterSummaryUpdate(paramInput)
         #self.page_rules.parameterSummaryUpdate(paramInput)

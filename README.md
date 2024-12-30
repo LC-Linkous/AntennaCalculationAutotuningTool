@@ -143,6 +143,9 @@ While there are unit testing artifacts in some code files, entry at other points
 
 It is recommended to run AntennaCAT in a virtual environment, but it is not a requirement. 
 
+
+
+
 ## Related Publications and Repositories
 
 1. L. Linkous, “Machine Learning Assisted Optimization for Calculation and Automated Tuning of Antennas,” VCU Scholars Compass, 2024. https://scholarscompass.vcu.edu/etd/7841/ (accessed Oct. 21, 2024).

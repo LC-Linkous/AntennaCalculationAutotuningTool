@@ -9,14 +9,14 @@
 #      
 #
 #   Author(s): Lauren Linkous, Jonathan Lundquist
-#   Last update: June 24, 2024
+#   Last update: December 5, 2024
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
 from numpy.random import Generator, MT19937
-import time
 import sys
+
 
 class BayesianOptimization:
     def __init__(self,lbound, ubound, 
@@ -53,7 +53,7 @@ class BayesianOptimization:
                 pass
             else:
                 self.parent.record_params()
-                self.parent.debug_message_printout("ERROR: lbound and ubound must be 1xN-dimensional \
+                self.parent.updateStatusText("ERROR: lbound and ubound must be 1xN-dimensional \
                                                         arrays  with the same length")
            
         else:
@@ -84,6 +84,7 @@ class BayesianOptimization:
             self.allow_update           : Flag indicating whether to allow updates.
             self.Flist                  : List to store fitness values.
             self.Fvals                  : List to store fitness values.
+            self.init_points            : Integer. Number of initial points before optimization.
             self.xi                     : Float. Encourages exploration in expected improvement.
             self.n_restarts             : Integer. Number of randomly genreated proposed sample candiates. 
             self.new_point              : Newest proposed/passed in point.
@@ -94,7 +95,7 @@ class BayesianOptimization:
             self.Gb = sys.maxsize*np.ones((1,np.max([heightl, widthl])))   
             self.F_Gb = sys.maxsize*np.ones((1,output_size))
             self.F_Pb = []  
-            self.targets = np.array(targets)    
+            self.targets = np.array(targets).reshape(-1, 1)         
             self.maxit = maxit                       
             self.E_TOL = E_TOL
             self.obj_func = obj_func                                             
@@ -102,51 +103,18 @@ class BayesianOptimization:
             self.iter = 0
             self.allow_update = 0                                           
             self.Flist = []                                                 
-            self.Fvals = []    
+            self.Fvals = []
+            self.init_points = init_points    
             self.xi = xi
             self.n_restarts = n_restarts
             self.new_point = []
     
-
-
-            #create the initial pts
-            self.initialize_starting_points(init_points)
-
-            # get the sample points out (to ensure standard formatting)
-            x_sample, y_sample = self.get_sample_points()
-            # fit GP model.
-            self.parent.fit_model(x_sample, y_sample)
-
-
-
-    def initialize_starting_points(self, init_num_points=10):
-        # Initialize random initial points
-        if init_num_points>0:
-            # first point
-            rand_pts = self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound))
-            y, noError = self.obj_func(rand_pts[0], self.output_size)  # Cumulative Fvals
-            if noError == True:
-                self.M = rand_pts
-                self.F_Pb = np.vstack([y])
-            else:
-                print("ERROR: initial point creation issue")
-       
-            # rest of the points
-            for i in range(2,init_num_points+1):
-                new_M = self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound))
-                y, noError = self.obj_func(new_M[0], self.output_size) 
-                if noError == True:
-                    self.M = np.vstack([self.M, new_M])
-                    self.F_Pb = np.vstack([self.F_Pb,y])
-             
-                else:
-                    print("ERROR: objective function error when initilaizing random points")
-
-            self.is_fitted = False
-            # tracking the iterations (samples)
-            # self.iter=init_num_points
-            print("Model initialized with " + str(init_num_points) + " points. \
-            The interation counter will start from " + str(self.iter))
+            # state machine control flow
+            self.firstOptimizationRun = False
+            self.doneInitializationBoolean = False
+            self.ctr  = 0
+            self.objective_function_case = 0 #initial pts by default
+        
 
     # SURROGATE MODEL CALLS
     def fit_model(self, x, y):
@@ -278,35 +246,69 @@ class BayesianOptimization:
         if self.parent == None:
             print(msg)
         else:
-            self.parent.debug_message_printout(msg)
+            self.parent.updateStatusText(msg)
 
     def call_objective(self, allow_update=False):
-        # seperate function to mimic other optimizers in the collection
+
+       # may have re-run in an upstream optimizer
+        # so this may be triggered when the point should not be sampled
         if allow_update == False:
-            # may have re-run in an upstream optimizer
-            # so this may be triggered when the point should not be sampled
             self.allow_update = 0
             return
-
-        self.allow_update = 1
+        else:        
+            self.allow_update = 1
         
-        if len(self.new_point) < 1: # point not set
-            print("WARNING: no point set for objective call. Ignore unless this is persistent.")
-            return
+        # case 0: first point of initial points (must have minimum 1)
+        if self.objective_function_case == 0:
+            new_M = self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound))
+            newFVals, noError = self.obj_func(new_M[0], self.output_size)  # Cumulative Fvals
 
-        newFVals, noError = self.obj_func(self.new_point[0], self.output_size)
-        if noError==True:
-            self.Fvals = np.array(newFVals).reshape(1,-1)
-            self.Flist = abs(self.targets - self.Fvals)
-            self.iter = self.iter + 1
+            if noError == True:
+                newFVals = np.array([newFVals])#.reshape(-1, 1)  # kept for comparison between other optimzers
+                self.M = new_M
+                self.F_Pb = newFVals
+            else:
+                msg = "ERROR: initial point creation issue"
+                self.error_message_generator(msg)
 
-            self.M = np.vstack((self.M, self.new_point))
-            self.F_Pb = np.vstack((self.F_Pb, [newFVals]))
-            self.fit_model(self.M, self.F_Pb)
+            self.is_fitted = False
+
+        # case 1: any other initial points before optimiation begins
+        elif self.objective_function_case == 1:
+            new_M = self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound))
+            newFVals, noError = self.obj_func(new_M[0], self.output_size) 
+            if noError == True:
+                newFVals = np.array([newFVals])#.reshape(-1, 1) 
+                self.M = np.vstack([self.M, new_M])
+                self.F_Pb = np.vstack((self.F_Pb, newFVals))#.reshape(-1, 1) 
+
+            else:
+                msg = "ERROR: objective function error when initilaizing random points"
+                self.error_message_generator(msg)
+
+            self.is_fitted = False
+
+        # case 2: normal objective function calls, optimization running live
+        elif self.objective_function_case == 2:
+            if len(self.new_point) < 1: # point not set
+                msg = "WARNING: no point set for objective call. Skipping. Ignore unless this is persistent."
+                self.error_message_generator(msg)
+                return
+
+            newFVals, noError = self.obj_func(self.new_point[0], self.output_size)
+            if noError==True:
+                self.Fvals = np.array([newFVals])#.reshape(-1, 1) 
+                self.Flist = abs(self.targets - self.Fvals)
+                self.M = np.vstack((self.M, self.new_point))
+                self.F_Pb = np.vstack((self.F_Pb, newFVals))#.reshape(-1, 1) 
+                self.fit_model(self.M, self.F_Pb)
 
         else:
-            print("ERROR: in call objective objective function evaluation")
+            msg = "ERROR: in call objective objective function evaluation"
+            self.error_message_generator(msg)
 
+
+        self.iter = self.iter + 1
 
     def step(self, suppress_output=False):
 
@@ -314,7 +316,8 @@ class BayesianOptimization:
             msg = "\n-----------------------------\n" + \
                 "STEP #" + str(self.iter) +"\n" + \
                 "-----------------------------\n" + \
-                "Newest Point:\n" + \
+                "Completed Initial Sample #" + str(self.ctr) + " of " + str(self.init_points) + "\n" +\
+                "Last Proposed Point:\n" + \
                 str(self.new_point) +"\n" + \
                 "Best Fitness Solution: \n" +\
                 str(np.linalg.norm(self.F_Gb)) +"\n" +\
@@ -324,12 +327,54 @@ class BayesianOptimization:
             self.error_message_generator(msg)
 
         if self.allow_update:      
-            # check if points are better than last global bests
-            self.check_global_local(self.Flist)
 
-            #self.sample_next_point(), but split up
-            self.new_point = self.propose_location()
-        
+            #initialize the first couple runs
+            if self.doneInitializationBoolean == False:
+                #1) the initial points need to be run
+                #2) getter for sample points (to ensure standard formatting)
+                #3) fit the surrogate model
+
+                # running the initial point collection 
+                if self.ctr < self.init_points:
+                    
+                    # these are split into 2 cases for easier debug
+                    if self.ctr == 0: # first point
+                        #calling the objective function with the first random pt 
+                        self.objective_function_case = 0
+                        
+                    else: # rest of the points
+                        self.objective_function_case = 1
+                    self.ctr = self.ctr + 1
+                
+                else: #if self.ctr >= self.init_points: 
+                    msg = "Model initialized with " + str(self.ctr) + " points. \n \
+                    The iteration counter will start from " + str(self.iter) + "\n\n"
+                    self.error_message_generator(msg)
+                    # get the sample points out (to ensure standard formatting)
+                    x_sample, y_sample = self.get_sample_points()
+                    # fit GP model.
+                    self.parent.fit_model(x_sample, y_sample)
+                    ### ABOVE HERE IS THE END OF THE FULL INITIALIZATION SETUP###
+                    self.doneInitializationBoolean = True
+                    
+
+            # NOT an elif, so that this condition is hit immediately after the setup is done above
+            if self.doneInitializationBoolean == True:
+                # set to case 2 for objective function call
+                self.objective_function_case = 2
+
+                # check if points are better than last global bests
+                self.check_global_local(self.Flist)
+
+                #self.sample_next_point() in original example, but now split up
+                self.new_point = self.propose_location()
+
+                # check if points are better than last global bests
+                self.check_global_local(self.Flist)
+
+                #self.sample_next_point(), but split up
+                self.new_point = self.propose_location()
+            
 
             # There is no handling boundaries for points in the bayesian optimizer
             # because the proposed location is already bounded by the problem space
@@ -340,9 +385,3 @@ class BayesianOptimization:
                     "Flist: \n" + str(self.F_Gb) + "\n" + \
                     "Norm Flist: \n" + str(np.linalg.norm(self.F_Gb)) + "\n"
                 self.error_message_generator(msg)
-
-    def error_message_generator(self, msg):
-        if self.parent == None:
-            print(msg)
-        else:
-            self.parent.updateStatusText(msg)

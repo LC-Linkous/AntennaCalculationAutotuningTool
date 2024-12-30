@@ -6,7 +6,7 @@
 #   K-Nearest Neighbors surrogate model for optimization. 
 #
 #   Author(s): Lauren Linkous 
-#   Last update: June 25, 2024
+#   Last update: December 2, 2024
 ##--------------------------------------------------------------------\
 
 import numpy as np
@@ -20,6 +20,23 @@ class KNNRegression:
         self.last_predictions = None
         self.is_fitted = False
 
+    # configuration check for surrogate models
+    # important for AntennCAT surrogate model use. can skip otherwise
+    def _check_configuration(self, init_pts):
+        noError, errMsg = self._check_initial_points(init_pts)
+        return noError, errMsg
+        
+    def _check_initial_points(self, init_pts):
+        MIN_INIT_POINTS = 1
+        errMsg = ""
+        noError = True        
+        if init_pts < MIN_INIT_POINTS:
+            errMsg = "ERROR: minimum required initial points is" + str(MIN_INIT_POINTS)
+            noError = False
+        return noError, errMsg
+
+    
+    # SM functions
     def fit(self, X, Y):
         self.X_sample = np.atleast_2d(X)
         self.Y_sample = np.atleast_2d(Y).reshape(Y.shape[0], -1)  # Ensure Y_sample is 2D
