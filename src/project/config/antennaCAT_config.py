@@ -31,6 +31,7 @@ DEFAULT_COLORS = ['blue','orange','green','red','purple','brown','pink','grey',
                   'olive','cyan']
 
 #media
+ANTENNACAT_SPLASH_FILE = os.path.join('src','media','antennaCAT-icons','splashscreen_2024.png')
 ANTENNACAT_ICON_FILE = os.path.join('src','media','antennaCAT-icons','transparent-antennaCAT-icon.png')
 #".//src//media//antennaCAT-icons//transparent-antennaCAT-icon.png"
 ANTENNACAT_LOGO_FILE =os.path.join('src','media','antennaCAT-icons','transparent-antennaCAT-logo.png')
@@ -107,7 +108,7 @@ ANTENNA_TYPE_DICT = {
 FEED_TYPE_DICT = {'microstrip': 'microstrip', 'probe': 'probe'}
 
 #list of topologies that can be exported
-CALCULATOR_EXPORT_LIST = ['rectangular_patch', 'rep_rectangular_patch', 'rep_E']
+CALCULATOR_EXPORT_LIST = ['rectangular_patch', 'rep_rectangular_patch']
 
 
 

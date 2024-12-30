@@ -4,7 +4,7 @@
 #   Class for GUI layout and basic functionality
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: December 30, 2024
 ##--------------------------------------------------------------------\
 
 import sys
@@ -118,9 +118,11 @@ class GFrame(wx.Frame):
         except Exception as e:
             print(e)
            
+
     def recentProjectClicked (self, pathname):
         #called from page_project notebook
         self.openProjectCheck(pathname)
+        
 
     def openProjectCheck(self, pathname):
         # called by the open file btn and clicking recent from panel
