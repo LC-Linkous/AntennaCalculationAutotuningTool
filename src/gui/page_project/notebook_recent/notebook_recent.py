@@ -29,11 +29,8 @@ class RecentProjectNotebook(wx.Notebook):
 
 
         self.page_recent = ProjectListPage(self)
-        self.page_pinned = ProjectListPage(self)
 
         self.AddPage(self.page_recent, "Recent")
-        self.AddPage(self.page_pinned, "Pinned") 
 
     def applyLoadedProjectSettings(self, PC):
         self.page_recent.applyLoadedProjectSettings(PC)
-        self.page_pinned.applyLoadedProjectSettings(PC)
