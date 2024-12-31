@@ -12,7 +12,7 @@ import wx
 
 # debug messages printed to terminal
 DEBUG = True
-
+ANTENNACAT_EXE = False  #update to TRUE to use the exe path configs
 
 # GUI visuals
 ## default frame/panel sizes
@@ -25,7 +25,8 @@ SIDEBAR_COLOR ='Thistle'
 robin_egg_blue = wx.Colour(176, 224, 230) #Not an eyesore
 light_blue = wx.Colour(190, 238, 230)
 antennaCAT_default_blue = wx.Colour(190, 220, 220) #'Light Blue', but a little warmer
-MAIN_BACKGROUND_COLOR=  antennaCAT_default_blue
+MAIN_BACKGROUND_COLOR =  antennaCAT_default_blue
+GREY_BACKGROUND_COLOR = wx.Colour(234, 234, 234)
 ALTERNATE_COLORS = ['Medium Goldenrod','Pale Green', 'Light Green', 'Light Steel Blue']
 DEFAULT_COLORS = ['blue','orange','green','red','purple','brown','pink','grey',
                   'olive','cyan']
@@ -46,7 +47,7 @@ DESIGN_REPLICATION_SLOTTED_PATCH = os.path.join('src','media','design-images','d
 DESIGN_REPLICATION_SERPENTINE = os.path.join('src','media','design-images','design-serpentine-patch.png')
 DESIGN_REPLICATION_CIRCULAR_LOOP = os.path.join('src','media','design-images','design-circular-loop.png')
 
-# Static project filepaths
+# Static user-created PROJECT filepaths
 ## base directories
 OUTPUT_DIR = "output"
 SCRIPTS_DIR = os.path.join(OUTPUT_DIR, "scripts")
@@ -54,18 +55,9 @@ BATCH_OUTPUT = os.path.join(OUTPUT_DIR, "batch")
 TMP_DIR = os.path.join(OUTPUT_DIR, "tmp")
 OPTIMIZER_DIR =  os.path.join(OUTPUT_DIR, "optimizer")
 
-SOURCE_CODE_DIR = "./src"
-ANSYS_DIR = os.path.join(SOURCE_CODE_DIR, "simulation_integrator", "ANSYS")
-COMSOL_DIR = os.path.join(SOURCE_CODE_DIR, "simulation_integrator", "COMSOL")
-CST_DIR = os.path.join(SOURCE_CODE_DIR, "simulation_integrator", "CST")
-EMPIRE_DIR = os.path.join(SOURCE_CODE_DIR, "simulation_integrator", "EMPIRE")
-FEKO_DIR = os.path.join(SOURCE_CODE_DIR, "simulation_integrator", "FEKO")
-
 ## list for directories - used for error checking. If anything else is missing, there are other issues
 DIR_LIST = {OUTPUT_DIR, SCRIPTS_DIR, TMP_DIR, OPTIMIZER_DIR}
 
-## default names for logging and data saving
-DEFAULT_OUTPUT_DIRECTORY = SOURCE_CODE_DIR + OUTPUT_DIR
 #logs
 SIMULATION_OUTPUT_LOG_NAME = "SIMULATION_SOFTWARE_LOG.log"
 PLOT_HISTORY_LOG_NAME = "PLOT_HISTORY_LOG.log"
@@ -81,7 +73,39 @@ PSO_SUMMARY_FILE = "organismSummary.txt"
 GENETIC_CHECKPOINT_IMAGE = "outputImage.bmp"
 
 
-#software paths
+# ANTENNACAT SOFTWARE PATHS
+## EM hardcoded paths to main template and integrator folders
+SOURCE_CODE_DIR = "./src"
+ANSYS_DIR = os.path.join(SOURCE_CODE_DIR, "simulation_integrator", "ANSYS")
+COMSOL_DIR = os.path.join(SOURCE_CODE_DIR, "simulation_integrator", "COMSOL")
+CST_DIR = os.path.join(SOURCE_CODE_DIR, "simulation_integrator", "CST")
+EMPIRE_DIR = os.path.join(SOURCE_CODE_DIR, "simulation_integrator", "EMPIRE")
+FEKO_DIR = os.path.join(SOURCE_CODE_DIR, "simulation_integrator", "FEKO")
+
+
+## AntennaCAT software files for cache and other user memory files
+# starts from current working directory FOR NOW
+# TODO: update toggle for the .exe version
+if ANTENNACAT_EXE == True:
+    #might need to load in file depending on how the .exe locs can be saved
+    pass
+
+else:
+    #use current working directory
+    ROOT_PATH = os.getcwd()
+
+
+PROG_TEMP_PATH = os.path.join(ROOT_PATH, "tmp")
+PROG_CONFIG_PATH = os.path.join(ROOT_PATH, "config")
+PROG_DIR_LIST = {PROG_TEMP_PATH, PROG_CONFIG_PATH}
+
+# cache files
+PROG_RECENTS_FILE = os.path.join(PROG_TEMP_PATH, "recent_local.json") #project files
+PROG_CONFIG_FILE = os.path.join(PROG_CONFIG_PATH, "config_local.json") #user and other program config
+PROG_FILES_LIST = {PROG_RECENTS_FILE,PROG_CONFIG_FILE}
+
+
+#SOFTWARE PATHS
 ## default software path for simulation softwares
 # #name of the exe - this will be searched for with new project creation to get accurate paths
 # KEEP THESE HERE FOR NOW
@@ -91,7 +115,7 @@ CST_EXECUTABLE = None
 EMPIRE_EXECUTABLE = None
 FEKO_EXECUTABLE = None
 
-# Shared dictionaries and lists
+# SHARED DICTIONARIES AND LISTS
 ## dictionary for calculator integration (not enough vals to move yet)
 ANTENNA_TYPE_DICT = {
     '(calculate) Rectangular Patch': 'rectangular_patch',
