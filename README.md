@@ -41,6 +41,10 @@ This version is close to the early 2023 lit:
 * Ansys HFSS integration
 * ANCAT project creation, basic save functionality (a newer feature, but not worth removing)
 
+What's happening now?
+* Minor restructuring to get the save&load functionality switched over from a txt file to JSON. This was a requested feature, so it's been bumped up in priority. It's also a good time to clean up the 'file load' functions.
+
+
 Why are we not matching the literature exactly? 
 * The driving goal behind the development of this software is for it to be useful and to encourage experimentation. Holding back features/functionality to be truer to the publications goes against that. 
 
