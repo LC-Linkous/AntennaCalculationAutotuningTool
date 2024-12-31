@@ -35,7 +35,13 @@ class AntennaCATGUI():
                      15000,  None, -1, wx.DefaultPosition, wx.DefaultSize,wx.BORDER_NONE)
         splash.Show()
 
+
+        # while splash screen is up, create the GUI
         GUIFrame = GFrame(parent, title=title)
+
+        # show the GUI and destory the splash when thread is free
         GUIFrame.Show()
         splash.Destroy()
+
+        # add app to the main loop to keep program open
         app.MainLoop()
