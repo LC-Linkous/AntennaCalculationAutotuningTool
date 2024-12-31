@@ -244,3 +244,7 @@ src/simulation_integrator/FEKO/__pycache__
 src/optimizers/GLODS/multi_glods_python/himmelblau/__pycache__/configs_F.cpython-39.pyc
 src/optimizers/GLODS/multi_glods_python/himmelblau/__pycache__/constr_F.cpython-39.pyc
 src/optimizers/GLODS/multi_glods_python/himmelblau/__pycache__/func_F.cpython-39.pyc
+
+.tmp/
+.config/
+
