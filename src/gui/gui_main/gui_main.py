@@ -8,6 +8,7 @@
 ##--------------------------------------------------------------------\
 
 import sys
+import os
 import wx
 
 sys.path.insert(0, './gui')
@@ -31,6 +32,11 @@ HEIGHT = c.HEIGHT
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 SIDEBAR_COLOR = c.SIDEBAR_COLOR
 ANTENNACAT_ICON_FILE = c.ANTENNACAT_ICON_FILE
+
+
+PROG_DIR_LIST = c.PROG_DIR_LIST
+PROG_FILES_LIST = c.PROG_FILES_LIST
+PROG_TEMP_PATH = c.PROG_TEMP_PATH
 
 #######################################################################
 # Classes for basic GUI frame creation
@@ -56,6 +62,11 @@ class GFrame(wx.Frame):
         self.mainSizer.Add(self.panel_btnMenu, 0, wx.EXPAND)
         self.mainSizer.Add(self.panel_mainUI, 3, wx.EXPAND)
         self.SetSizer(self.mainSizer)
+
+
+        #config and check calls
+        self.loadAntennaCATSystemFiles()
+
 
     #btn events called from children
     def onClose(self, evt=None):
@@ -140,3 +151,75 @@ class GFrame(wx.Frame):
     def applyLoadedProjectSettings(self):
         # no PC pass bc it calls UP
         self.panel_mainUI.applyLoadedProjectSettings()
+
+
+   
+    def loadAntennaCATSystemFiles(self):
+        # needs access to self.DC, self.PC, self.SO
+
+        #TODO when AntennaCAT is avilable as an .exe:
+            # root folder starts with where the EXE is installed. 
+            # shortcut option placed on desktop to exe
+
+
+
+        # For when funning AntennaCAT in an IDE
+            # currently no extra code needed
+            # set path vars in config files
+            
+
+        # Folders, cache, and error checks for both options
+            # directory checking
+                # tmp folder (genreal cache)
+                # any EM simulation software configs needed (if templates need versioning)
+                # last user information for faster project creation
+
+
+        for dirPath in PROG_DIR_LIST:
+            if not os.path.exists(dirPath):
+                os.makedirs(dirPath)
+
+        for filePath in PROG_FILES_LIST:
+            print(filePath)
+            if not os.path.exists(filePath):
+                with open(filePath, 'w') as file:
+                    file.write("")
+
+
+
+
+    def clearProjectCache(self):
+        #called from settings folder to reset projects that have recurring issues
+        msg = "This action will permanently delete the local settings for this project. \n" +\
+             "It cannot be undone. Delete project cache?"
+
+        dlg = wx.MessageDialog(None, msg,'Delete Project Cache',wx.CANCEL|wx.CANCEL_DEFAULT | wx.ICON_QUESTION)
+        result = dlg.ShowModal()
+        if result == wx.ID_OK:
+            if os.path.exists(PROG_TEMP_PATH):
+                os.remove(PROG_TEMP_PATH)
+            output_msg = "Project cache has been cleared"
+            self.loadAntennaCATSystemFiles()
+        else:
+            output_msg = "Project cache has not been deleted"
+
+        return output_msg
+
+
+    def clearAntennaCATCache(self):
+        #called from settings folder to reset projects that have recurring issues
+        msg = "This action will permanently delete the local cache and custom settings for AntennaCAT. \n" +\
+             "It cannot be undone. Reset AntennaCAT settings?"
+
+        dlg = wx.MessageDialog(None, msg,'Reset AntennaCAT Settings',wx.CANCEL|wx.CANCEL_DEFAULT | wx.ICON_QUESTION)
+        result = dlg.ShowModal()
+        if result == wx.ID_OK:
+            for dirPath in PROG_DIR_LIST:
+                if os.path.exists(dirPath):
+                    os.remove(dirPath)
+            output_msg = "AntennaCAT cache and settings have been reset"
+            self.loadAntennaCATSystemFiles()
+        else:
+            output_msg = "AntennaCAT settings have not been deleted"
+
+        return output_msg
