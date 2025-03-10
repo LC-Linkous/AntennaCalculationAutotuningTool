@@ -57,9 +57,9 @@ class SlottedPatchOptionsPage(wx.Panel):
         lblLength = wx.StaticText(self, label="Length (mm):")
         self.fieldLength = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldLength.SetValue("60.45")
-        lblGroundplaneLength = wx.StaticText(self, label="Groundplane Length (mm):")
-        self.fieldGroundplaneLength = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldGroundplaneLength.SetValue("125")
+        lblSubstrateLength = wx.StaticText(self, label="Substrate Length (mm):")
+        self.fieldSubstrateLength = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateLength.SetValue("125")
         lblfx = wx.StaticText(self, label="fx (mm):")
         self.fieldfx = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldfx.SetValue("22.43")
@@ -76,9 +76,9 @@ class SlottedPatchOptionsPage(wx.Panel):
         lblWidth = wx.StaticText(self, label="Width (mm):")
         self.fieldWidth = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldWidth.SetValue("65.96")
-        lblGroundplaneWidth = wx.StaticText(self, label="Groundplane Width (mm):")
-        self.fieldGroundplaneWidth = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldGroundplaneWidth.SetValue("150")
+        lblSubstrateWidth = wx.StaticText(self, label="Substrate Width (mm):")
+        self.fieldSubstrateWidth = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateWidth.SetValue("150")
         lblfy = wx.StaticText(self, label="fy (mm):")
         self.fieldfy = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldfy.SetValue("7.69")
@@ -98,14 +98,13 @@ class SlottedPatchOptionsPage(wx.Panel):
         boxInputSizer = wx.BoxSizer(wx.HORIZONTAL)
         boxInputLeft = wx.BoxSizer(wx.VERTICAL)
         boxInputRight = wx.BoxSizer(wx.VERTICAL)
-        boxInputLeft.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)
+        
         boxInputLeft.Add(lblConductor, 0, wx.ALL|wx.EXPAND, border=7)
         boxInputLeft.Add(lblSimSubstrate, 0, wx.ALL|wx.EXPAND, border=7)
-
-        boxInputRight.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
+        boxInputLeft.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)
         boxInputRight.Add(self.conductorDropDown, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputRight.Add(self.substrateDropDown, 0, wx.ALL|wx.EXPAND, border=3)
-
+        boxInputRight.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputSizer.Add(boxInputLeft, 0, wx.ALL|wx.EXPAND,border=10)
         boxInputSizer.Add(boxInputRight, 0, wx.ALL|wx.EXPAND,border=10)
 
@@ -148,21 +147,20 @@ class SlottedPatchOptionsPage(wx.Panel):
         boxMiddleInput3 = wx.BoxSizer(wx.VERTICAL)
         boxMiddleInput4 = wx.BoxSizer(wx.VERTICAL)
 
+        boxMiddleInput1.Add(lblSubstrateLength, 0, wx.ALL|wx.EXPAND, border=5)
         boxMiddleInput1.Add(lblLength, 0, wx.ALL|wx.EXPAND, border=5)
-        boxMiddleInput1.Add(lblGroundplaneLength, 0, wx.ALL|wx.EXPAND, border=5)
         boxMiddleInput1.Add(lblfx, 0, wx.ALL|wx.EXPAND, border=5)   
 
+        boxMiddleInput2.Add(self.fieldSubstrateLength, 0, wx.ALL|wx.EXPAND, border=3)
         boxMiddleInput2.Add(self.fieldLength, 0, wx.ALL|wx.EXPAND, border=3)
-        boxMiddleInput2.Add(self.fieldGroundplaneLength, 0, wx.ALL|wx.EXPAND, border=3)
         boxMiddleInput2.Add(self.fieldfx, 0, wx.ALL|wx.EXPAND, border=3)
 
-
+        boxMiddleInput3.Add(lblSubstrateWidth, 0, wx.ALL|wx.EXPAND, border=5)
         boxMiddleInput3.Add(lblWidth, 0, wx.ALL|wx.EXPAND, border=5)
-        boxMiddleInput3.Add(lblGroundplaneWidth, 0, wx.ALL|wx.EXPAND, border=5)
         boxMiddleInput3.Add(lblfy, 0, wx.ALL|wx.EXPAND, border=5)
 
+        boxMiddleInput4.Add(self.fieldSubstrateWidth, 0, wx.ALL|wx.EXPAND, border=3)
         boxMiddleInput4.Add(self.fieldWidth, 0, wx.ALL|wx.EXPAND, border=3)       
-        boxMiddleInput4.Add(self.fieldGroundplaneWidth, 0, wx.ALL|wx.EXPAND, border=3)
         boxMiddleInput4.Add(self.fieldfy, 0, wx.ALL|wx.EXPAND, border=3)
 
         boxMiddleInputSizer.Add(boxMiddleInput1, 0, wx.ALL|wx.EXPAND,border=5)
@@ -191,36 +189,39 @@ class SlottedPatchOptionsPage(wx.Panel):
 
         return features
     
-    def getParams(self):
+    def getParams(self):  #cannot change names without issues with the lead chars for scripting
         paramArr = []
         d = float(self.fieldSubstrateHeight.GetValue())
         lr = float(self.fieldLr.GetValue())
         lh = float(self.fieldLh.GetValue())
         Lv = float(self.fieldLv.GetValue())
         l = float(self.fieldLength.GetValue())
-        Lg= float(self.fieldGroundplaneLength.GetValue())
+        Lg= float(self.fieldSubstrateLength.GetValue())
         fx = float(self.fieldfx.GetValue())
 
         Pr = float(self.fieldPr.GetValue())
         Wr = float(self.fieldWr.GetValue())
         Wu = float(self.fieldWu.GetValue())
         w = float(self.fieldWidth.GetValue())
-        Wg = float(self.fieldGroundplaneWidth.GetValue())
+        Wg = float(self.fieldSubstrateWidth.GetValue())
         fy = float(self.fieldfy.GetValue())
 
         paramArr = [["Lr", lr],
                     ["Lh", lh],
                     ["Lv", Lv],
                     ["L", l],
-                    ["Lg", Lg],
                     ["Pr", Pr],
                     ["Wr", Wr],
                     ["Wu", Wu],
                     ["W", w],
-                    ["Wg", Wg],
                     ["fx", fx],
                     ["fy", fy],
-                    ["d", d]]
+                    ["substrate_width", Wg],
+                    ["substrate_length", Lg],
+                    ["ground_plane_width", Wg],
+                    ["ground_plane_length", Lg],
+                    #["conductor_height", None],
+                    ["substrate_height", d]]
         return paramArr
 
     

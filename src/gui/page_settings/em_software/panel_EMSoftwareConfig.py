@@ -38,7 +38,7 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
         #licenses
         boxLicense = wx.StaticBox(self, label='License Options')
         lblNumLicenses = wx.StaticText(boxLicense, label="Max Number of Licenses for Simulation Software: ")
-        self.fieldNumLicenses = wx.TextCtrl(boxLicense, value=str(10), size=(-1, 20))
+        self.fieldNumLicenses = wx.TextCtrl(boxLicense, value=str(1), size=(-1, 20))
         self.ckbxUseSingleLicense = wx.CheckBox(boxLicense, label="Limit Simulations to Single License")
         self.ckbxUseStudentVersion = wx.CheckBox(boxLicense, label="Use Student Version")
         self.ckbxUseSingleLicense.SetValue(True)

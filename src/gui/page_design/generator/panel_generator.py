@@ -18,12 +18,22 @@ from gui.page_design.generator.input_panels.calculator.panel_rectangularPatch im
 from gui.page_design.generator.input_panels.calculator.panel_quarterWaveMonopole import QuarterWaveMonopoleOptionsPage as Calc_QuarterMonopole
 from gui.page_design.generator.input_panels.calculator.panel_halfWaveDipole import HalfWaveDipoleOptionsPage as Calc_HalfDipole
 #replication interface
-from gui.page_design.generator.input_panels.replication.panel_rectangularPatch import RectangularPatchOptionsPage as Rep_RPatch
-from gui.page_design.generator.input_panels.replication.panel_halfWaveDipole import HalfWaveDipoleOptionsPage as Rep_HalfDipole
-from gui.page_design.generator.input_panels.replication.panel_E import EOptionsPage as Rep_E
-from gui.page_design.generator.input_panels.replication.panel_slottedPatch import SlottedPatchOptionsPage as Rep_SlotPatch
-from gui.page_design.generator.input_panels.replication.panel_dualBandSerpentine import DualBandSerpentineOptionsPage as Rep_DBSerp
 from gui.page_design.generator.input_panels.replication.panel_circularLoop import CircularLoopOptionsPage as Rep_CircLoop
+from gui.page_design.generator.input_panels.replication.panel_coplanarKeyhole import CoplanarKeyholeOptionsPage as Rep_CoplanarKeyhole
+from gui.page_design.generator.input_panels.replication.panel_doubleSidedBowtie import DoubleSidedBowtieOptionsPage as Rep_DoubleSideBowtie
+# --- TODO: double sided vivaldi
+from gui.page_design.generator.input_panels.replication.panel_dualBandSerpentine import DualBandSerpentineOptionsPage as Rep_DBSerp
+from gui.page_design.generator.input_panels.replication.panel_E import EOptionsPage as Rep_E
+from gui.page_design.generator.input_panels.replication.panel_halfWaveDipole import HalfWaveDipoleOptionsPage as Rep_HalfDipole
+from gui.page_design.generator.input_panels.replication.panel_planarBowtie import PlanarBowtieOptionsPage as Rep_PlanarBowtie
+# --- TODO: polarized patch
+from gui.page_design.generator.input_panels.replication.panel_rectangularPatch import RectangularPatchOptionsPage as Rep_RPatch
+# --- TODO: slotline patch
+from gui.page_design.generator.input_panels.replication.panel_slottedPatch import SlottedPatchOptionsPage as Rep_SlotPatch
+from gui.page_design.generator.input_panels.replication.panel_squareLoop import SquareLoopOptionsPage as Rep_SquareLoop
+from gui.page_design.generator.input_panels.replication.panel_twoArmSquareSpiral import TwoArmSquareSpiralOptionsPage as Rep_TwoArmSquareSpiral
+from gui.page_design.generator.input_panels.replication.panel_quarterWaveMonopole import QuarterWaveMonopoleOptionsPage as Rep_QuarterMonopole
+
 
 import project.config.antennaCAT_config as c
 #static vars for cosmetic features
@@ -57,10 +67,17 @@ class GeneratorNotebookPage(wx.Panel):
         self.calculateHalfWaveDipolePanel = Calc_HalfDipole(self.boxInput) 
         self.replicateRectangularPatchPanel = Rep_RPatch(self.boxInput)
         self.replicateHalfWaveDipolePanel = Rep_HalfDipole(self.boxInput)
+        self.replicateQuarterWaveMonopolePanel = Rep_QuarterMonopole(self.boxInput) 
         self.replicateE = Rep_E(self.boxInput)
         self.replicateSlottedPatch = Rep_SlotPatch(self.boxInput)
         self.replicateDBSerpentine = Rep_DBSerp(self.boxInput)
         self.replicateCircularLoop = Rep_CircLoop(self.boxInput)
+        self.replicateSquareLoop = Rep_SquareLoop(self.boxInput)
+        self.replicateCoplanarKeyhole = Rep_CoplanarKeyhole(self.boxInput)
+        self.replicateDoubleSidedBowtie = Rep_DoubleSideBowtie(self.boxInput)
+        self.replicatePlanarBowtie = Rep_PlanarBowtie(self.boxInput)
+        self.replicateTwoArmSquareSpiral = Rep_TwoArmSquareSpiral(self.boxInput)
+
 
 
         self.calculateRectangularPatchPanel.Show()
@@ -68,10 +85,22 @@ class GeneratorNotebookPage(wx.Panel):
         self.calculateHalfWaveDipolePanel.Hide()
         self.replicateRectangularPatchPanel.Hide()
         self.replicateHalfWaveDipolePanel.Hide()
+        self.replicateQuarterWaveMonopolePanel.Hide()
         self.replicateE.Hide()
         self.replicateSlottedPatch.Hide()
         self.replicateDBSerpentine.Hide()
         self.replicateCircularLoop.Hide()
+        self.replicateSquareLoop.Hide()
+        self.replicateCoplanarKeyhole.Hide()
+        self.replicateDoubleSidedBowtie.Hide()
+        self.replicatePlanarBowtie.Hide()
+        self.replicateTwoArmSquareSpiral.Hide()
+
+
+
+
+
+
 
         self.btnCalc = wx.Button(self, label="Calculate" )
         self.btnCalc.Bind(wx.EVT_BUTTON, self.btnCalculateClicked)
@@ -106,10 +135,16 @@ class GeneratorNotebookPage(wx.Panel):
         boxInputSizer.Add(self.calculateHalfWaveDipolePanel, 1, wx.ALL|wx.EXPAND,border=15)
         boxInputSizer.Add(self.replicateRectangularPatchPanel, 1, wx.ALL|wx.EXPAND,border=15)
         boxInputSizer.Add(self.replicateHalfWaveDipolePanel, 1, wx.ALL|wx.EXPAND,border=15)
+        boxInputSizer.Add(self.replicateQuarterWaveMonopolePanel, 1, wx.ALL|wx.EXPAND,border=15)
         boxInputSizer.Add(self.replicateE, 1, wx.ALL|wx.EXPAND,border=15)
         boxInputSizer.Add(self.replicateSlottedPatch, 1, wx.ALL|wx.EXPAND,border=15)
         boxInputSizer.Add(self.replicateDBSerpentine, 1, wx.ALL|wx.EXPAND,border=15)
         boxInputSizer.Add(self.replicateCircularLoop, 1, wx.ALL|wx.EXPAND,border=15)
+        boxInputSizer.Add(self.replicateSquareLoop, 1, wx.ALL|wx.EXPAND,border=15)
+        boxInputSizer.Add(self.replicateCoplanarKeyhole, 1, wx.ALL|wx.EXPAND,border=15)
+        boxInputSizer.Add(self.replicateDoubleSidedBowtie, 1, wx.ALL|wx.EXPAND,border=15)
+        boxInputSizer.Add(self.replicatePlanarBowtie, 1, wx.ALL|wx.EXPAND,border=15)
+        boxInputSizer.Add(self.replicateTwoArmSquareSpiral, 1, wx.ALL|wx.EXPAND,border=15)        
 
         self.boxInput.SetSizer(boxInputSizer)
 
@@ -171,6 +206,11 @@ class GeneratorNotebookPage(wx.Panel):
             self.boxDesign.Hide()
             self.boxExport.Hide()
             self.btnCalc.SetLabel("Replicate")
+        elif boxText == "(replicate) Quarter Wave Monopole":
+            self.hideEverythingAndShowSinglePanel(self.replicateQuarterWaveMonopolePanel)
+            self.boxDesign.Hide()
+            self.boxExport.Hide()
+            self.btnCalc.SetLabel("Replicate")        
         elif boxText == "(replicate) E":
             self.hideEverythingAndShowSinglePanel(self.replicateE)
             self.boxDesign.Hide()
@@ -186,12 +226,41 @@ class GeneratorNotebookPage(wx.Panel):
             self.boxDesign.Hide()
             self.boxExport.Hide()
             self.btnCalc.SetLabel("Replicate")
+        elif boxText == "(replicate) Coplanar Keyhole":
+            self.hideEverythingAndShowSinglePanel(self.replicateCoplanarKeyhole)
+            self.boxDesign.Hide()
+            self.boxExport.Hide()
+            self.btnCalc.SetLabel("Replicate")
         elif boxText == "(replicate) Circular Loop":
             self.hideEverythingAndShowSinglePanel(self.replicateCircularLoop)
             self.boxDesign.Hide()
             self.boxExport.Hide()
             self.btnCalc.SetLabel("Replicate")
-        self.Layout() 
+        elif boxText == "(replicate) Square Loop":
+            self.hideEverythingAndShowSinglePanel(self.replicateSquareLoop)
+            self.boxDesign.Hide()
+            self.boxExport.Hide()
+            self.btnCalc.SetLabel("Replicate")
+        elif boxText == "(replicate) Double Sided Bowtie":
+            self.hideEverythingAndShowSinglePanel(self.replicateDoubleSidedBowtie)
+            self.boxDesign.Hide()
+            self.boxExport.Hide()
+            self.btnCalc.SetLabel("Replicate")
+        elif boxText == "(replicate) Planar Bowtie":
+            self.hideEverythingAndShowSinglePanel(self.replicatePlanarBowtie)
+            self.boxDesign.Hide()
+            self.boxExport.Hide()
+            self.btnCalc.SetLabel("Replicate")    
+        elif boxText == "(replicate) Two Arm Square Spiral":
+            self.hideEverythingAndShowSinglePanel(self.replicateTwoArmSquareSpiral)
+            self.boxDesign.Hide()
+            self.boxExport.Hide()
+            self.btnCalc.SetLabel("Replicate")
+
+        # self.Layout()
+        self.Layout()
+        self.Refresh()
+        self.Update() #force the paint event to happen immediately
 
     def hideEverythingAndShowSinglePanel(self, showPanel):
             # hide everything
@@ -200,11 +269,16 @@ class GeneratorNotebookPage(wx.Panel):
             self.calculateHalfWaveDipolePanel.Hide()
             self.replicateRectangularPatchPanel.Hide()
             self.replicateHalfWaveDipolePanel.Hide()
+            self.replicateQuarterWaveMonopolePanel.Hide()
             self.replicateE.Hide()
             self.replicateSlottedPatch.Hide()
             self.replicateDBSerpentine.Hide()
             self.replicateCircularLoop.Hide()
-
+            self.replicateSquareLoop.Hide()
+            self.replicateCoplanarKeyhole.Hide()
+            self.replicateDoubleSidedBowtie.Hide()
+            self.replicatePlanarBowtie.Hide()
+            self.replicateTwoArmSquareSpiral.Hide()
             #show the selected panel
             showPanel.Show()
 
@@ -233,6 +307,10 @@ class GeneratorNotebookPage(wx.Panel):
             fts = self.replicateHalfWaveDipolePanel.getFeatures()
             prm = self.replicateHalfWaveDipolePanel.getParams()
             useCalculator = False
+        elif aType == "rep_quarter_wave_monopole":
+            fts = self.replicateQuarterWaveMonopolePanel.getFeatures()
+            prm = self.replicateQuarterWaveMonopolePanel.getParams()
+            useCalculator = False
         elif  aType == "rep_E":
             fts = self.replicateE.getFeatures()
             prm = self.replicateE.getParams()
@@ -249,11 +327,38 @@ class GeneratorNotebookPage(wx.Panel):
             fts = self.replicateCircularLoop.getFeatures()
             prm = self.replicateCircularLoop.getParams()
             useCalculator = False
+        elif  aType == "rep_square_loop":
+            fts = self.replicateSquareLoop.getFeatures()
+            prm = self.replicateSquareLoop.getParams()
+            useCalculator = False
+        elif  aType == "rep_coplanar_keyhole":
+            fts = self.replicateCoplanarKeyhole.getFeatures()
+            prm = self.replicateCoplanarKeyhole.getParams()
+            useCalculator = False
+        elif  aType == "rep_double_sided_bowtie":
+            fts = self.replicateDoubleSidedBowtie.getFeatures()
+            prm = self.replicateDoubleSidedBowtie.getParams()
+            useCalculator = False
+        elif  aType == "rep_planar_bowtie":
+            fts = self.replicatePlanarBowtie.getFeatures()
+            prm = self.replicatePlanarBowtie.getParams()
+            useCalculator = False
+        elif  aType == "rep_two_arm_square_spiral":
+            fts = self.replicateTwoArmSquareSpiral.getFeatures()
+            prm = self.replicateTwoArmSquareSpiral.getParams()
+            useCalculator = False
 
         return fts, prm, altX0Bool, useCalculator
 
       
     def btnCalculateClicked(self, evt):
+        # calculator
+        aType = str(ANTENNA_TYPE_DICT[self.antennaDropDown.GetValue()])
+        if aType == "placeholder":
+            #this is not an actual selection
+            self.updateSummaryText("WARNING: select an antenna design from the library")
+            return
+        
         self.updateSummaryText("calculating antenna design from library")
         # clear existing design settings
         self.DC.clearParams()
@@ -261,8 +366,6 @@ class GeneratorNotebookPage(wx.Panel):
         #clear existing design if it exists
         # TODO:
         
-        # calculator
-        aType = str(ANTENNA_TYPE_DICT[self.antennaDropDown.GetValue()])
         panelFeats, panelParams, altX0Bool, useCalculator = self.getGeneratorOptionsPanelFeatures(aType)
         if useCalculator == True:
             antennaGen = Calculator(self.DC, aType, panelFeats)

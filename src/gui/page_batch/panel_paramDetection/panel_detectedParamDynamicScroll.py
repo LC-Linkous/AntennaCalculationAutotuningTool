@@ -150,13 +150,16 @@ class DetectedBoundaryParameterDynamicScrollPanel(wx.Panel):
         t = t.strip('\"')
         varPercent = float(varPercent)
         try:
-            n = float(t)
-            minN = n * (1-varPercent)
-            maxN = n * (1+varPercent)
-            minN = format(minN, '.5f')
-            maxN = format(maxN, '.5f')
-            t = "[" + str(minN) + ", " + str(maxN) + "]"
-            ignoreVal=False
+            if (t == None) or (t =="None"):
+                ignoreVal == True
+            else:
+                n = float(t)
+                minN = n * (1-varPercent)
+                maxN = n * (1+varPercent)
+                minN = format(minN, '.5f')
+                maxN = format(maxN, '.5f')
+                t = "[" + str(minN) + ", " + str(maxN) + "]"
+                ignoreVal=False
         except:
             ignoreVal = True
         return t, ignoreVal

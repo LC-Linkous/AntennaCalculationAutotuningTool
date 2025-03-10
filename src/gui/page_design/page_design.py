@@ -10,12 +10,18 @@
 # system level imports
 import os
 import sys
-import wx
+import wx.aui
+import wx.lib.newevent
+import wx.lib.mixins.inspection as wit
 import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
+#from matplotlib.figure import Figure
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.backends.backend_wx import NavigationToolbar2Wx
+
+# from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+#from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg 
+from matplotlib.figure import Figure
 
 # local imports
 import project.config.antennaCAT_config as c
@@ -50,14 +56,18 @@ class DesignPage(wx.Panel):
 
         #canvas
         boxCanvasPreview = wx.StaticBox(self, label='Preview')
-        self.figure = matplotlib.figure.Figure(figsize=(5,5), tight_layout=False)
+        # self.figure = matplotlib.figure.Figure(figsize=(5,5), tight_layout=False)
+        self.figure = matplotlib.figure.Figure(figsize=(5,5), tight_layout=True)
         self.axes = self.figure.add_subplot(111, projection="3d")
         self.canvas = FigureCanvas(boxCanvasPreview, -1, self.figure)
-        self.navToolbar = NavigationToolbar2Wx(self.canvas)
-
+        self.navToolbar = NavigationToolbar2Wx(self.canvas) #NavigationToolbar2Wx(self.canvas)
+        self.navToolbar.Realize() #still didn't fix the buttons changing colors,
+        
+        
         #design options notebook creation
         boxDesignOptions = wx.StaticBox(self, label='Design Options')
         self.notebook_design = DesignNotebook(boxDesignOptions, self, self.DC, self.PC)
+        self.notebook_design.SetMinSize((100, HEIGHT-100))
 
         #summary box
         boxDesignSummary = wx.StaticBox(self, label='Design Summary:')
@@ -109,19 +119,18 @@ class DesignPage(wx.Panel):
 
     def draw3DDesignOnCanvas(self):
         self.axes.clear()
-        #TODO:replace this with DrawAntenna class, add monopole and dipole
-        try:
-            print("calling draw3DDesignOnCanvas() on page_design")
-            cDraw = CalculateAndDraw()
-            if self.PC.getAntennaGeneratorBoolean() == True:
-                cDraw.calculateGeneratedCoordinates(self.axes, self.DC.getFeatures(), self.DC.getParams())
-            elif self.PC.getCustomConductorBoolean() ==True:
-                shapeVec =[]
-                cDraw.parseImportedConductorDesignCoordinates(self.axes, shapeVec)
-        except Exception as e:
-            print(e)
-
-            self.updateSummaryText("skipping drawing for now from page_design.py")
+        #TODO:replace this with DrawAntenna class
+        #try:
+        print("calling draw3DDesignOnCanvas() on page_design")
+        cDraw = CalculateAndDraw()
+        if self.PC.getAntennaGeneratorBoolean() == True:
+            cDraw.calculateGeneratedCoordinates(self.axes, self.DC.getFeatures(), self.DC.getParams())
+        elif self.PC.getCustomConductorBoolean() ==True:
+            shapeVec =[]
+            cDraw.parseImportedConductorDesignCoordinates(self.axes, shapeVec)
+        #except Exception as e:
+        #    print(e)
+        #    self.updateSummaryText("skipping drawing for now from page_design.py. Updating drawing class")
         self.canvas.draw()
 
         # called from here because EVERYTHING that calls this would call it right after the draw

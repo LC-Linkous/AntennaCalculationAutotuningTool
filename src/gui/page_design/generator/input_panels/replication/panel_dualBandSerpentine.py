@@ -88,9 +88,9 @@ class DualBandSerpentineOptionsPage(wx.Panel):
         lblLength = wx.StaticText(self, label="Lp (mm):")
         self.fieldLength = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldLength.SetValue("22.0")
-        lblGroundplaneLength = wx.StaticText(self, label="Lsub (mm):")
-        self.fieldGroundplaneLength = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldGroundplaneLength.SetValue("22.5")
+        lblSubstrateLength = wx.StaticText(self, label="Lsub (mm):")
+        self.fieldSubstrateLength = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateLength.SetValue("22.5")
         lblPx = wx.StaticText(self, label="Px (mm):")
         self.fieldPx = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldPx.SetValue("0.2")
@@ -98,9 +98,9 @@ class DualBandSerpentineOptionsPage(wx.Panel):
         lblWidth = wx.StaticText(self, label="Wp (mm):")
         self.fieldWidth = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldWidth.SetValue("17.75")
-        lblGroundplaneWidth = wx.StaticText(self, label="Wsub (mm):")
-        self.fieldGroundplaneWidth = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldGroundplaneWidth.SetValue("22.5")
+        lblSubstrateWidth = wx.StaticText(self, label="Wsub (mm):")
+        self.fieldSubstrateWidth = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateWidth.SetValue("22.5")
         lblPy = wx.StaticText(self, label="Py (mm):")
         self.fieldPy = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldPy.SetValue("0.2")
@@ -127,14 +127,13 @@ class DualBandSerpentineOptionsPage(wx.Panel):
         boxInputSizer = wx.BoxSizer(wx.HORIZONTAL)
         boxInputLeft = wx.BoxSizer(wx.VERTICAL)
         boxInputRight = wx.BoxSizer(wx.VERTICAL)
-        boxInputLeft.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)
+        
         boxInputLeft.Add(lblConductor, 0, wx.ALL|wx.EXPAND, border=7)
         boxInputLeft.Add(lblSimSubstrate, 0, wx.ALL|wx.EXPAND, border=7)
-
-        boxInputRight.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
+        boxInputLeft.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)        
         boxInputRight.Add(self.conductorDropDown, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputRight.Add(self.substrateDropDown, 0, wx.ALL|wx.EXPAND, border=3)
-
+        boxInputRight.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputSizer.Add(boxInputLeft, 0, wx.ALL|wx.EXPAND,border=10)
         boxInputSizer.Add(boxInputRight, 0, wx.ALL|wx.EXPAND,border=10)
 
@@ -205,15 +204,15 @@ class DualBandSerpentineOptionsPage(wx.Panel):
         boxMiddleInput5 = wx.BoxSizer(wx.VERTICAL)
         boxMiddleInput6 = wx.BoxSizer(wx.VERTICAL)
 
+        boxMiddleInput1.Add(lblSubstrateLength, 0, wx.ALL|wx.EXPAND, border=5)
         boxMiddleInput1.Add(lblLength, 0, wx.ALL|wx.EXPAND, border=5)
-        boxMiddleInput1.Add(lblGroundplaneLength, 0, wx.ALL|wx.EXPAND, border=5)
         boxMiddleInput2.Add(self.fieldLength, 0, wx.ALL|wx.EXPAND, border=3)
-        boxMiddleInput2.Add(self.fieldGroundplaneLength, 0, wx.ALL|wx.EXPAND, border=3)
+        boxMiddleInput2.Add(self.fieldSubstrateLength, 0, wx.ALL|wx.EXPAND, border=3)
 
+        boxMiddleInput3.Add(lblSubstrateWidth, 0, wx.ALL|wx.EXPAND, border=5)
         boxMiddleInput3.Add(lblWidth, 0, wx.ALL|wx.EXPAND, border=5)
-        boxMiddleInput3.Add(lblGroundplaneWidth, 0, wx.ALL|wx.EXPAND, border=5)
         boxMiddleInput4.Add(self.fieldWidth, 0, wx.ALL|wx.EXPAND, border=3)       
-        boxMiddleInput4.Add(self.fieldGroundplaneWidth, 0, wx.ALL|wx.EXPAND, border=3)
+        boxMiddleInput4.Add(self.fieldSubstrateWidth, 0, wx.ALL|wx.EXPAND, border=3)
 
         boxMiddleInputSizer.Add(boxMiddleInput1, 0, wx.ALL|wx.EXPAND,border=5)
         boxMiddleInputSizer.Add(boxMiddleInput2, 0, wx.ALL|wx.EXPAND,border=5)
@@ -233,7 +232,7 @@ class DualBandSerpentineOptionsPage(wx.Panel):
         txt = str(materials_dict[self.conductorDropDown.GetValue()])
         # self.fieldDi.SetValue(txt)
 
-    def getFeatures(self):
+    def getFeatures(self): #cannot change names without issues with the lead chars for scripting
         features = [["substrate_material", self.substrateDropDown.GetValue()],
                     ["conductor_material", self.conductorDropDown.GetValue()],
                     ["simulation_frequency", -1]]
@@ -244,9 +243,9 @@ class DualBandSerpentineOptionsPage(wx.Panel):
         paramArr = []
         d = float(self.fieldSubstrateHeight.GetValue())
         lp = float(self.fieldLength.GetValue())
-        lsub= float(self.fieldGroundplaneLength.GetValue())
+        subLength= float(self.fieldSubstrateLength.GetValue())
         wp = float(self.fieldWidth.GetValue())
-        wsub = float(self.fieldGroundplaneWidth.GetValue())
+        subWidth = float(self.fieldSubstrateWidth.GetValue())
         ps1 = float(self.fieldPs1.GetValue())
         ls1 = float(self.fieldLs1.GetValue())
         ws1 = float(self.fieldWs1.GetValue())
@@ -264,10 +263,9 @@ class DualBandSerpentineOptionsPage(wx.Panel):
         Fy = float(self.fieldFy.GetValue())
         Lc = float(self.fieldLc.GetValue())
 
+
         paramArr = [["Lp", lp],
-                    ["Lsub", lsub],
                     ["Wp", wp],
-                    ["Wsub", wsub],
                     ["Ps1", ps1],
                     ["Ls1", ls1],
                     ["Ws1", ws1],
@@ -284,7 +282,12 @@ class DualBandSerpentineOptionsPage(wx.Panel):
                     ["Fy", Fy],
                     ["Px", Px],
                     ["Py", Py],
-                    ["d", d]]
+                    ["substrate_width", subWidth],
+                    ["substrate_length", subLength],
+                    ["ground_plane_width", subWidth],
+                    ["ground_plane_length", subLength],
+                    #["conductor_height", None],
+                    ["substrate_height", d]]
         return paramArr
 
     

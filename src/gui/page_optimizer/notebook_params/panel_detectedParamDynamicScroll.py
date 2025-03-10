@@ -86,14 +86,14 @@ class DetectedBoundaryParameterDynamicScrollPanel(wx.Panel):
             vt = vt.strip()
             hSizer = wx.BoxSizer(wx.HORIZONTAL)
 
-            tcParam = wx.TextCtrl(self.scrolled_panel, value=t, style=wx.TE_READONLY, size=(self.defaultBoxWidth, -1))
+            tcParam = wx.TextCtrl(self.scrolled_panel, value=str(t), style=wx.TE_READONLY, size=(self.defaultBoxWidth, -1))
             minN, maxN, ignoreVal = self.setRangeValues(vt, self.defaultVariation)
             oVal = self.formatDisplay(vt)
-            origVal = wx.TextCtrl(self.scrolled_panel, value=oVal, style=wx.TE_READONLY, size=(self.defaultBoxWidth, -1)) 
+            origVal = wx.TextCtrl(self.scrolled_panel, value=str(oVal), style=wx.TE_READONLY, size=(self.defaultBoxWidth, -1)) 
             unitsDropDown = wx.ComboBox(self.scrolled_panel, choices=dataUnits)
             unitsDropDown.SetValue(dataUnits[2]) #mm is default
-            lbVal = wx.TextCtrl(self.scrolled_panel, value=minN, size=(self.defaultBoxWidth, -1)) 
-            ubVal = wx.TextCtrl(self.scrolled_panel, value=maxN, size=(self.defaultBoxWidth, -1)) 
+            lbVal = wx.TextCtrl(self.scrolled_panel, value=str(minN), size=(self.defaultBoxWidth, -1)) 
+            ubVal = wx.TextCtrl(self.scrolled_panel, value=str(maxN), size=(self.defaultBoxWidth, -1)) 
             cbIgnoreVal = wx.CheckBox(self.scrolled_panel, label='ignore')
             cbIgnoreVal.SetValue(ignoreVal)
 
@@ -146,12 +146,15 @@ class DetectedBoundaryParameterDynamicScrollPanel(wx.Panel):
         maxN = 0
         varPercent = float(varPercent)
         try:
-            n = float(t)
-            minN = n * (1-varPercent)
-            maxN = n * (1+varPercent)
-            minN = format(minN, '.5f')
-            maxN = format(maxN, '.5f')
-            ignoreVal=False
+            if (t == None) or (t=="None"):
+                ignoreVal == True
+            else:
+                n = float(t)
+                minN = n * (1-varPercent)
+                maxN = n * (1+varPercent)
+                minN = format(minN, '.5f')
+                maxN = format(maxN, '.5f')
+                ignoreVal=False
         except:
             ignoreVal = True
         return minN, maxN, ignoreVal

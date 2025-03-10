@@ -28,12 +28,12 @@ class AntennaCATGUI():
         app = wit.InspectableApp()
 
         #splash img
-        bmap = wx.Bitmap(ANTENNACAT_SPLASH_FILE, wx.BITMAP_TYPE_PNG)
-        img = wx.Bitmap.ConvertToImage(bmap)
-        img = img.Scale(735, 400, wx.IMAGE_QUALITY_HIGH)
-        splash = wx.adv.SplashScreen(img.ConvertToBitmap(), wx.adv.SPLASH_CENTER_ON_SCREEN|wx.adv.SPLASH_TIMEOUT, 
-                     15000,  None, -1, wx.DefaultPosition, wx.DefaultSize,wx.BORDER_NONE)
-        splash.Show()
+        # bmap = wx.Bitmap(ANTENNACAT_SPLASH_FILE, wx.BITMAP_TYPE_PNG)
+        # img = wx.Bitmap.ConvertToImage(bmap)
+        # img = img.Scale(735, 400, wx.IMAGE_QUALITY_HIGH)
+        # splash = wx.adv.SplashScreen(img.ConvertToBitmap(), wx.adv.SPLASH_CENTER_ON_SCREEN|wx.adv.SPLASH_TIMEOUT, 
+        #              15000,  None, -1, wx.DefaultPosition, wx.DefaultSize,wx.BORDER_NONE)
+        # splash.Show()
 
 
         # while splash screen is up, create the GUI
@@ -41,7 +41,7 @@ class AntennaCATGUI():
 
         # show the GUI and destory the splash when thread is free
         GUIFrame.Show()
-        splash.Destroy()
+        #splash.Destroy()
 
         # add app to the main loop to keep program open
         app.MainLoop()

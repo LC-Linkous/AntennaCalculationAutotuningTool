@@ -152,8 +152,8 @@ oEditor.CreateBox(
 		"XPosition:="		, "-(5mm+$ground_plane_radius)",
 		"YPosition:="		, "-(5mm+$ground_plane_radius)",
 		"ZPosition:="		, "-5mm",
-		"XSize:="		, "10mm+$ground_plane_radius",
-		"YSize:="		, "10mm+$ground_plane_radius",
+		"XSize:="		, "2.2*$ground_plane_radius",
+		"YSize:="		, "2.2*$ground_plane_radius",
 		"ZSize:="		, "15mm + $feed_gap + $length"
 	], 
 	[

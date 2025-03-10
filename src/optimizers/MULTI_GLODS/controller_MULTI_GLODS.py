@@ -67,7 +67,7 @@ class CONTROLLER_MULTI_GLODS():
         GP = float(optimizerParams['gamma'][0])                # Gamma Par
         SF = float(optimizerParams['search_frequency'][0])     # Search Frequency
         TARGETS = list(optimizerParams['target_values'][0])    # Target values for output
-        MAXIT = float(optimizerParams['max_iterations'][0])    # Maximum allowed iterations 
+        MAXIT = int(optimizerParams['max_iterations'][0])    # Maximum allowed iterations 
         targetMetrics = optimizerParams['target_metrics']
         F = np.zeros((np.prod(np.shape(TARGETS)), 1))
 

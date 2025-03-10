@@ -25,25 +25,14 @@ You can [Start Here](https://github.com/LC-Linkous/AntennaCalculationAutotuningT
 
 Pages are being updated daily, so check back in a few days if the information you're looking for hasn't been posted yet.
 
-
 ## Current Release
 
-First code drop! AntennaCAT 2024.0 is live, and stripped down so we can start lining up some versions with the released literature.
-
-This version is close to the early 2023 lit:
-* the [AntennaCalculator](https://github.com/Dollarhyde/AntennaCalculator)
-* a couple of the replication studies (these are too useful to leave out)
-* material dictionary #1 with ~25 common materials
-* simulation setup
-* batch data collection
-* the optimizer set (without the ML additions and surrogate modeling)
-* load/detect script features
-* Ansys HFSS integration
-* ANCAT project creation, basic save functionality (a newer feature, but not worth removing)
+First 2025 code drop! AntennaCAT 2025.0 is live!
 
 What's happening now?
 * Minor restructuring to get the save&load functionality switched over from a txt file to JSON. This was a requested feature, so it's been bumped up in priority. It's also a good time to clean up the 'file load' functions.
-
+* Graphics library update for better previews and live parameter editing
+* Streamlining the optimizer class initializations for more modularity + the surrogate model integration
 
 Why are we not matching the literature exactly? 
 * The driving goal behind the development of this software is for it to be useful and to encourage experimentation. Holding back features/functionality to be truer to the publications goes against that. 
@@ -51,37 +40,52 @@ Why are we not matching the literature exactly?
 Why not release it all at once?
 * The goal of several major releases close together is to have some roll-back points as collaborators join in and want to implement their own features. We won't wait to release what's already been implemented in recent publications, but there will be links to these 'check points' should anyone wish to download an earlier version.
 
-
 ## Release Schedule 
 
-Where are we so far? (Nov. 7, 2024)
+**Where are we so far?** (Feb. 2025)
+* AntennaCAT 2025.0 is live!
 
-* The dissertation based on the AntennaCAT software has been released at https://scholarscompass.vcu.edu/etd/7841/
-* The individual optimizers have been released for unit testing
-* The objective function library has been posted
-* The journal/magazine article for AntennaCAT is under review
-* The [Wiki](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/wiki) is being updated daily 
-* AntennaCAT 2024.0 is live
+We are in the quick release stage for several major features. See the [Past Releases section on the Documentation Wiki page](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/wiki/Documentation#past-releases) for the list of all releases. 2025.0, 2025.1, and 2025.2 and their corresponding lit will be listed in the Wiki.
+
 
 What does that mean for code releases?
 * The code will always be released independently from the journal/magazine publication. While publications are awesome and we want to share what we're up to, sometimes we might move a little faster than planned. Or slower, because code takes time.
 
-* Post release 1, updates and code examples will be found at https://lc-linkous.github.io/projects/antennaCAT AND the wiki
+* Post release 1, updates and code examples will be found at https://lc-linkous.github.io/projects/antennaCAT AND the [wiki](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/wiki/)
 * Documentation of usage examples will be posted in the Wiki on this page. The full explanation of all of the details that did not fit in the dissertation will begin appearing, but this may take some time
 
-Stages of major revision roll out:
-* AntennaCAT v. 2024.0
-  * All core AntennaCAT features - a stable first release so collaborators can find bugs while I document the newer updates. This release includes the calculator, several replication studies, the load/detect script features, optimizers WITHOUT the hyperparameter suggestion network. This version will be fully integrated with Ansys HFSS, with the template framework for the other EM simulation software included. Why not all of them hooked up? Licensing issue being handled over the academic Winter break so we can test on non-code development systems. 
+Stages of early 2025 major revision roll out:
 
-* AntennaCAT v. 2025.1
-  * (or maybe 2024.1, the difference is 3 free weekends to document code)
-  * The rest of the replication study set. The hyperparameter suggestion network added in and documented.
-  * Start phasing in the other EM simulation software(s).  
+* AntennaCAT v. 2025.0
+  * The 12 topology replication set.  
+  * All optimizers integrated fully with the GUI. 
+  * This is the 'core' functionality of AntennaCAT without the add-ons. 
+  * It sets us up for plugging in all of the developments from Summer 2024 onwards (2 conferences + dissertation)
 
-* AntennaCAT v. 2025.2
-  * The first round of bending and custom layers added back in. This works differently for different EM simulation software, so the templates are more intricate for these steps
-  * At this point, that's 99.9% of the functionality released open-source. Major revisions after this point will be due to feature additions not originally planned.
+
  
+
+## Recent Previous Releases
+
+2024.0:
+* This version is close to the early 2023 lit. All core AntennaCAT features - a stable first release so collaborators can find bugs while I document the newer updates. This release includes the calculator, several replication studies, the load/detect script features, optimizers WITHOUT the hyperparameter suggestion network. This version will be fully integrated with Ansys HFSS, with the template framework for the other EM simulation software included. Why not all of them hooked up? Licensing issue being handled over the academic Winter break so we can test on non-code development systems. 
+* The dissertation based on the AntennaCAT software has been released at https://scholarscompass.vcu.edu/etd/7841/
+* The individual optimizers have been released for unit testing
+* The objective function library has been posted
+* The [Wiki](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/wiki) is being updated daily 
+* Core features:
+  * the [AntennaCalculator](https://github.com/Dollarhyde/AntennaCalculator)
+  * a couple of the replication studies (these are too useful to leave out)
+  * material dictionary #1 with ~25 common materials
+  * simulation setup
+  * batch data collection
+  * the optimizer set (without the ML additions and surrogate modeling)
+  * load/detect script features
+  * Ansys HFSS integration
+  * ANCAT project creation, basic save functionality (a newer feature, but not worth removing)
+
+
+
 
 ## Requirements
 Library requirements for locally run Python code are included in requirements.txt and can be 
@@ -123,7 +127,6 @@ Optionally, requirements can be installed manually with:
 
 pip install wxPython, matplotlib, pandas, numpy, ezdxf, Pint, pcb-tools, pcb-tools-extension 
 
-
 ## Organization
 
 The simplified project structure is shown below.  Full file structure will be updated in the documentation for future collaboration efforts. 
@@ -151,7 +154,6 @@ It is recommended to run AntennaCAT in a virtual environment, but it is not a re
 
 
 
-
 ## Related Publications and Repositories
 
 1. L. Linkous, “Machine Learning Assisted Optimization for Calculation and Automated Tuning of Antennas,” VCU Scholars Compass, 2024. https://scholarscompass.vcu.edu/etd/7841/ (accessed Oct. 21, 2024).
@@ -166,7 +168,6 @@ It is recommended to run AntennaCAT in a virtual environment, but it is not a re
 
 6. L. Linkous, E. Karincic, J. Lundquist and E. Topsakal, "Automated Antenna Calculation, Design and Tuning Tool for HFSS," 2023 United States National Committee of URSI National Radio Science Meeting (USNC-URSI NRSM), Boulder, CO, USA, 2023, pp. 229-230, doi: 10.23919/USNC-URSINRSM57470.2023.10043119.  [Online:] https://ieeexplore.ieee.org/abstract/document/10043119
 
-
 **Individual Optimizer Repositories:**
 
 | Base Optimizer | Alternate Version | Quantum-Inspired Optimizer | Surrogate Model Version |
@@ -179,5 +180,6 @@ It is recommended to run AntennaCAT in a virtual environment, but it is not a re
 | [multi_glods_python](https://github.com/LC-Linkous/multi_glods_python)| - | - | |
 
 The [Objective Function Test Suite](https://github.com/LC-Linkous/objective_function_suite)used to collect performance data on the individual optimizers is now public.
+
 
 

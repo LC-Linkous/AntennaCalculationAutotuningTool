@@ -16,7 +16,7 @@ import numpy as np
 
 #debug
 import project.config.antennaCAT_config as c
-DEBUG = c.DEBUG
+DEBUG = False#c.DEBUG
 
 
 import helper_func.fileIO_helperFuncs as fIO
@@ -27,6 +27,7 @@ from optimizers.PSO_BASIC.controller_PSO_BASIC import CONTROLLER_PSO_BASIC
 from optimizers.CAT_SWARM.controller_CAT_SWARM import CONTROLLER_CAT_SWARM
 from optimizers.SAND_CAT_PYTHON.controller_SAND_CAT import CONTROLLER_SAND_CAT
 from optimizers.CHICKEN_SWARM.controller_CHICKEN_SWARM import CONTROLLER_CHICKEN_SWARM
+from optimizers.CHICKEN_SWARM_2015.controller_CHICKEN_SWARM_2015 import CONTROLLER_CHICKEN_SWARM_2015
 ## QUANTUM INSPIRED PSO
 from optimizers.PSO_QUANTUM.controller_PSO_QUANTUM import CONTROLLER_PSO_QUANTUM
 from optimizers.CAT_SWARM_QUANTUM.controller_CAT_QUANTUM import CONTROLLER_CAT_SWARM_QUANTUM
@@ -224,6 +225,8 @@ class OptimizerIntegrator():
             OO = CONTROLLER_CAT_SWARM_QUANTUM(self)
         elif optimizerSelection == "CHICKEN_SWARM":
             OO = CONTROLLER_CHICKEN_SWARM(self)
+        elif optimizerSelection == "CHICKEN_2015":
+            OO = CONTROLLER_CHICKEN_SWARM_2015(self)
         elif optimizerSelection == "CHICKEN_QUANTUM":
             OO = CONTROLLER_CHICKEN_QUANTUM(self)
         elif optimizerSelection == "MULTI_GLODS":
@@ -239,6 +242,7 @@ class OptimizerIntegrator():
         else:
             print("ERROR: non recognized optimizer object: " + str(optimizerSelection))
             print("check selection in optimizer_integrator.py")
+          
 
         return OO
 
@@ -365,11 +369,16 @@ class OptimizerIntegrator():
         # remove lock file if it exists
         lockFilepath = self.SO.getLockFile()
         if DEBUG == True:
-            print("checking lockfilePath in optimizer_integrator:")
-            print(lockFilepath)
+            self.updateStatusText("checking lockfilePath in optimizer_integrator:")
+            self.updateStatusText(str(lockFilepath))
+            # print("checking lockfilePath in optimizer_integrator:")
+            # print(lockFilepath)
         if os.path.isfile(lockFilepath) == True:
-            print("attempting to remove lockfile")
+            #print("attempting to remove lockfile")
+            self.updateStatusText("attempting to remove lockfile")
             os.remove(lockFilepath)
+            if os.path.isfile(lockFilepath) == False:
+                self.updateStatusText("lockfile removed")
             
         # reset bools here if unusual behavior is noticed
         # but resetting bools will restart the simulation
@@ -383,13 +392,13 @@ class OptimizerIntegrator():
         #check if first loop - setup if needed
         if self.firstRunBool == True:
             self.firstRun()
-            msg = "beginning optimizer"
+            msg = "starting optimizer"
             self.updateStatusText(msg)
 
         #check for stop conditions
         #user
         if self.pauseBool == True:
-            msg = "pausing..."
+            msg = "optimizer paused"
             self.updateStatusText(msg)
             return
         if self.stopBool == True:
@@ -542,8 +551,8 @@ class OptimizerIntegrator():
                 ctr = ctr +1
                 self.F.append([valArr])
         except:
-            print("ERROR: file not exported from EM simulaiton software correctly. attempting to force re-run simulation")
-            print("if issue continues. you may need to restart the program.")
+            print("ERROR: file not exported from EM simulation software correctly. attempting to force re-run simulation")
+            print("if issue continues, you may need to restart the program.")
             print("A fix to this is in progress!")
 
 

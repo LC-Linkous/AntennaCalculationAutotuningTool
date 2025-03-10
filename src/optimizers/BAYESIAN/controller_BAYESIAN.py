@@ -75,7 +75,7 @@ class CONTROLLER_BAYESIAN():
         OUT_VARS = int(optimizerParams['num_output'][0])                   # Number of output variables
         TARGETS = list(optimizerParams['target_values'][0])                # Target values for output
         E_TOL = float(optimizerParams['tolerance'][0])                     # Convergence Tolerance (This is a radius)       
-        MAXIT = float(optimizerParams['max_iterations'][0])                # Maximum allowed iterations 
+        MAXIT = int(optimizerParams['max_iterations'][0])                # Maximum allowed iterations 
         BOUNDARY = int(optimizerParams['boundary'][0])                     # int boundary 1 = random,      2 = reflecting
         INIT_SAMPLES = int(optimizerParams['init_samples'][0])
         SURROGATE_MODEL = int(optimizerParams['surrogate_model'][0]) # integer representation of surrogate model (for later variations)
@@ -83,7 +83,7 @@ class CONTROLLER_BAYESIAN():
                                                                         #3 = Polynomial regression, 4 = polynomial chaos expansion,
                                                                         #5 = KNN regression, 6 = Decision Tree Regression
         XI = float(optimizerParams['xi'][0])   
-        NUM_RESTARTS = float(optimizerParams['num_restarts'][0])    # number of restarts to minimize for randoms
+        NUM_RESTARTS = int(optimizerParams['num_restarts'][0])    # number of restarts to minimize for randoms
 
 
         targetMetrics = optimizerParams['target_metrics']
@@ -268,7 +268,7 @@ class CONTROLLER_BAYESIAN():
                                                     obj_func=func_F, constr_func=constr_default, 
                                                     init_points=INIT_SAMPLES, 
                                                     xi=XI, n_restarts=NUM_RESTARTS, 
-                                                    parent=self)
+                                                    parent=parent, detailedWarnings=detailedWarnings)
 
         msg = "optimizer configured"
         self.updateStatusText(msg)

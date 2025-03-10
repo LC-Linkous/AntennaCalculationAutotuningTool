@@ -29,8 +29,8 @@ from simulation_integrator.EMPIRE.templateGen_Simulation import SimulationTempla
 
 import project.config.antennaCAT_config as c
 # EMPIRE_PATH = c.EMPIRE_PATH
-FREQ_PARAM_DATA = ".\output\data\Terminal_S-Parameter_Rectangular-Plot.csv"
-ANTENNA_PARAM_DATA = ".\output\data\Antenna-Parameters-Table.csv"
+FREQ_PARAM_DATA = "./output/data/Terminal_S-Parameter_Rectangular-Plot.csv"
+ANTENNA_PARAM_DATA = "./output/data/Antenna-Parameters-Table.csv"
 DEFAULT_EMPIRE_PROJECT_NAME = "GeneratedProject.py"
 EMPIRE_DESIGN_CREATION_SCRIPT_NAME = "DesignCreation.py"
 EMPIRE_DESIGN_EDIT_SCRIPT_NAME = "DesignEdit.py"

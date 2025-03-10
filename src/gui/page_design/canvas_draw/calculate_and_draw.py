@@ -6,10 +6,12 @@
 #   Not all points used for drawing are saved for CAD creation
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: February 16, 2025
 ##--------------------------------------------------------------------\
 
 import numpy as np
+
+import matplotlib.patches as patches
 
 ZEROS_ARR = [0, -0, 0.0, -0.0] #cover the different ways zeros can be represented (also deals w weird user input)
 
@@ -183,11 +185,11 @@ class CalculateAndDraw():
             ylims = [-l/2, l/2]
             zlims = [-0.75*l, 0.75*l]         
 
-        elif aType =="quarter_wave_monopole":
-            l  = self.generateMonopole(ax, features, params)
+        elif (aType =="quarter_wave_monopole") or (aType == "rep_quarter_wave_monopole"):
+            l,gpRad  = self.generateMonopole(ax, features, params)
             # adjust limits for 3D canvas
-            xlims = [-l/2, l/2]
-            ylims = [-l/2, l/2]
+            xlims = [-gpRad/2, gpRad/2]
+            ylims = [-gpRad/2, gpRad/2]
             zlims = [0, 1.25*l]     
 
         elif aType =="rep_E":
@@ -208,11 +210,42 @@ class CalculateAndDraw():
             ylims = [-0.5*w, 0.5*w]
             zlims = [-.25*l, .25*l]  
 
+        elif aType =="rep_planar_bowtie":
+            l,w  = self.generatePlanarBowtie(ax, features, params)
+            xlims = [0, 1.4*l]
+            ylims = [0, 1.4*w]
+            zlims = [-1.2*l, 1.2*l] 
+
+        elif aType =="rep_two_arm_square_spiral":
+            l,w  = self.generateTwoArmSquareSpiral(ax, features, params)
+            xlims = [0, 1.1*l]
+            ylims = [0, 1.1*w]
+            zlims = [-1.25*l, 1.25*l]   
+
+
+        elif aType =="rep_coplanar_keyhole":
+            l,w  = self.generateCoplanarKeyhole(ax, features, params)
+            xlims = [0, 1.2*l]
+            ylims = [0, 1.2*w]
+            zlims = [-1.25*l, 1.25*l] 
+
         elif aType =="rep_circular_loop":
             l,w  = self.generateCircularLoop(ax, features, params)
-            xlims = [-l, l]
-            ylims = [-l, l]
-            zlims = [-1.25*l, 1.25*l]
+            xlims = [0, 1.2*l]
+            ylims = [0, 1.2*w]
+            zlims = [-1.25*l, 1.25*l] 
+
+        elif aType =="rep_square_loop":
+            l,w  = self.generateSquareLoop(ax, features, params)
+            xlims = [0, 1.2*l]
+            ylims = [0, 1.2*w]
+            zlims = [-1.25*l, 1.25*l] 
+
+        elif aType =="rep_double_sided_bowtie":
+            l,w  = self.generateDoubleSidedBowtie(ax, features, params)
+            xlims = [0, 1.1*l]
+            ylims = [0, 1.1*w]
+            zlims = [-1.2*l, 1.2*l] 
 
         else:
             print("unrecognized antenna type in graphics helper funcs: " + str(aType))
@@ -256,11 +289,13 @@ class CalculateAndDraw():
     def generatePatch(self, ax, features, params):
         aType = features["antenna_type"][0]
         feed = features["feed_type"][0]
-        h = float(features["substrate_height"][0]) 
+        h = float(params["substrate_height"][0]) 
         w = float(params["width"][0])
         l = float(params["length"][0])    
         x0 = float(params["x0"][0])
         y0 = float(params["y0"][0])
+        subW = float(params["substrate_width"][0])
+        subL = float(params["substrate_length"][0])
 
         #draw ground plane rectangle
         pts = self.drawRectangularPlane(ax, 2*l, 2*w, z=0, color="goldenrod") # groundplane
@@ -282,21 +317,25 @@ class CalculateAndDraw():
             print("unrecognized feed type for rectangular_patch")
         return l, w
 
-
     def generateMonopole(self, ax, features, params, color = "b"):
         aType = features["antenna_type"][0]
         l = float(params["length"][0])    
-        rad = float(params["radius"][0])    
+        rad = float(params["conductor_radius"][0])    
+        gp_rad = float(params["ground_plane_radius"][0])
+        feed_gap = float(params["feed_gap"][0])
 
+        # draw monopole
         self.drawCylinder(ax, rad, start=0, stop=l, center=[0,0], color=color)
+        # draw ground plane disk
+        self.drawDisk(ax, a=gp_rad, z=-feed_gap, center=[0,0], color=color, alpha=.2)
 
-        return l #return val to size the canvas
+        return l, gp_rad #return val to size the canvas
 
     def generateDipole(self, ax, features, params, color = "m"):
         aType = features["antenna_type"][0]
         l = float(params["length"][0]) 
         hl = float(params["half_length"][0])    
-        rad = float(params["radius"][0])    
+        rad = float(params["conductor_radius"][0])    
         fg = float(params["feed_gap"][0])    
 
         #draw cylinder x2
@@ -305,45 +344,51 @@ class CalculateAndDraw():
 
         return l, rad #return val to size the canvas
 
-
     def generateMicrostripE(self, ax, features, params, corner=[0,0], color="g"):
+       
         x = float(params["X"][0]) 
         l = float(params["L"][0])    
         ls = float(params["Ls"][0])    
-        lg = float(params["Lg"][0])   
         ps = float(params["Ps"][0]) 
         ws = float(params["Ws"][0])    
         w = float(params["W"][0])    
-        wg = float(params["Wg"][0])   
-        h = float(params["h"][0])
-        self.draw2DMicrostripEConductor(ax, x, l, ls, lg, ps, ws, w, wg, h, corner=[0,0], color=color)
+        h = float(params["substrate_height"][0]) 
+        gpWidth = float(params["ground_plane_width"][0]) #Wg
+        gpLength = float(params["ground_plane_length"][0]) #Lg
 
-        return lg, wg #return val to size the canvas
 
+        self.draw2DMicrostripEConductor(ax, x, l, ls, gpLength, ps, ws, w, gpWidth, h, corner=[0,0], color=color)
+
+        return gpLength, gpWidth #return val to size the canvas
 
     def generateSlottedPatch(self, ax, features, params, corner=[0,0], color="indigo"):
+    
         lr = float(params["Lr"][0]) 
         lh = float(params["Lh"][0])    
         lv = float(params["Lv"][0])    
         l = float(params["L"][0])   
-        lg = float(params["Lg"][0]) 
         pr = float(params["Pr"][0]) 
         wr = float(params["Wr"][0])    
         wu = float(params["Wu"][0])    
         w = float(params["W"][0])   
-        wg = float(params["Wg"][0])
         fx = float(params["fx"][0])    
         fy = float(params["fy"][0])    
-        d = float(params["d"][0])   
-        self.draw2DSlottedPatchConductor(ax, lr, lh, lv, l, lg, pr, wr, wu, w, wg, fx, fy, d, corner=[0,0], color=color)
+        subHeight = float(params["substrate_height"][0])   #d
+        subW = float(params["substrate_width"][0]) #Wg
+        subL = float(params["substrate_length"][0]) #Lg
+        gpWidth = float(params["ground_plane_width"][0]) # Wg
+        gpLength = float(params["ground_plane_length"][0]) #Lg
 
-        return lg, wg #return val to size the canvas
+
+
+        self.draw2DSlottedPatchConductor(ax, lr, lh, lv, l, subL, pr, wr, wu, w, subW, fx, fy, subHeight, corner=[0,0], color=color)
+
+        return subL, subW #return val to size the canvas
 
     def generateDualBandSerpentine(self, ax, features, params, corner=[0,0], color="b"):
+
         lp = float(params["Lp"][0]) 
-        lsub = float(params["Lsub"][0])    
         wp = float(params["Wp"][0])  
-        wsub = float(params["Wsub"][0])    
         ps1 = float(params["Ps1"][0])   
         ls1 = float(params["Ls1"][0]) 
         ws1 = float(params["Ws1"][0])    
@@ -360,25 +405,139 @@ class CalculateAndDraw():
         fy = float(params["Fy"][0])    
         px = float(params["Px"][0])   
         py = float(params["Py"][0]) 
-        d = float(params["d"][0]) 
+        subHeight = float(params["substrate_height"][0]) #d
+        wsub = float(params["substrate_width"][0])
+        lsub = float(params["substrate_length"][0])
+        gpWidth = float(params["ground_plane_width"][0])
+        gpLength = float(params["ground_plane_length"][0])
 
         self.draw2DDualBandSerpentinePatchConductor(ax, lp, lsub, wp, wsub,
                                                     ps1, ls1, ws1, ps2, ls2, ws2, ps3, ls3, ws3, ps4, ls4, ws4,
-                                                    lc, fy, px, py, d, corner=[0,0], color=color)
+                                                    lc, fy, px, py, subHeight, corner=[0,0], color=color)
 
         return lsub, wsub #return val to size the canvas
 
     def generateCircularLoop(self, ax, features, params, corner=[0,0], color="b"):
+        
+        h = float(params["substrate_height"][0]) 
+        innerRad = float(params["inner_radius"][0])
         outerRad = float(params["outer_radius"][0]) 
-        innerRad = float(params["inner_radius"][0])    
-        feedWidth = float(params["feed_width"][0])  
-        inset = float(params["inset"][0])    
-        gapDist = float(params["gap_distance"][0])   
-        h = float(features["substrate_height"][0]) 
+        feedWidth = float(params["feed_width"][0])
+        inset = float(params["inset"][0])
+        gapDist = float(params["gap_distance"][0])
+        subW = float(params["substrate_width"][0])
+        subL = float(params["substrate_length"][0])
+        gpWidth = float(params["ground_plane_width"][0])
+        gpLength = float(params["ground_plane_length"][0])
 
-        self.draw2DCircularLoopConductor(ax, outerRad, innerRad, feedWidth, inset, gapDist, h, corner=[0,0], color=color)
 
-        return (feedWidth+2*outerRad), (feedWidth+2*outerRad) #return val to size the canvas
+        self.draw2DCircularLoopConductor(ax, innerRad, outerRad, feedWidth, inset, gapDist, subW, subL, gpWidth, gpLength, h, corner=[0,0], color=color)
+
+        return subL, subW #return val to size the canvas
+
+
+    def generatePlanarBowtie(self, ax, features, params, corner=[0,0], color="green"):
+
+        h = float(params["substrate_height"][0]) 
+        w = float(params["width"][0]) #bowtie width
+        l = float(params["length"][0])    #bowtie length
+        feedWidth = float(params["feed_width"][0])
+        gap = float(params["gap_distance"][0])
+        subW = float(params["substrate_width"][0])
+        subL = float(params["substrate_length"][0])
+        gpWidth = float(params["ground_plane_width"][0])
+        gpLength = float(params["ground_plane_length"][0])
+
+
+        #draw ground plane rectangle
+        pts = self.drawPlanarBowtieConductor(ax, w,l,feedWidth, gap, subW, subL, h, gpWidth, gpLength, color=color) 
+        self.substrateCoords.append(pts)
+
+        return subL, subW #return val to size the canvas
+        
+
+    def generateTwoArmSquareSpiral(self, ax, features, params, corner=[0,0], color="orangered"):
+        
+        h = float(params["substrate_height"][0]) 
+        initW = float(params["init_width"][0])
+        initL = float(params["init_length"][0]) 
+        feedX = float(params["feed_x"][0])
+        feedY = float(params["feed_y"][0])
+        feedWidth = float(params["strip_width"][0])
+        spacing = float(params["spacing"][0])
+        subW = float(params["substrate_width"][0])
+        subL = float(params["substrate_length"][0])
+        gpWidth = float(params["ground_plane_width"][0])
+        gpLength = float(params["ground_plane_length"][0])
+
+
+
+        #draw ground plane rectangle
+        self.drawTwoArmSquareSpiralConductor(ax, initW, initL, feedX, feedY, feedWidth, spacing, subW, subL, gpWidth, gpLength, h, corner=[0,0], color=color)
+
+        return subL, subW #return val to size the canvas
+
+    def generateCoplanarKeyhole(self, ax, features, params, corner=[0,0], color="b"):
+
+        h = float(params["substrate_height"][0]) 
+        innerRad = float(params["inner_radius"][0])
+        outerRad = float(params["outer_radius"][0]) 
+        feedWidth = float(params["feed_width"][0])
+        feedLength = float(params["feed_length"][0])
+        gapDist = float(params["gap_distance"][0])
+        subW = float(params["substrate_width"][0])
+        subL = float(params["substrate_length"][0])
+        gpWidth = float(params["ground_plane_width"][0])
+        gpLength = float(params["ground_plane_length"][0])
+
+        
+        self.drawCoplanarKeyholeConductor(ax, innerRad, outerRad, feedWidth, feedLength, gapDist, subW, subL, gpWidth, gpLength, h, corner=[0,0], color=color)
+       
+        return subL, subW #return val to size the canvas
+        
+    def generateSquareLoop(self, ax, features, params, corner=[0,0], color="indigo"):
+        h = float(params["substrate_height"][0]) 
+        length = float(params["length"][0])
+        width = float(params["width"][0]) 
+        feedWidth = float(params["feed_width"][0])
+        gapDist = float(params["gap_distance"][0])
+        subW = float(params["substrate_width"][0])
+        subL = float(params["substrate_length"][0])
+        gpWidth = float(params["ground_plane_width"][0])
+        gpLength = float(params["ground_plane_length"][0])
+        #draw ground plane rectangle
+        
+        self.drawSquareLoopConductor(ax, length, width, feedWidth, gapDist, subW, subL, gpWidth, gpLength, h, corner=[0,0], color=color)
+
+        return subL, subW #return val to size the canvas
+        
+    def generateDoubleSidedBowtie(self, ax, features, params, corner=[0,0], color="b"):
+
+        W2 = float(params["W2"][0])
+        W3 = float(params["W3"][0])
+        W4 = float(params["W4"][0])
+        W5 = float(params["W5"][0])
+        W6 = float(params["W6"][0])
+        W7 = float(params["W7"][0])
+        W8 = float(params["W8"][0])
+        L2 = float(params["L2"][0])
+        L3 = float(params["L3"][0])
+        L4 = float(params["L4"][0])
+        L5 = float(params["L5"][0])
+        L6 = float(params["L6"][0])
+        L7 = float(params["L7"][0])
+        subW = float(params["substrate_width"][0])
+        subL = float(params["substrate_length"][0])
+        gpWidth = float(params["ground_plane_width"][0])
+        gpLength = float(params["ground_plane_length"][0])
+        h = float(params["substrate_height"][0]) 
+    
+        #draw ground plane rectangle
+        pts = self.drawDoubleSidedBowtieConductor(ax, W2,W3,W4,W5,W6,W7,W8,L2,L3,L4,L5,L6,L7, subL, subW, gpWidth, gpLength, h, color="goldenrod") 
+        self.substrateCoords.append(pts)
+
+        
+        return subL, subW #return val to size the canvas
 
 
     #######################################################################
@@ -582,84 +741,455 @@ class CalculateAndDraw():
     # Functions for drawing the circular loop
     #######################################################################
 
-    def draw2DCircularLoopConductor(self, ax, outerRad, innerRad, feedWidth, inset, gapDist, h, corner=[0,0], color="g"):
-        #ground plane
-        gpLength= 1.25*(inset+2*outerRad) 
-        substratePts = self.rectangle([-gpLength/2, -gpLength/2], gpLength, gpLength, 0)
+    def draw2DCircularLoopConductor(self, ax, innerRad, outerRad, feedWidth, inset, gapDist, subW, subL, gpWidth, gpLength, h, corner=[0,0], color="g"):
+        #draw ground plane rectangle
+        substratePts = self.rectangle(corner, subW, subL, 0)
+        x,y,z = self.XYZptsSplit(substratePts)
+        ax.plot(x,y,z, color=color)
+        
+        #substrate edges
+        substratePts = self.rectangle(corner, subW, subL, h)
+        x,y,z = self.XYZptsSplit(substratePts)
+        ax.plot(x,y,z, color=color)
+
+
+        # Ensure that all the feed and arc coordinates have the same shape
+        # conductor
+        centerX = subW / 2
+        centerY = subL / 2
+
+        # Inner arc
+        a = gapDist / (2 * innerRad)
+        if (a < -1) or (a > 1): 
+            a = np.clip(a, -1, 1) #arcsin cannot have vals below -1 or above 1
+            print("calc_and_draw.py. The gap distance is too large for the inner radius. increase the radius")
+        thetaInner = 2 * np.arcsin(a)
+        thetaListInner = np.linspace(-0.5 * np.pi + thetaInner / 2, 1.5 * np.pi - thetaInner / 2, 200)
+        xInner = innerRad * np.cos(thetaListInner) + centerX
+        yInner = innerRad * np.sin(thetaListInner) + inset + innerRad
+        zInner = np.ones_like(xInner) * h
+        innerArcCoordinates = np.column_stack((xInner, yInner, zInner))  # Ensuring it's 2D with 3 columns
+
+        # Outer arc
+        a = (gapDist + 2 * feedWidth) / (2 * outerRad)
+        if (a < -1) or (a > 1): 
+            a = np.clip(a, -1, 1) #arcsin cannot have vals below -1 or above 1
+            print("calc_and_draw.py. The gap distance is too large for the outer radius. increase the radius")
+        thetaOuter = 2 * np.arcsin(a)
+        thetaListOuter = np.linspace(-0.5 * np.pi + thetaOuter / 2, 1.5 * np.pi - thetaOuter / 2, 200)
+        xOuter = outerRad * np.cos(thetaListOuter) + centerX
+        yOuter = outerRad * np.sin(thetaListOuter) + inset + innerRad
+        zOuter = np.ones_like(xOuter) * h
+        outerArcCoordinates = np.column_stack((xOuter, yOuter, zOuter))  # Ensuring it's 2D with 3 columns
+
+        # Left feed
+        leftFeed = np.array([[centerX + gapDist / 2 + feedWidth, 0, h],
+                            [centerX + gapDist / 2, 0, h],
+                            [centerX + gapDist / 2, inset, h]])
+        x, y, z = self.XYZptsSplit(leftFeed)
+
+        # Right feed
+        rightFeed = np.array([[centerX - gapDist / 2, inset, h],
+                            [centerX - gapDist / 2, 0, h],
+                            [centerX - gapDist / 2 - feedWidth, 0, h]])
+        x, y, z = self.XYZptsSplit(rightFeed)
+
+        # Concatenate the arrays
+        outerArcCoordinatesReversed = np.flip(outerArcCoordinates, axis=0)
+
+        conductorPts = np.concatenate(
+            (leftFeed, innerArcCoordinates, rightFeed, outerArcCoordinatesReversed, np.array([leftFeed[0]])), axis=0
+        )
+
+        # Split and plot conductor points
+        x, y, z = self.XYZptsSplit(conductorPts)
+        ax.plot(x, y, z, color=color)
+
+    #######################################################################
+    # Functions for drawing the coplanar keyhole
+    #######################################################################
+
+    def drawCoplanarKeyholeConductor(self, ax, keyInnerRad, outerRad, feedWidth, feedLength, gapDist, subW, subL, gpWidth, gpLength, h, corner=[0,0], color="g"):
+        #draw ground plane rectangle
+        substratePts = self.rectangle(corner, subW, subL, 0)
+        x,y,z = self.XYZptsSplit(substratePts)
+        ax.plot(x,y,z, color=color)
+        
+        #substrate edges
+        substratePts = self.rectangle(corner, subW, subL, h)
+        x,y,z = self.XYZptsSplit(substratePts)
+        ax.plot(x,y,z, color=color)
+
+
+        # Ensure that all the feed and arc coordinates have the same shape
+        # conductor
+
+        #check what the radius is bc the feed might be to large for the keyhole arc
+
+
+        centerX = subW / 2
+        centerY = subL / 2
+        gapDist = 2*gapDist + feedWidth   #this is the FULL distance for the calcs, not just the empty space
+        # Inner arc
+        
+        innerRad = outerRad-feedWidth
+        a = gapDist / (2 * innerRad)
+        if (a < -1) or (a > 1): 
+            a = np.clip(a, -1, 1) #arcsin cannot have vals below -1 or above 1
+            print("calc_and_draw.py. The gap distance is too large for the inner radius of the loop. increase the radius")
+        thetaInner = 2 * np.arcsin(a)
+        thetaListInner = np.linspace(-0.5 * np.pi + thetaInner / 2, 1.5 * np.pi - thetaInner / 2, 200)
+        xInner = innerRad * np.cos(thetaListInner) + centerX
+        yInner = innerRad * np.sin(thetaListInner) + feedLength + keyInnerRad#+ feedLength
+        zInner = np.ones_like(xInner) * h
+        innerArcCoordinates = np.column_stack((xInner, yInner, zInner))  # Ensuring it's 2D with 3 columns
+
+        # Outer arc
+        a = (gapDist + 2 * feedWidth) / (2 * outerRad)
+        if (a < -1) or (a > 1): 
+            a = np.clip(a, -1, 1) #arcsin cannot have vals below -1 or above 1
+            print("calc_and_draw.py. The gap distance is too large for the outer radius of the loop. increase the radius")
+        thetaOuter = 2 * np.arcsin(a)
+        thetaListOuter = np.linspace(-0.5 * np.pi + thetaOuter / 2, 1.5 * np.pi - thetaOuter / 2, 200)
+        xOuter = outerRad * np.cos(thetaListOuter) + centerX
+        yOuter = outerRad * np.sin(thetaListOuter) + feedLength  + keyInnerRad#+ feedLength
+        zOuter = np.ones_like(xOuter) * h
+        outerArcCoordinates = np.column_stack((xOuter, yOuter, zOuter))  # Ensuring it's 2D with 3 columns
+
+        # Left feed
+        leftFeed = np.array([[centerX + gapDist / 2 + feedWidth, 0, h],
+                            [centerX + gapDist / 2, 0, h],
+                            [centerX + gapDist / 2, feedLength-innerRad, h]])
+        x, y, z = self.XYZptsSplit(leftFeed)
+
+        # Right feed
+        rightFeed = np.array([[centerX - gapDist / 2 ,feedLength-innerRad, h],
+                            [centerX - gapDist / 2, 0, h],
+                            [centerX - gapDist / 2 - feedWidth, 0, h]])
+        x, y, z = self.XYZptsSplit(rightFeed)
+
+        # Concatenate the arrays
+        outerArcCoordinatesReversed = np.flip(outerArcCoordinates, axis=0)
+
+        conductorPts = np.concatenate(
+            (leftFeed, innerArcCoordinates, rightFeed, outerArcCoordinatesReversed, np.array([leftFeed[0]])), axis=0
+        )
+
+        # Split and plot conductor points
+        x, y, z = self.XYZptsSplit(conductorPts)
+        ax.plot(x, y, z, color=color)
+
+
+        # plot the center feed and arc that makes this a 'keyhole'
+        # Inner arc
+ 
+        # print(feedWidth)
+        # print(keyInnerRad)
+        # print(feedWidth / (2 * keyInnerRad))
+        a = feedWidth / (2 * keyInnerRad)
+        if (a < -1) or (a > 1): 
+            a = np.clip(a, -1, 1) #arcsin cannot have vals below -1 or above 1
+            print("calc_and_draw.py. The gap distance is too large for the outer radius of the loop. increase the radius")
+        thetaInner = 2 * np.arcsin(a)
+        thetaListInner = np.linspace(-0.5 * np.pi + thetaInner / 2, 1.5 * np.pi - thetaInner / 2, 200)
+        xInner = keyInnerRad * np.cos(thetaListInner) + centerX
+        yInner = keyInnerRad * np.sin(thetaListInner) + feedLength + keyInnerRad
+        zInner = np.ones_like(xInner) * h
+        innerArcCoordinates = np.column_stack((xInner, yInner, zInner))  # Ensuring it's 2D with 3 columns
+
+
+        # center feed
+        centerFeed = np.array([[centerX - feedWidth / 2, feedLength, h],
+                             [centerX - feedWidth / 2, 0, h],
+                            [centerX + feedWidth / 2, 0, h],
+                            [centerX + feedWidth / 2, feedLength, h]])
+        conductorPts = np.concatenate(
+            (centerFeed, innerArcCoordinates, np.array([centerFeed[0]])), axis=0
+        )
+
+
+        x, y, z = self.XYZptsSplit(conductorPts)
+        ax.plot(x, y, z, color=color)
+
+
+
+    #######################################################################
+    # Functions for drawing the square loop
+    #######################################################################
+
+    def drawSquareLoopConductor(self, ax, length, width, feedWidth, gapDist, subW, subL, gpWidth, gpLength, h, corner=[0,0], color="indigo"):
+        
+        #draw ground plane rectangle
+        substratePts = self.rectangle(corner, subW, subL, 0)
+        x,y,z = self.XYZptsSplit(substratePts)
+        ax.plot(x,y,z, color=color)
+        
+        #substrate edges
+        substratePts = self.rectangle(corner, subW, subL, h)
         x,y,z = self.XYZptsSplit(substratePts)
         ax.plot(x,y,z, color=color)
         #conductor
-        substratePts = self.rectangle([-gpLength/2, -gpLength/2], gpLength, gpLength, h)#counding rectangle
+        centerX = .5*subW
+        centerY = .5*subL
+        conductorPts = [[centerX-.5*gapDist, centerY-.5*length, h], 
+                [centerX-.5*width, centerY-.5*length, h], 
+                [centerX-.5*width, centerY+.5*length, h], 
+                [centerX+.5*width, centerY+.5*length, h], 
+                [centerX+.5*width, centerY-.5*length, h], 
+                [centerX+.5*gapDist, centerY-.5*length, h], #end outer loop
+                [centerX+.5*gapDist, centerY-.5*length+.5*feedWidth, h], #first inner loop
+                [centerX+.5*width-.5*feedWidth, centerY-.5*length+.5*feedWidth, h],
+                [centerX+.5*width-.5*feedWidth, centerY+.5*length-.5*feedWidth, h],
+                [centerX-.5*width+.5*feedWidth, centerY+.5*length-.5*feedWidth, h], 
+                [centerX-.5*width+.5*feedWidth, centerY-.5*length+.5*feedWidth, h],
+                [centerX-.5*gapDist, centerY-.5*length+.5*feedWidth, h], 
+                [centerX-.5*gapDist, centerY-.5*length, h]]  #close loop
+
+
+        x,y,z = self.XYZptsSplit(conductorPts)
+        ax.plot(x, y, z, color=color)
+
+        #append points to memory
+        self.substrateCoords.append(substratePts)
+        self.conductorCoords.append(conductorPts)
+
+    #######################################################################
+    # Functions for drawing the planar bowtie
+    #######################################################################
+
+    def drawPlanarBowtieConductor(self, ax, w,l,feedWidth, gapDist, subW, subL, h, gpWidth, gpLength, corner=[0,0], color="teal"):
+        
+        #draw ground plane rectangle
+        substratePts = self.rectangle(corner, subW, subL, 0)
         x,y,z = self.XYZptsSplit(substratePts)
         ax.plot(x,y,z, color=color)
-        conductorPts = self.circularLoopConductor(outerRad, innerRad, feedWidth, inset, gapDist, h)
+        
+        #substrate edges
+        substratePts = self.rectangle(corner, subW, subL, h)
+        x,y,z = self.XYZptsSplit(substratePts)
+        ax.plot(x,y,z, color=color)
+        #conductor
+        centerX = .5*subW
+        centerY = .5*subL
+        conductorLeftPts = [[centerX-.5*gapDist,0, h], 
+                            [centerX-.5*gapDist, centerY, h], 
+                            [centerX-.5*gapDist-w, centerY+.5*l, h], 
+                            [centerX-.5*gapDist-w, centerY-.5*l, h], 
+                            [centerX-.5*gapDist-feedWidth, centerY-feedWidth, h], 
+                            [centerX-.5*gapDist-feedWidth,0, h],
+                [centerX-.5*gapDist,0, h]]  #close loop
+
+
+        x,y,z = self.XYZptsSplit(conductorLeftPts)
+        ax.plot(x, y, z, color=color)
+
+        conductorRightPts = [[centerX+.5*gapDist,0, h], 
+                            [centerX+.5*gapDist, centerY, h], 
+                            [centerX+.5*gapDist+w, centerY+.5*l, h], 
+                            [centerX+.5*gapDist+w, centerY-.5*l, h], 
+                            [centerX+.5*gapDist+feedWidth, centerY-feedWidth, h], 
+                            [centerX+.5*gapDist+feedWidth,0, h],
+                            [centerX+.5*gapDist,0, h]]  #close loop
+
+        x,y,z = self.XYZptsSplit(conductorRightPts)
+        ax.plot(x, y, z, color=color)
+
+        #append points to memory
+        self.substrateCoords.append(substratePts)
+        self.conductorCoords.append(conductorLeftPts)
+        self.conductorCoords.append(conductorRightPts)
+
+
+    #######################################################################
+    # Functions for drawing the two arm square spiral
+    #######################################################################
+
+    def drawTwoArmSquareSpiralConductor(self, ax, initW, initL, feedX, feedY, feedWidth, spacing, subW, subL, gpWidth, gpLength, h,corner=[0,0], color="orangered"):
+     
+        #draw ground plane rectangle
+        substratePts = self.rectangle(corner, subW, subL, 0)
+        x,y,z = self.XYZptsSplit(substratePts)
+        ax.plot(x,y,z, color=color)
+        
+        #substrate edges
+        substratePts = self.rectangle(corner, subW, subL, h)
+        x,y,z = self.XYZptsSplit(substratePts)
+        ax.plot(x,y,z, color=color)
+
+
+
+
+        
+        centerX = .5*subW
+        centerY = .5*subL
+
+        #feed loc
+        pts = self.drawCircularPoint(ax, centerX+ feedX, centerY+feedY, h, color="orange") #includes plot
+        self.conductorCoords.append(pts)
+
+        #conductor
+        conductorPts = [[centerX-.5*feedWidth,centerY-initW, h], 
+                        [centerX+initL,centerY-initW, h], 
+                        [centerX+initL,centerY+initW+spacing+feedWidth, h], 
+                        [centerX-initL-spacing-feedWidth,centerY+initW+spacing+feedWidth, h], 
+                        [centerX-initL-spacing-feedWidth,centerY-initW-spacing-feedWidth, h], 
+                        [centerX-initL-spacing,centerY-initW-spacing-feedWidth, h], 
+                        [centerX-initL-spacing,centerY+initW+spacing, h], 
+                        [centerX+initL-feedWidth,centerY+initW+spacing, h],
+                        [centerX+initL-feedWidth,centerY-initW+feedWidth, h],
+                        [centerX+.5*feedWidth,centerY-initW+feedWidth, h],#next to feed pt, right side
+                        [centerX+.5*feedWidth,centerY+initW, h], #11
+                        [centerX-initL,centerY+initW, h],
+                        [centerX-initL,centerY-initW-spacing-feedWidth, h],
+                        [centerX+initL+spacing+feedWidth,centerY-initW-spacing-feedWidth, h],
+                        [centerX+initL+spacing+feedWidth,centerY+initW+spacing+feedWidth, h],
+                        [centerX+initL+spacing,centerY+initW+spacing+feedWidth, h],
+                        [centerX+initL+spacing,centerY-initW-spacing, h],
+                        [centerX-initL+feedWidth,centerY-initW-spacing, h],
+                        [centerX-initL+feedWidth,centerY+initW-feedWidth, h],
+                        [centerX-.5*feedWidth,centerY+initW-feedWidth, h],
+
+                [centerX-.5*feedWidth,centerY-initW, h], ]  #close loop
+
+
         x,y,z = self.XYZptsSplit(conductorPts)
         ax.plot(x, y, z, color=color)
 
 
-    def circularLoopConductor(self, outerRad, innerRad, feedWidth, inset, gapDist, h):
-        #2D coordinates for drawing the slotted patch antenna conductor
-        originW = 0
-        originL = 0
-
-        points = []
+        #append points to memory
+        self.substrateCoords.append(substratePts)
+        self.conductorCoords.append(conductorPts)
 
 
-        # #draw striplines 
-        # r_strip_x = np.linspace((-gapDist/2), (-gapDist/2 - feedWidth), self.N)  
-        # l_strip_x = np.linspace((gapDist/2 + feedWidth), (gapDist/2), self.N)                   
+    #######################################################################
+    # Functions for drawing the doublesided bowtie
+    #######################################################################
 
-        # pts_z_min = np.zeros(self.N)
-        # #looking down on to the XZ plane, draw an arc with an opening of the gap distance
-        # #looking from the XY plane, this shape should look like an arc flush with the substrate/layers below it
-
-        # r_feed_x = feedRight[0][::-1]
-        # r_feed_y = feedRight[1][::-1]
-
-        # l_feed_x = feedLeft[0][::-1]
-        # l_feed_y = feedLeft[1][::-1]
-
-        # inner_inset  = inset + (outerRad-innerRad)
-
-        # #running pts - add arc of left feed
-        # pts_x = l_feed_x
-        # pts_y = l_feed_y
-        # pts_z = pts_z_min
-
-        # #loop features
-        # o_x, o_y, o_z = self.calcLoopAndArc(outLoopRad, gapDist, feedWidth, inset,  useFeedOffset=True, numPts=int(bendRad*25))##outer loop 
-        # i_x, i_y, i_z = self.calcLoopAndArc(inLoopRad, gapDist, feedWidth, inner_inset,  bendRad=bendRad, layerOffset=layerOffset, numPts=int(bendRad*25))##inner loop
-        # #draw a star at the start of the arc - used to check for rotation offset
-        # # ax.plot(o_x[0], o_y[0], o_z[0],'y*')
-
-        # #running pts - add jump from arc to outer loop, on the outside (not-gap) side of left strip
-        # pts_x = np.concatenate((pts_x, o_x), axis=None)
-        # pts_y = np.concatenate((pts_y, o_y), axis=None)
-        # pts_z = np.concatenate((pts_z, o_z), axis=None)
-
-        # # #running pts - add jump from outer loop to arc, on the outside (not-gap) side of right strip
-        # pts_x = np.concatenate((pts_x, r_feed_x), axis=None)
-        # pts_y = np.concatenate((pts_y, r_feed_y), axis=None)
-        # pts_z = np.concatenate((pts_z, pts_z_min), axis=None)
-
-        # #running pts - add jump from arc to inner loop, on the gap side of right strip
-        # pts_x = np.concatenate((pts_x, i_x[::-1]), axis=None)
-        # pts_y = np.concatenate((pts_y, i_y[::-1]), axis=None)
-        # pts_z = np.concatenate((pts_z, i_z[::-1]), axis=None)
-
-        # #running pts - add jump from inner loop to arc of the left feed, on the gap side of right strip
-        # pts_x = np.concatenate((pts_x, l_feed_x[0]), axis=None)
-        # pts_y = np.concatenate((pts_y, l_feed_y[0]), axis=None)
-        # pts_z = np.concatenate((pts_z, pts_z_min[0]), axis=None)
-
-        # #zip the x,y,z pts together
-        # zipped_pts = list(zip(pts_x, pts_y, pts_z))
-        # return zipped_pts
-
+    def drawDoubleSidedBowtieConductor(self, ax, W2, W3, W4, W5, W6, W7, W8, L2, L3, L4, L5, L6, L7, subL, subW, gpWidth, gpLength, h, corner=[0,0], color="g"):
+        #draw ground plane rectangle
+        substratePts = self.rectangle(corner, subW, subL, 0)
+        x,y,z = self.XYZptsSplit(substratePts)
+        ax.plot(x,y,z, color=color)
         
-        # spline_pts.append(zp)
+        #substrate edges
+        substratePts = self.rectangle(corner, subW, subL, h)
+        x,y,z = self.XYZptsSplit(substratePts)
+        ax.plot(x,y,z, color=color)
 
-        return points
+
+        centerX = subW/2
+        centerY = subL/2
+        #topside
+        topCenter = np.array([[centerX-W2/2, 0, h],
+                            [centerX+W2/2, 0, h],
+                            [centerX+W2/2, L2, h ],
+                            [centerX+W3/2, L2, h],
+                            [centerX+W3/2, L2+L3, h],
+                            [centerX+W4/2, L2+L3, h],
+                            [centerX+W4/2, L2+L3+L4, h],
+                            [centerX+W5/2, L2+L3+L4, h],
+                            [centerX+W5/2, L2+L3+L4, h],
+                            [centerX+W5/2, L2+L3+L4+L5, h],
+                            [centerX-W5/2, L2+L3+L4+L5, h],
+                            [centerX-W5/2, L2+L3+L4, h],
+                            [centerX-W5/2, L2+L3+L4, h],
+                            [centerX-W5/2, L2+L3+L4, h],
+                            [centerX-W4/2, L2+L3+L4, h],
+                            [centerX-W4/2, L2+L3, h],
+                            [centerX-W3/2, L2+L3, h],
+                            [centerX-W3/2, L2, h],
+                            [centerX-W2/2, L2, h ],
+                            [centerX-W2/2, 0, h],
+                            [centerX-W2/2, 0, h]])
+
+        x, y, z = self.XYZptsSplit(topCenter)
+        ax.plot(x, y, z, color=color)
+
+        rightWingTriangle = np.array([[centerX, L2+L3+L4+L5-L7/2, h],
+                            [centerX+W6, L2+L3+L4+L5-L7/2+L6/2, h],
+                            [centerX+W6, L2+L3+L4+L5-L7/2-L6/2, h],
+                            [centerX, L2+L3+L4+L5-L7/2, h]])
+
+        x, y, z = self.XYZptsSplit(rightWingTriangle)
+        ax.plot(x, y, z, color=color)
+
+        rightWingRectangle = np.array([[centerX+W6, L2+L3+L4+L5-L7/2+L6/2, h],
+                                       [centerX+W6+W7, L2+L3+L4+L5-L7/2+L6/2, h],
+                                       [centerX+W6+W7, L2+L3+L4+L5-L7/2-L6/2, h],
+                                       [centerX+W6, L2+L3+L4+L5-L7/2-L6/2, h],
+                                        [centerX+W6, L2+L3+L4+L5-L7/2+L6/2, h]])
+
+        x, y, z = self.XYZptsSplit(rightWingRectangle)
+        ax.plot(x, y, z, color=color)
+
+        # print(L6)
+        # print(W8)
+        # theta = 180
+        # theta = np.linspace(0.5 * np.pi + theta  / 2, -.5 * np.pi - theta / 2, 200)
+        # xInner = W8 * np.cos(theta) + centerX +W6+W7
+        # yInner = W8 * np.sin(theta) + L2+L3+L4+L5-L7/2
+        # zInner = np.ones_like(xInner) * h
+        # rightWingArc = np.column_stack((xInner, yInner, zInner)) 
+
+
+        # x, y, z = self.XYZptsSplit(rightWingArc)
+        # ax.plot(x, y, z, color=color)
+
+
+
+
+        # back
+        
+        ##  ground
+        backGround = np.array([[0,0,0],
+                            [subW, 0,0],
+                            [subW, L2, 0],
+                            [0, L2, 0],
+                            [0,0,0]])
+        x, y, z = self.XYZptsSplit(backGround)
+        ax.plot(x, y, z, color="g")
+
+        bottomCenter = np.array([[centerX+W2/2, L2, 0],
+                            [centerX+W3/2, L2, 0],
+                            [centerX+W3/2, L2+L3, 0],
+                            [centerX+W4/2, L2+L3, 0],
+                            [centerX+W4/2, L2+L3+L4, 0],
+                            [centerX+W5/2, L2+L3+L4, 0],
+                            [centerX+W5/2, L2+L3+L4, 0],
+                            [centerX+W5/2, L2+L3+L4+L5, 0],
+                            [centerX-W5/2, L2+L3+L4+L5, 0],
+                            [centerX-W5/2, L2+L3+L4, 0],
+                            [centerX-W5/2, L2+L3+L4, 0],
+                            [centerX-W5/2, L2+L3+L4, 0],
+                            [centerX-W4/2, L2+L3+L4, 0],
+                            [centerX-W4/2, L2+L3, 0],
+                            [centerX-W3/2, L2+L3, 0],
+                            [centerX-W3/2, L2, 0],
+                            [centerX-W2/2, L2, 0 ],
+                            [centerX+W2/2, L2, 0]])
+
+        x, y, z = self.XYZptsSplit(bottomCenter)
+        ax.plot(x, y, z, color="g")
+
+        leftWingTriangle = np.array([[centerX, L2+L3+L4+L5-L7/2, 0],
+                            [centerX-W6, L2+L3+L4+L5-L7/2+L6/2, 0],
+                            [centerX-W6, L2+L3+L4+L5-L7/2-L6/2, 0],
+                            [centerX, L2+L3+L4+L5-L7/2, 0]])
+
+        x, y, z = self.XYZptsSplit(leftWingTriangle)
+        ax.plot(x, y, z, color="g")
+
+        leftWingRectangle = np.array([[centerX-W6, L2+L3+L4+L5-L7/2+L6/2, 0],
+                                       [centerX-W6-W7, L2+L3+L4+L5-L7/2+L6/2, 0],
+                                       [centerX-W6-W7, L2+L3+L4+L5-L7/2-L6/2, 0],
+                                       [centerX-W6, L2+L3+L4+L5-L7/2-L6/2, 0],
+                                        [centerX-W6, L2+L3+L4+L5-L7/2+L6/2, 0]])
+
+        x, y, z = self.XYZptsSplit(leftWingRectangle)
+        ax.plot(x, y, z, color="g")
+
+
+
 
 
 
@@ -684,7 +1214,7 @@ class CalculateAndDraw():
     # Functions for drawing 3D shapes
     #######################################################################
 
-    def drawCylinder(self, ax, a, start, stop, center=[0,0], color="b"):
+    def drawCylinder(self, ax, a, start, stop, center=[0,0], color="b", alpha=0.75):
         x = center[0]
         y = center[1]
         z = np.linspace(start, stop, 50)
@@ -692,10 +1222,32 @@ class CalculateAndDraw():
         thetaMat, zMat=np.meshgrid(theta, z)
         xMat = x + a*np.cos(thetaMat)
         yMat = y + a*np.sin(thetaMat)
-        ax.plot_surface(xMat, yMat, zMat, alpha=0.75, color=color)
+        ax.plot_surface(xMat, yMat, zMat, alpha=alpha, color=color)
 
         # zip cords
         pts = zip(xMat, yMat, zMat)
+        return pts
+    
+    def drawDisk(self, ax, a, z, center=[0,0], color="b", alpha=0.75):
+        x = center[0]
+        y = center[1]
+        
+        # Define the angular parameter (theta) for the disk
+        theta = np.linspace(0, 2*np.pi, 50)
+        
+        # Use meshgrid to create a circular pattern
+        thetaMat, rMat = np.meshgrid(theta, np.linspace(0, a, 50))  # r from 0 to 'a'
+        
+        # Parametric equations for the disk
+        xMat = x + rMat * np.cos(thetaMat)
+        yMat = y + rMat * np.sin(thetaMat)
+        zMat = np.full_like(xMat, z)  # Fix z to the constant plane
+        
+        # Plot the disk surface
+        ax.plot_surface(xMat, yMat, zMat, alpha=alpha, color=color)
+
+        # Return the coordinates of the disk
+        pts = zip(xMat.flatten(), yMat.flatten(), zMat.flatten())
         return pts
 
     def drawFlatRectangle3DLayer(self, ax, width, length, depth, centerFrontPt, color="b"):        
@@ -785,10 +1337,17 @@ class CalculateAndDraw():
         y = c[1]
         return [[x-0.5*w, y-0.5*h, z], [x +0.5*w, y-0.5*h, z], [x+0.5*w, y+0.5*h, z], [x-0.5*w, y+0.5*h,z]]
 
-    def circleByCenter(self,c, w, h, z):
-        x = c[0]
-        y = c[1]
-        return [[x, y, z], [x + w, y, z], [x + w, y + h, z], [x, y + h, z]]
+    def circleByCenter(self, h, rad, numPts = 201):
+
+        t = np.linspace(0, 2*np.pi, numPts)
+        # Parametric equations for the circle
+        x = np.cos(t)
+        y = np.sin(t)
+        z = np.full_like(t, h)  # Constant value for z
+
+
+
+        return x,y,z
 
     def triangle(self,c, w, h, z):
         x = c[0]

@@ -43,11 +43,11 @@ class RectangularPatchOptionsPage(wx.Panel):
         conductorTypes = list(materials_dict.keys())
         self.conductorDropDown = wx.ComboBox(self, choices=conductorTypes, style=wx.CB_READONLY) # size=(INPUT_BOX_WIDTH, 20),
         self.conductorDropDown.SetValue('copper')
-        self.conductorDropDown.Bind(wx.EVT_COMBOBOX, self.conductorSelected)
         lblSimSubstrate = wx.StaticText(self, label="Substrate Material (simulation req):")
         substrateTypes = list(materials_dict.keys())
         self.substrateDropDown = wx.ComboBox(self, choices=substrateTypes,  style=wx.CB_READONLY) #size=(INPUT_BOX_WIDTH, 20),
         self.substrateDropDown.SetValue('FR4_epoxy')
+        self.substrateDropDown.Bind(wx.EVT_COMBOBOX, self.substrateSelected)
         lblGap = wx.StaticText(self, label="Gap (optional, mm):")
         self.fieldGap = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldGap.SetValue("1")
@@ -59,21 +59,23 @@ class RectangularPatchOptionsPage(wx.Panel):
         boxInputSizer = wx.BoxSizer(wx.HORIZONTAL)
         boxInputLeft = wx.BoxSizer(wx.VERTICAL)
         boxInputRight = wx.BoxSizer(wx.VERTICAL)
-        boxInputLeft.Add(lblTarget, 0, wx.ALL|wx.EXPAND, border=5)
-        boxInputLeft.Add(lblDielectric, 0, wx.ALL|wx.EXPAND, border=5)
-        boxInputLeft.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)
+        
         boxInputLeft.Add(lblFeed, 0, wx.ALL|wx.EXPAND, border=7)
         boxInputLeft.Add(lblConductor, 0, wx.ALL|wx.EXPAND, border=7)
         boxInputLeft.Add(lblSimSubstrate, 0, wx.ALL|wx.EXPAND, border=7)
+        boxInputLeft.Add(lblTarget, 0, wx.ALL|wx.EXPAND, border=5)
+        boxInputLeft.Add(lblDielectric, 0, wx.ALL|wx.EXPAND, border=5)
+        boxInputLeft.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)
         boxInputLeft.Add(lblGap, 0, wx.ALL|wx.EXPAND, border=7)
         boxInputLeft.Add(lblStripWidth, 0, wx.ALL|wx.EXPAND, border=7)
 
-        boxInputRight.Add(self.fieldFrequency, 0, wx.ALL|wx.EXPAND, border=3)
-        boxInputRight.Add(self.fieldDielectric, 0, wx.ALL|wx.EXPAND, border=3)
-        boxInputRight.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
+
         boxInputRight.Add(self.feedDropDown, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputRight.Add(self.conductorDropDown, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputRight.Add(self.substrateDropDown, 0, wx.ALL|wx.EXPAND, border=3)
+        boxInputRight.Add(self.fieldFrequency, 0, wx.ALL|wx.EXPAND, border=3)
+        boxInputRight.Add(self.fieldDielectric, 0, wx.ALL|wx.EXPAND, border=3)
+        boxInputRight.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputRight.Add(self.fieldGap, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputRight.Add(self.fieldStripWidth, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputRight.Add(self.ckbX0, 0, wx.ALL|wx.EXPAND, border=3)
@@ -89,12 +91,17 @@ class RectangularPatchOptionsPage(wx.Panel):
         txt = str(materials_dict[self.conductorDropDown.GetValue()])
         self.fieldDielectric.SetValue(txt)
 
+    def substrateSelected(self,evt):
+        txt = str(materials_dict[self.substrateDropDown.GetValue()])
+        self.fieldDielectric.SetValue(txt)
+
     def getFeatures(self):
+
         features = [["feed_type", self.feedDropDown.GetValue()],
                     ["dielectric", self.fieldDielectric.GetValue()],
                     ["substrate_material", self.substrateDropDown.GetValue()],
                     ["conductor_material", self.conductorDropDown.GetValue()],
-                    ["conductor_height", None],
+                    #["conductor_height", None],
                     ["substrate_height", self.fieldSubstrateHeight.GetValue()],
                     ["simulation_frequency", self.fieldFrequency.GetValue()],
                     ["gap", self.fieldGap.GetValue()],

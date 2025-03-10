@@ -1,0 +1,433 @@
+import ScriptEnv
+ScriptEnv.Initialize("Ansoft.ElectronicsDesktop")
+oDesktop.RestoreWindow()
+oProject = oDesktop.NewProject()
+INSERT_DESIGN_NETWORK_TYPE
+oProject.SaveAs(r"INSERT_PROJECT_NAME", True)
+oProject.ChangeProperty(
+	[
+		"NAME:AllTabs",
+		[
+			"NAME:ProjectVariableTab",
+			[
+				"NAME:PropServers", 
+				"ProjectVariables"
+			],
+			[
+				"NAME:NewProps",
+				[
+					"NAME:$outer_rad",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_OUTER_RAD_VALUE"
+				],
+				[
+					"NAME:$inner_rad",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_INNER_RAD_VALUE"
+				],
+				[
+					"NAME:$feed_width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_FEED_WIDTH_VALUE"
+				],
+				[
+					"NAME:$inset",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_INSET_VALUE"
+				],
+				[
+					"NAME:$gap_dist",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_GAP_DIST_VALUE"
+				],				
+				[
+					"NAME:$gp_length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_GP_LENGTH_VALUE"
+				],
+				[
+					"NAME:$gp_width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_GP_WIDTH_VALUE"
+				],
+				[
+					"NAME:$depth",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUB_HEIGHT_VALUE"
+				],
+				[
+					"NAME:$sub_width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUB_WIDTH_VALUE"
+				],
+				[
+					"NAME:$sub_length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUB_LENGTH_VALUE"
+				]				
+			]
+		]
+	])
+oDesign = oProject.SetActiveDesign("HFSSDesign1")
+oEditor = oDesign.SetActiveEditor("3D Modeler")
+
+# create ground plane
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "-$gp_length/2",
+		"YStart:="		, "-$gp_width/2",
+		"ZStart:="		, "-$depth",
+		"Width:="		, "$gp_length",
+		"Height:="		, "$gp_width",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "ground_plane",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_GROUND_PLANE_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# create substrate
+oEditor.CreateBox(
+	[
+		"NAME:BoxParameters",
+		"XPosition:="		, "-$sub_length/2",
+		"YPosition:="		, "-$sub_width/2",
+		"ZPosition:="		, "-$depth",
+		"XSize:="		, "$sub_length",
+		"YSize:="		, "$sub_width",
+		"ZSize:="		, "$depth"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "substrate",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_SUBSTRATE_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# create conductor
+# right feed
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2",
+		"YStart:="		, "$gap_dist/2 ",
+		"ZStart:="		, "0mm",
+		"Width:="		, "-$sub_length/2 + ($inner_rad)",
+		"Height:="		, "$feed_width",
+		"WhichAxis:="		, "Z"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "right_feed",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+# left feed
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2",
+		"YStart:="		, "-$gap_dist/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "-$sub_length/2 + ($inner_rad)",
+		"Height:="		, "-$feed_width",
+		"WhichAxis:="		, "Z"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "left_feed",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+# outerloop circle
+oEditor.CreateCircle(
+	[
+		"NAME:CircleParameters",
+		"IsCovered:="		, True,
+		"XCenter:="		, "0mm",
+		"YCenter:="		, "0mm",
+		"ZCenter:="		, "0mm",
+		"Radius:="		, "$outer_rad",
+		"WhichAxis:="		, "Z",
+		"NumSegments:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "loop",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# inner circle and gap cut  
+oEditor.CreateCircle(
+	[
+		"NAME:CircleParameters",
+		"IsCovered:="		, True,
+		"XCenter:="		, "0mm",
+		"YCenter:="		, "0mm",
+		"ZCenter:="		, "0mm",
+		"Radius:="		, "$inner_rad",
+		"WhichAxis:="		, "Z",
+		"NumSegments:="		, "0"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "inner_loop",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2",
+		"YStart:="		, "-$gap_dist/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "-$sub_length/2",
+		"Height:="		, "$gap_dist",
+		"WhichAxis:="		, "Z"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "Rectangle1",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+oEditor.Unite(
+	[
+		"NAME:Selections",
+		"Selections:="		, "Rectangle1,inner_loop"
+	], 
+	[
+		"NAME:UniteParameters",
+		"KeepOriginals:="	, False,
+		"TurnOnNBodyBoolean:="	, True
+	])
+oEditor.Subtract(
+	[
+		"NAME:Selections",
+		"Blank Parts:="		, "loop",
+		"Tool Parts:="		, "Rectangle1"
+	], 
+	[
+		"NAME:SubtractParameters",
+		"KeepOriginals:="	, False,
+		"TurnOnNBodyBoolean:="	, True
+	])
+
+#unite remaining
+oEditor.Unite(
+	[
+		"NAME:Selections",
+		"Selections:="		, "loop,right_feed,left_feed"
+	], 
+	[
+		"NAME:UniteParameters",
+		"KeepOriginals:="	, False,
+		"TurnOnNBodyBoolean:="	, True
+	])
+
+
+# draw the port Rectangle1
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2 -2mm",
+		"YStart:="		, "-$gap_dist/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "2mm",
+		"Height:="		, "$gap_dist",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "port",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+
+# draw the airbox
+oEditor.CreateBox(
+	[
+		"NAME:BoxParameters",
+		"XPosition:="		, "-$sub_length",
+		"YPosition:="		, "-$sub_width",
+		"ZPosition:="		, "-$sub_width",
+		"XSize:="		, "$sub_length*2",
+		"YSize:="		, "$sub_width*2",
+		"ZSize:="		, "$sub_width*2"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "air_box",
+		"Flags:="		, "",
+		"Color:="		, "(128 255 255)",
+		"Transparency:="	, 0.95,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+oModule = oDesign.GetModule("BoundarySetup")
+oModule.AssignFiniteCond(
+	[
+		"NAME:FiniteCond1",
+		"Objects:="		, ["ground_plane","loop"],
+		"UseMaterial:="		, True,
+		"Material:="		, "INSERT_CONDUCTOR_BOUNDARY_MATERIAL", 
+		"UseThickness:="	, False,
+		"Roughness:="		, "0um",
+		"InfGroundPlane:="	, False,
+		"IsTwoSided:="		, False,
+		"IsInternal:="		, True
+	])
+
+
+oModule.AssignRadiation(
+	[
+		"NAME:Rad1",
+		"Objects:="		, ["air_box"]
+	])
+	
+oModule = oDesign.GetModule("BoundarySetup")
+
+
+# generic lumped approach 
+
+INSERT_PORT_SETUP
+
+
+#oProject.Save()
+#end antenna generation

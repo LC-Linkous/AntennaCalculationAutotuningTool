@@ -106,7 +106,7 @@ class ButtonMenuPanel(wx.Panel):
         self.parent.panel_mainUI.panel_batch.Hide()
         self.parent.panel_mainUI.panel_settings.Hide()
         self.parent.panel_mainUI.panel_optimizer.Hide()
-        self.parent.Layout() 
+        self.parent.Layout()
 
     def btnSimulationClicked(self):
         self.parent.panel_mainUI.panel_project.Hide()

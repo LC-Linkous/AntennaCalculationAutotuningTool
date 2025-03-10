@@ -40,10 +40,10 @@ class RectangularPatchOptionsPage(wx.Panel):
         conductorTypes = list(materials_dict.keys())
         self.conductorDropDown = wx.ComboBox(self, choices=conductorTypes, style=wx.CB_READONLY) # size=(INPUT_BOX_WIDTH, 20),
         self.conductorDropDown.SetValue('copper')
-        self.conductorDropDown.Bind(wx.EVT_COMBOBOX, self.conductorSelected)
         lblSimSubstrate = wx.StaticText(self, label="Substrate Material (simulation req):")
         substrateTypes = list(materials_dict.keys())
         self.substrateDropDown = wx.ComboBox(self, choices=substrateTypes,  style=wx.CB_READONLY) #size=(INPUT_BOX_WIDTH, 20),
+        self.substrateDropDown.Bind(wx.EVT_COMBOBOX, self.substrateSelected)
         self.substrateDropDown.SetValue('FR4_epoxy')
         lblLength = wx.StaticText(self, label="Length (mm):")
         self.fieldLength = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
@@ -63,6 +63,12 @@ class RectangularPatchOptionsPage(wx.Panel):
         lblStripWidth = wx.StaticText(self, label="Strip Width (mm):")
         self.fieldStripWidth = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldStripWidth.SetValue("3.06")
+        lblSubstrateWidth = wx.StaticText(self, label="Substrate Width (mm): ")
+        self.fieldSubstrateWidth  = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateWidth.SetValue("100")
+        lblSubstrateLength = wx.StaticText(self, label="Substrate Length (mm): ")
+        self.fieldSubstrateLength  = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateLength.SetValue("80")
 
         #patch image
         img_panel = wx.Panel(self, wx.ID_ANY)
@@ -96,26 +102,30 @@ class RectangularPatchOptionsPage(wx.Panel):
         boxSmallInput3 = wx.BoxSizer(wx.VERTICAL)
         boxSmallInput4 = wx.BoxSizer(wx.VERTICAL)
 
+        boxSmallInput1.Add(lblSubstrateLength, 0, wx.ALL|wx.EXPAND, border=3)
+        boxSmallInput1.Add(lblDielectric, 0, wx.ALL|wx.EXPAND, border=5)
         boxSmallInput1.Add(lblLength, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput1.Add(lblWidth, 0, wx.ALL|wx.EXPAND, border=5)
         boxSmallInput1.Add(lblGap, 0, wx.ALL|wx.EXPAND, border=5)
-        boxSmallInput1.Add(lblDielectric, 0, wx.ALL|wx.EXPAND, border=5)
-
+        
+        boxSmallInput2.Add(self.fieldSubstrateLength, 0, wx.ALL|wx.EXPAND, border=3)
+        boxSmallInput2.Add(self.fieldDielectric, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput2.Add(self.fieldLength, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput2.Add(self.fieldWidth, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput2.Add(self.fieldGap, 0, wx.ALL|wx.EXPAND, border=3)
-        boxSmallInput2.Add(self.fieldDielectric, 0, wx.ALL|wx.EXPAND, border=3)
-
+       
+        boxSmallInput3.Add(lblSubstrateWidth, 0, wx.ALL|wx.EXPAND, border=5)
+        boxSmallInput3.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)
         boxSmallInput3.Add(lblX0, 0, wx.ALL|wx.EXPAND, border=5)
         boxSmallInput3.Add(lblY0, 0, wx.ALL|wx.EXPAND, border=5)
         boxSmallInput3.Add(lblStripWidth, 0, wx.ALL|wx.EXPAND, border=5)
-        boxSmallInput3.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)
-
+        
+        boxSmallInput4.Add(self.fieldSubstrateWidth, 0, wx.ALL|wx.EXPAND, border=3)
+        boxSmallInput4.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput4.Add(self.fieldX0, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput4.Add(self.fieldY0, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput4.Add(self.fieldStripWidth, 0, wx.ALL|wx.EXPAND, border=3)       
-        boxSmallInput4.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
-
+       
         boxSmallInputSizer.Add(boxSmallInput1, 0, wx.ALL|wx.EXPAND,border=5)
         boxSmallInputSizer.Add(boxSmallInput2, 0, wx.ALL|wx.EXPAND,border=5)
         boxSmallInputSizer.Add(boxSmallInput3, 0, wx.ALL|wx.EXPAND,border=5)
@@ -130,23 +140,20 @@ class RectangularPatchOptionsPage(wx.Panel):
         self.SetSizer(pageSizer)
         
 
-    def conductorSelected(self,evt):
-        txt = str(materials_dict[self.conductorDropDown.GetValue()])
+    def substrateSelected(self,evt):
+        txt = str(materials_dict[self.substrateDropDown.GetValue()])
         self.fieldDielectric.SetValue(txt)
 
-    def getFeatures(self):
+    def getFeatures(self):  #cannot change names without issues with the lead chars for scripting
+
         features = [["feed_type", self.feedDropDown.GetValue()],
-                    ["dielectric", self.fieldDielectric.GetValue()],
                     ["substrate_material", self.substrateDropDown.GetValue()],
                     ["conductor_material", self.conductorDropDown.GetValue()],
-                    ["conductor_height", None],
-                    ["substrate_height", self.fieldSubstrateHeight.GetValue()],
-                    ["gap", self.fieldGap.GetValue()],
-                    ["strip_width", self.fieldStripWidth.GetValue()],
                     ["simulation_frequency", -1]]
 
         return features
-    
+
+   
     def getParams(self):
         paramArr = []
         width = float(self.fieldWidth.GetValue())
@@ -154,20 +161,30 @@ class RectangularPatchOptionsPage(wx.Panel):
         x0 = float(self.fieldX0.GetValue())
         y0 = float(self.fieldY0.GetValue())
         gap = float(self.fieldGap.GetValue())
+        subWidth = float(self.fieldSubstrateWidth.GetValue())
+        subLength = float(self.fieldSubstrateLength.GetValue())  
+        subHeight = float(self.fieldSubstrateHeight.GetValue())
+               
 
         if self.feedDropDown.GetValue() == 'microstrip':
-            paramArr = [["width", width],
-                        ["length", length],
-                        ["x0", x0],
-                        ["y0", y0],
-                        ["gap", gap],
-                        ["strip_width", float(self.fieldStripWidth.GetValue())]]
+            stripWidth = float(self.fieldStripWidth.GetValue())
         else:
-            paramArr = [["width", width],
-                        ["length", length],
-                        ["x0", x0],
-                        ["y0", y0],
-                        ["gap", gap]]
+            stripWidth = None
+            
+        paramArr = [["width", width],
+            ["length", length],
+            ["x0", x0],
+            ["y0", y0],
+            ["gap", gap],
+            ["strip_width", stripWidth],
+            ["substrate_width", subWidth],
+            ["substrate_length", subLength],
+            ["ground_plane_width", subWidth],
+            ["ground_plane_length", subLength],
+            #["conductor_height", None],
+            ["substrate_height", subHeight]]
+        
+       
         return paramArr
 
     

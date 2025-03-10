@@ -132,12 +132,12 @@ oEditor.CreateRectangle(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$length/2",
-		"YPosition:="		, "-$length/2",
-		"ZPosition:="		, "-$length/2",
-		"XSize:="		, "$length",
-		"YSize:="		, "$length",
-		"ZSize:="		, "$length"
+		"XPosition:="		, "-$length",
+		"YPosition:="		, "-$length",
+		"ZPosition:="		, "-$length",
+		"XSize:="		, "$length*2",
+		"YSize:="		, "$length*2",
+		"ZSize:="		, "$length*2"
 	], 
 	[
 		"NAME:Attributes",

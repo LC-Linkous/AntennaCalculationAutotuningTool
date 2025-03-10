@@ -106,7 +106,7 @@ class BayesianOptimization:
             self.Fvals = []
             self.init_points = init_points    
             self.xi = xi
-            self.n_restarts = n_restarts
+            self.n_restarts = int(n_restarts) 
             self.new_point = []
     
             # state machine control flow
@@ -201,6 +201,22 @@ class BayesianOptimization:
         dim = len(self.lbound)
         min_val = 1
         min_x = None # may stay none if it doesn't minimize
+
+
+        print("propose_location()")
+        print("self.lbound.reshape(1,-1)")
+        print(self.lbound.reshape(1,-1))
+        print("self.lbound.reshape(1,-1)[0]")
+        print(self.lbound.reshape(1,-1)[0])
+        print("self.ubound.reshape(1,-1)")
+        print(self.ubound.reshape(1,-1))
+        print("self.ubound.reshape(1,-1)[0]")
+        print(self.ubound.reshape(1,-1)[0])
+        print("self.n_restarts")
+        print(self.n_restarts)
+        print("dim")
+        print(dim)
+
 
         for x0 in self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], size=(self.n_restarts, dim)):
             x, f_x = self.minimize(x0)

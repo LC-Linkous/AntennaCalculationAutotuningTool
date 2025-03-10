@@ -27,7 +27,7 @@ import project.config.antennaCAT_config as c
 INPUT_BOX_WIDTH = 70
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
-DESIGN_REPLICATION_ANTENNA = c.DESIGN_REPLICATION_E
+DESIGN_REPLICATION_ANTENNA = c.DESIGN_REPLICATION_COPLANAR_KEYHOLE
 
 class CoplanarKeyholeOptionsPage(wx.Panel):
     def __init__(self, parent):
@@ -35,41 +35,37 @@ class CoplanarKeyholeOptionsPage(wx.Panel):
         self.parent = parent
         self.SetBackgroundColour(MAIN_BACKGROUND_COLOR)
 
+        lblSubstrateHeight = wx.StaticText(self, label="Substrate Height (mm):")
+        self.fieldSubstrateHeight = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateHeight.SetValue("1.6")
         lblConductor = wx.StaticText(self, label="Conductor Material (simulation req):")
         conductorTypes = list(materials_dict.keys())
         self.conductorDropDown = wx.ComboBox(self, choices=conductorTypes, style=wx.CB_READONLY) # size=(INPUT_BOX_WIDTH, 20),
         self.conductorDropDown.SetValue('copper')
         self.conductorDropDown.Bind(wx.EVT_COMBOBOX, self.conductorSelected)
-        lblGroundDist = wx.StaticText(self, label="Distance from Ground Plane (mm):")
-        self.fieldGroundDist = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldGroundDist.SetValue("15")
-
-        lblX = wx.StaticText(self, label="X (mm):")
-        self.fieldX = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldX.SetValue("0")
-        lblLs = wx.StaticText(self, label="Ls (mm):")
-        self.fieldLs = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldLs.SetValue("20")
-        lblLength = wx.StaticText(self, label="Length (mm):")
-        self.fieldLength = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldLength.SetValue("30")
-        lblGroundplaneLength = wx.StaticText(self, label="Groundplane Length (mm):")
-        self.fieldGroundplaneLength = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldGroundplaneLength.SetValue("125")
-
-
-        lblPs = wx.StaticText(self, label="Ps (mm):")
-        self.fieldPs = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldPs.SetValue("7.5")
-        lblWs = wx.StaticText(self, label="Ws (mm):")
-        self.fieldWs = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldWs.SetValue("5")
-        lblWidth = wx.StaticText(self, label="Width (mm):")
-        self.fieldWidth = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldWidth.SetValue("30")
-        lblGroundplaneWidth = wx.StaticText(self, label="Groundplane Width (mm):")
-        self.fieldGroundplaneWidth = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldGroundplaneWidth.SetValue("150")
+        lblSimSubstrate = wx.StaticText(self, label="Substrate Material (simulation req):")
+        substrateTypes = list(materials_dict.keys())
+        self.substrateDropDown = wx.ComboBox(self, choices=substrateTypes,  style=wx.CB_READONLY) #size=(INPUT_BOX_WIDTH, 20),
+        self.substrateDropDown.SetValue('FR4_epoxy')
+        
+        lblOuterRadius = wx.StaticText(self, label="Outer Radius (mm):")
+        self.fieldOuterRadius = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldOuterRadius.SetValue("17.6")
+        lblInnerRadius = wx.StaticText(self, label="Inner Radius (mm):")
+        self.fieldInnerRadius = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldInnerRadius.SetValue("2.1")
+        lblFeedLength = wx.StaticText(self, label="Feed Length (mm):")
+        self.fieldFeedLength = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldFeedLength.SetValue("29.0")
+        lblFeedWidth = wx.StaticText(self, label="Feed Width (mm):")
+        self.fieldFeedWidth = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldFeedWidth.SetValue("4")
+        lblSubstrateWidth = wx.StaticText(self, label="Substrate Width (mm): ")
+        self.fieldSubstrateWidth  = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateWidth.SetValue("50")
+        lblSubstrateLength = wx.StaticText(self, label="Substrate Length (mm): ")
+        self.fieldSubstrateLength  = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateLength.SetValue("50")
 
 
         #patch image
@@ -78,7 +74,7 @@ class CoplanarKeyholeOptionsPage(wx.Panel):
         imgFile = DESIGN_REPLICATION_ANTENNA
         bMap = wx.Bitmap(imgFile, wx.BITMAP_TYPE_PNG)
         img = wx.Bitmap.ConvertToImage(bMap)
-        img = img.Scale(275, 250, wx.IMAGE_QUALITY_HIGH)
+        img = img.Scale(285, 250, wx.IMAGE_QUALITY_HIGH)
         antennaImg = wx.StaticBitmap(img_panel, wx.ID_ANY)
         antennaImg.SetBitmap(img.ConvertToBitmap()) 
 
@@ -87,13 +83,14 @@ class CoplanarKeyholeOptionsPage(wx.Panel):
         boxInputLeft = wx.BoxSizer(wx.VERTICAL)
         boxInputRight = wx.BoxSizer(wx.VERTICAL)
         boxInputLeft.Add(lblConductor, 0, wx.ALL|wx.EXPAND, border=7)
-        boxInputLeft.Add(lblGroundDist, 0, wx.ALL|wx.EXPAND, border=7)
-
+        boxInputLeft.Add(lblSimSubstrate, 0, wx.ALL|wx.EXPAND, border=7)
+        boxInputLeft.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)        
         boxInputRight.Add(self.conductorDropDown, 0, wx.ALL|wx.EXPAND, border=3)
-        boxInputRight.Add(self.fieldGroundDist, 0, wx.ALL|wx.EXPAND, border=3)
-
+        boxInputRight.Add(self.substrateDropDown, 0, wx.ALL|wx.EXPAND, border=3)
+        boxInputRight.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputSizer.Add(boxInputLeft, 0, wx.ALL|wx.EXPAND,border=10)
         boxInputSizer.Add(boxInputRight, 0, wx.ALL|wx.EXPAND,border=10)
+
 
         #small input sizer
         boxSmallInputSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -102,25 +99,23 @@ class CoplanarKeyholeOptionsPage(wx.Panel):
         boxSmallInput3 = wx.BoxSizer(wx.VERTICAL)
         boxSmallInput4 = wx.BoxSizer(wx.VERTICAL)
 
-        boxSmallInput1.Add(lblX, 0, wx.ALL|wx.EXPAND, border=3)
-        boxSmallInput1.Add(lblLs, 0, wx.ALL|wx.EXPAND, border=5)
-        boxSmallInput1.Add(lblLength, 0, wx.ALL|wx.EXPAND, border=5)
-        boxSmallInput1.Add(lblGroundplaneLength, 0, wx.ALL|wx.EXPAND, border=5)
 
-        boxSmallInput2.Add(self.fieldX, 0, wx.ALL|wx.EXPAND, border=3)
-        boxSmallInput2.Add(self.fieldLs, 0, wx.ALL|wx.EXPAND, border=3)
-        boxSmallInput2.Add(self.fieldLength, 0, wx.ALL|wx.EXPAND, border=3)
-        boxSmallInput2.Add(self.fieldGroundplaneLength, 0, wx.ALL|wx.EXPAND, border=3)
+        boxSmallInput1.Add(lblSubstrateLength, 0, wx.ALL|wx.EXPAND, border=3)
+        boxSmallInput1.Add(lblOuterRadius, 0, wx.ALL|wx.EXPAND, border=3)
+        boxSmallInput1.Add(lblFeedWidth, 0, wx.ALL|wx.EXPAND, border=5)
+        
+        boxSmallInput2.Add(self.fieldSubstrateLength, 0, wx.ALL|wx.EXPAND, border=3)
+        boxSmallInput2.Add(self.fieldOuterRadius, 0, wx.ALL|wx.EXPAND, border=3)
+        boxSmallInput2.Add(self.fieldFeedWidth, 0, wx.ALL|wx.EXPAND, border=3)
 
-        boxSmallInput3.Add(lblPs, 0, wx.ALL|wx.EXPAND, border=5)
-        boxSmallInput3.Add(lblWs, 0, wx.ALL|wx.EXPAND, border=5)
-        boxSmallInput3.Add(lblWidth, 0, wx.ALL|wx.EXPAND, border=5)
-        boxSmallInput3.Add(lblGroundplaneWidth, 0, wx.ALL|wx.EXPAND, border=5)
+        boxSmallInput3.Add(lblSubstrateWidth, 0, wx.ALL|wx.EXPAND, border=5)
+        boxSmallInput3.Add(lblInnerRadius, 0, wx.ALL|wx.EXPAND, border=5)
+        boxSmallInput3.Add(lblFeedLength, 0, wx.ALL|wx.EXPAND, border=5)
+        
+        boxSmallInput4.Add(self.fieldSubstrateWidth, 0, wx.ALL|wx.EXPAND, border=3)
+        boxSmallInput4.Add(self.fieldInnerRadius, 0, wx.ALL|wx.EXPAND, border=3)
+        boxSmallInput4.Add(self.fieldFeedLength, 0, wx.ALL|wx.EXPAND, border=3)
 
-        boxSmallInput4.Add(self.fieldPs, 0, wx.ALL|wx.EXPAND, border=3)
-        boxSmallInput4.Add(self.fieldWs, 0, wx.ALL|wx.EXPAND, border=3)
-        boxSmallInput4.Add(self.fieldWidth, 0, wx.ALL|wx.EXPAND, border=3)       
-        boxSmallInput4.Add(self.fieldGroundplaneWidth, 0, wx.ALL|wx.EXPAND, border=3)
 
         boxSmallInputSizer.Add(boxSmallInput1, 0, wx.ALL|wx.EXPAND,border=5)
         boxSmallInputSizer.Add(boxSmallInput2, 0, wx.ALL|wx.EXPAND,border=5)
@@ -139,33 +134,34 @@ class CoplanarKeyholeOptionsPage(wx.Panel):
     def conductorSelected(self,evt):
         txt = str(materials_dict[self.conductorDropDown.GetValue()])
 
-    def getFeatures(self):
-        features = [["conductor_material", self.conductorDropDown.GetValue()],
+    def getFeatures(self): #cannot change names without issues with the lead chars for scripting
+        features = [["substrate_material", self.substrateDropDown.GetValue()],
+                    ["conductor_material", self.conductorDropDown.GetValue()],
                     ["simulation_frequency", -1]]
 
         return features
     
     def getParams(self):
         paramArr = []
-        x = float(self.fieldX.GetValue())
-        l = float(self.fieldLength.GetValue())
-        Ls = float(self.fieldLs.GetValue())
-        Lg= float(self.fieldGroundplaneLength.GetValue())
-        Ps = float(self.fieldPs.GetValue())
-        Ws = float(self.fieldWs.GetValue())
-        w = float(self.fieldWidth.GetValue())
-        Wg = float(self.fieldGroundplaneWidth.GetValue())
-        h = float(self.fieldGroundDist.GetValue())
+        outerRad = float(self.fieldOuterRadius.GetValue())
+        innerRad = float(self.fieldInnerRadius.GetValue())
+        feedLength = float(self.fieldFeedLength.GetValue())
+        feedWidth = float(self.fieldFeedWidth.GetValue())
+        subWidth =float(self.fieldSubstrateWidth.GetValue())
+        subLength =float(self.fieldSubstrateLength.GetValue())  
+        subHeight = float(self.fieldSubstrateHeight.GetValue())
 
-        paramArr = [["X", x],
-                    ["L", l],
-                    ["Ls", Ls],
-                    ["Lg", Lg],
-                    ["Ps", Ps],
-                    ["Ws", Ws],
-                    ["W", w],
-                    ["Wg", Wg],
-                    ["h", h]]
+        paramArr = [["outer_radius", outerRad],
+                    ["inner_radius", innerRad],
+                    ["feed_length", feedLength],
+                    ["feed_width", feedWidth],
+                    ["gap_distance", .5*feedWidth], #not in original paper, but should be parameterized in sim. dist between the feeds
+                    ["substrate_width", subWidth],
+                    ["substrate_length", subLength],
+                    ["ground_plane_width", subWidth],
+                    ["ground_plane_length", subLength],
+                    #["conductor_height", None],
+                    ["substrate_height", subHeight]]
+
         return paramArr
 
-    

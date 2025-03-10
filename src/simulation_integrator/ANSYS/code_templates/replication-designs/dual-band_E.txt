@@ -470,12 +470,12 @@ oEditor.CreateCircle(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$Wg/2",
-		"YPosition:="		, "-$Wg/2",
-		"ZPosition:="		, "-$Wg/2",
-		"XSize:="		, "$Wg",
-		"YSize:="		, "$Wg",
-		"ZSize:="		, "$Wg"
+		"XPosition:="		, "-$Wg",
+		"YPosition:="		, "-$Wg",
+		"ZPosition:="		, "-$Wg",
+		"XSize:="		, "$Wg*2",
+		"YSize:="		, "$Wg*2",
+		"ZSize:="		, "$Wg*2"
 	], 
 	[
 		"NAME:Attributes",

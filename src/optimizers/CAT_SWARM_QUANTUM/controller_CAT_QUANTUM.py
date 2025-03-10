@@ -64,7 +64,7 @@ class CONTROLLER_CAT_SWARM_QUANTUM():
         OUT_VARS = int(optimizerParams['num_output'][0])                   # Number of output variables
         TARGETS = list(optimizerParams['target_values'][0])                # Target values for output
         E_TOL = float(optimizerParams['tolerance'][0])                     # Convergence Tolerance (This is a radius)       
-        MAXIT = float(optimizerParams['max_iterations'][0])                # Maximum allowed iterations 
+        MAXIT = int(optimizerParams['max_iterations'][0])                # Maximum allowed iterations 
         BOUNDARY = int(optimizerParams['boundary'][0])                     # int boundary 1 = random,      2 = reflecting
         BETA = float(optimizerParams['beta'][0])                           #Float constant controlling influence 
                                                                             #between the personal and global best positions                                                   #              3 = absorbing,   4 = invisible

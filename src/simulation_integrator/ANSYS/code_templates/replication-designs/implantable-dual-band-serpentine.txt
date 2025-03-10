@@ -770,12 +770,12 @@ oEditor.Subtract(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$Lsub/2",
-		"YPosition:="		, "-$Wsub/2",
-		"ZPosition:="		, "-$Wsub/2",
-		"XSize:="		, "$Lsub",
-		"YSize:="		, "$Wsub",
-		"ZSize:="		, "$Wsub"
+		"XPosition:="		, "-$Lsub",
+		"YPosition:="		, "-$Wsub",
+		"ZPosition:="		, "-$Wsub",
+		"XSize:="		, "$Lsub*2",
+		"YSize:="		, "$Wsub*2",
+		"ZSize:="		, "$Wsub*2"
 	], 
 	[
 		"NAME:Attributes",

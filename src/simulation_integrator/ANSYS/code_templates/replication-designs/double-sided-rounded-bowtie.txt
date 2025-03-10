@@ -1,0 +1,939 @@
+import ScriptEnv
+ScriptEnv.Initialize("Ansoft.ElectronicsDesktop")
+oDesktop.RestoreWindow()
+oProject = oDesktop.NewProject()
+INSERT_DESIGN_NETWORK_TYPE
+oProject.SaveAs(r"INSERT_PROJECT_NAME", True)
+oProject.ChangeProperty(
+	[
+		"NAME:AllTabs",
+		[
+			"NAME:ProjectVariableTab",
+			[
+				"NAME:PropServers", 
+				"ProjectVariables"
+			],
+			[
+				"NAME:NewProps",
+				[
+					"NAME:$w2",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_W2_VALUE"
+				],
+				[
+					"NAME:$w3",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_W3_VALUE"
+				],
+				[
+					"NAME:$w4",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_W4_VALUE"
+				],
+				[
+					"NAME:$w5",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_W5_VALUE"
+				],
+				[
+					"NAME:$w6",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_W6_VALUE"
+				],
+				[
+					"NAME:$w7",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_W7_VALUE"
+				],
+				[
+					"NAME:$w8",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_W8_VALUE"
+				],
+				[
+					"NAME:$l2",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_L2_VALUE"
+				],
+				[
+					"NAME:$l3",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_L3_VALUE"
+				],
+				[
+					"NAME:$l4",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_L4_VALUE"
+				],
+				[
+					"NAME:$l5",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_L5_VALUE"
+				],
+				[
+					"NAME:$l6",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_L6_VALUE"
+				],
+				[
+					"NAME:$l7",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_L7_VALUE"
+				],
+				[
+					"NAME:$gp_length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_GP_LENGTH_VALUE"
+				],
+				[
+					"NAME:$gp_width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_GP_WIDTH_VALUE"
+				],
+				[
+					"NAME:$depth",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUB_HEIGHT_VALUE"
+				],
+				[
+					"NAME:$sub_width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUB_WIDTH_VALUE"
+				],
+				[
+					"NAME:$sub_length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUB_LENGTH_VALUE"
+				]				
+			]
+		]
+	])
+oDesign = oProject.SetActiveDesign("HFSSDesign1")
+oEditor = oDesign.SetActiveEditor("3D Modeler")
+
+# create ground plane
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$gp_width/2 ",
+		"YStart:="		, "-$gp_length/2",
+		"ZStart:="		, "-$depth",
+		"Width:="		, "-$l2",
+		"Height:="		, "$gp_width",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "ground_plane",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_GROUND_PLANE_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# create substrate
+oEditor.CreateBox(
+	[
+		"NAME:BoxParameters",
+		"XPosition:="		, "-$sub_width/2",
+		"YPosition:="		, "-$sub_length/2",
+		"ZPosition:="		, "-$depth",
+		"XSize:="		, "$sub_width",
+		"YSize:="		, "$sub_length",
+		"ZSize:="		, "$depth"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "substrate",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_SUBSTRATE_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# create conductor
+
+# top wing
+#center feed
+# feed_2 is on the edge of the board
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2",
+		"YStart:="		, "-$w2/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "-$l2",
+		"Height:="		, "$w2",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "top_feed_2",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2-$l2",
+		"YStart:="		, "-$w3/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "-$l3",
+		"Height:="		, "$w3",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "top_feed_3",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2-$l2-$l3",
+		"YStart:="		, "-$w4/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "-$l4",
+		"Height:="		, "$w4",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "top_feed_4",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2-$l2-$l3-$l4",
+		"YStart:="		, "-$w5/2",
+		"ZStart:="		, "0mm",
+		"Width:="		, "-$l5",
+		"Height:="		, "$w5",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "top_feed_5",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreatePolyline(
+	[
+		"NAME:PolylineParameters",
+		"IsPolylineCovered:="	, True,
+		"IsPolylineClosed:="	, True,
+		[
+			"NAME:PolylinePoints",
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5)",
+				"Y:="			, "$w5/2",
+				"Z:="			, "0mm"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7)",
+				"Y:="			, "$w5/2",
+				"Z:="			, "0mm"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2) ",
+				"Y:="			, "$w5/2+$w6",
+				"Z:="			, "0mm"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"Y:="			, "$w5/2+$w6",
+				"Z:="			, "0mm"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5)",
+				"Y:="			, "$w5/2",
+				"Z:="			, "0mm"
+			]
+		],
+		[
+			"NAME:PolylineSegments",
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Line",
+				"StartIndex:="		, 0,
+				"NoOfPoints:="		, 2
+			],
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Line",
+				"StartIndex:="		, 1,
+				"NoOfPoints:="		, 2
+			],
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Line",
+				"StartIndex:="		, 2,
+				"NoOfPoints:="		, 2
+			],
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Line",
+				"StartIndex:="		, 3,
+				"NoOfPoints:="		, 2
+			]
+		],
+		[
+			"NAME:PolylineXSection",
+			"XSectionType:="	, "None",
+			"XSectionOrient:="	, "Auto",
+			"XSectionWidth:="	, "0mm",
+			"XSectionTopWidth:="	, "0mm",
+			"XSectionHeight:="	, "0mm",
+			"XSectionNumSegments:="	, "0",
+			"XSectionBendType:="	, "Corner"
+		]
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "top_wing",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+# box 
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2) ",
+		"YStart:="		, "$w5/2+$w6",
+		"ZStart:="		, "0mm",
+		"Width:="		, "$l6",
+		"Height:="		, "$w7",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "top_wing_box",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# arc
+
+oEditor.CreatePolyline(
+	[
+		"NAME:PolylineParameters",
+		"IsPolylineCovered:="	, True,
+		"IsPolylineClosed:="	, True,
+		[
+			"NAME:PolylinePoints",
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"Y:="			, "$w5/2+$w6+$w7",
+				"Z:="			, "0mm"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2)",
+				"Y:="			, "$w5/2+$w6+$w7+$w8",
+				"Z:="			, "0mm"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2)",
+				"Y:="			, "$w5/2+$w6+$w7",
+				"Z:="			, "0mm"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"Y:="			, "$w5/2+$w6+$w7",
+				"Z:="			, "0mm"
+			]
+		],
+		[
+			"NAME:PolylineSegments",
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Arc",
+				"StartIndex:="		, 0,
+				"NoOfPoints:="		, 3,
+				"NoOfSegments:="	, "0"
+			],
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Line",
+				"StartIndex:="		, 2,
+				"NoOfPoints:="		, 2
+			]
+		],
+		[
+			"NAME:PolylineXSection",
+			"XSectionType:="	, "None",
+			"XSectionOrient:="	, "Auto",
+			"XSectionWidth:="	, "0mm",
+			"XSectionTopWidth:="	, "0mm",
+			"XSectionHeight:="	, "0mm",
+			"XSectionNumSegments:="	, "0",
+			"XSectionBendType:="	, "Corner"
+		]
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "top_wing_arc",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+# unite
+oEditor.Unite(
+	[
+		"NAME:Selections",
+		"Selections:="		, "top_wing,top_wing_arc,top_wing_box,top_feed_5,top_feed_4,top_feed_3,top_feed_2"
+	], 
+	[
+		"NAME:UniteParameters",
+		"KeepOriginals:="	, False,
+		"TurnOnNBodyBoolean:="	, True
+	])
+
+
+
+
+# bottom wing
+#center feed
+# feed_2 is replaced by the ground_plane
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2-$l2",
+		"YStart:="		, "-$w3/2",
+		"ZStart:="		, "-$depth",
+		"Width:="		, "-$l3",
+		"Height:="		, "$w3",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "bottom_feed_3",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2-$l2-$l3",
+		"YStart:="		, "-$w4/2",
+		"ZStart:="		, "-$depth",
+		"Width:="		, "-$l4",
+		"Height:="		, "$w4",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "bottom_feed_4",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2-$l2-$l3-$l4",
+		"YStart:="		, "-$w5/2",
+		"ZStart:="		, "-$depth",
+		"Width:="		, "-$l5",
+		"Height:="		, "$w5",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "bottom_feed_5",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+oEditor.CreatePolyline(
+	[
+		"NAME:PolylineParameters",
+		"IsPolylineCovered:="	, True,
+		"IsPolylineClosed:="	, True,
+		[
+			"NAME:PolylinePoints",
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5)",
+				"Y:="			, "-$w5/2",
+				"Z:="			, "-$depth"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7)",
+				"Y:="			, "-$w5/2",
+				"Z:="			, "-$depth"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2) ",
+				"Y:="			, "-$w5/2-$w6",
+				"Z:="			, "-$depth"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"Y:="			, "-$w5/2-$w6",
+				"Z:="			, "-$depth"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5)",
+				"Y:="			, "-$w5/2",
+				"Z:="			, "-$depth"
+			]
+		],
+		[
+			"NAME:PolylineSegments",
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Line",
+				"StartIndex:="		, 0,
+				"NoOfPoints:="		, 2
+			],
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Line",
+				"StartIndex:="		, 1,
+				"NoOfPoints:="		, 2
+			],
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Line",
+				"StartIndex:="		, 2,
+				"NoOfPoints:="		, 2
+			],
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Line",
+				"StartIndex:="		, 3,
+				"NoOfPoints:="		, 2
+			]
+		],
+		[
+			"NAME:PolylineXSection",
+			"XSectionType:="	, "None",
+			"XSectionOrient:="	, "Auto",
+			"XSectionWidth:="	, "0mm",
+			"XSectionTopWidth:="	, "0mm",
+			"XSectionHeight:="	, "0mm",
+			"XSectionNumSegments:="	, "0",
+			"XSectionBendType:="	, "Corner"
+		]
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "bottom_wing",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+# box 
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+		"YStart:="		, "-$w5/2-$w6",
+		"ZStart:="		, "-$depth",
+		"Width:="		, "$l6",
+		"Height:="		, "-$w7",
+		"WhichAxis:="		, "Z"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "bottom_wing_box",
+		"Flags:="		, "",
+		"Color:="		, "(225 225 128)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# arc
+oEditor.CreatePolyline(
+	[
+		"NAME:PolylineParameters",
+		"IsPolylineCovered:="	, True,
+		"IsPolylineClosed:="	, True,
+		[
+			"NAME:PolylinePoints",
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"Y:="			, "-($w5/2+$w6+$w7)",
+				"Z:="			, "-$depth"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2)",
+				"Y:="			, "-($w5/2+$w6+$w7+$w8)",
+				"Z:="			, "-$depth"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2)",
+				"Y:="			, "-($w5/2+$w6+$w7)",
+				"Z:="			, "-$depth"
+			],
+			[
+				"NAME:PLPoint",
+				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"Y:="			, "-($w5/2+$w6+$w7)",
+				"Z:="			, "-$depth"
+			]
+		],
+		[
+			"NAME:PolylineSegments",
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Arc",
+				"StartIndex:="		, 0,
+				"NoOfPoints:="		, 3,
+				"NoOfSegments:="	, "0"
+			],
+			[
+				"NAME:PLSegment",
+				"SegmentType:="		, "Line",
+				"StartIndex:="		, 2,
+				"NoOfPoints:="		, 2
+			]
+		],
+		[
+			"NAME:PolylineXSection",
+			"XSectionType:="	, "None",
+			"XSectionOrient:="	, "Auto",
+			"XSectionWidth:="	, "0mm",
+			"XSectionTopWidth:="	, "0mm",
+			"XSectionHeight:="	, "0mm",
+			"XSectionNumSegments:="	, "0",
+			"XSectionBendType:="	, "Corner"
+		]
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "bottom_wing_arc",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"INSERT_CONDUCTOR_MATERIAL\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"ReferenceTemperature:=", "20cel",
+		"IsMaterialEditable:="	, True,
+		"IsSurfaceMaterialEditable:=", True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+# unite
+
+
+oEditor.Unite(
+	[
+		"NAME:Selections",
+		"Selections:="		, "bottom_wing,bottom_wing_box,bottom_wing_arc,bottom_feed_5,bottom_feed_4,bottom_feed_3,ground_plane"
+	], 
+	[
+		"NAME:UniteParameters",
+		"KeepOriginals:="	, False,
+		"TurnOnNBodyBoolean:="	, True
+	])
+
+
+# create the port
+oEditor.CreateRectangle(
+	[
+		"NAME:RectangleParameters",
+		"IsCovered:="		, True,
+		"XStart:="		, "$sub_length/2",
+		"YStart:="		, "-$w2/2",
+		"ZStart:="		, "-$depth",
+		"Width:="		, "$w2",
+		"Height:="		, "$depth",
+		"WhichAxis:="		, "X"
+	],
+	[
+		"NAME:Attributes",
+		"Name:="		, "port",
+		"Flags:="		, "",
+		"Color:="		, "(143 175 143)",
+		"Transparency:="	, 0,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+
+# draw the airbox
+
+oEditor.CreateBox(
+	[
+		"NAME:BoxParameters",
+		"XPosition:="		, "-$sub_length",
+		"YPosition:="		, "-$sub_width",
+		"ZPosition:="		, "-$sub_width",
+		"XSize:="		, "$sub_length*2",
+		"YSize:="		, "$sub_width*2",
+		"ZSize:="		, "$sub_width*2"
+	], 
+	[
+		"NAME:Attributes",
+		"Name:="		, "air_box",
+		"Flags:="		, "",
+		"Color:="		, "(128 255 255)",
+		"Transparency:="	, 0.95,
+		"PartCoordinateSystem:=", "Global",
+		"UDMId:="		, "",
+		"MaterialValue:="	, "\"vacuum\"",
+		"SurfaceMaterialValue:=", "\"\"",
+		"SolveInside:="		, True,
+		"ShellElement:="	, False,
+		"ShellElementThickness:=", "0mm",
+		"IsMaterialEditable:="	, True,
+		"UseMaterialAppearance:=", False,
+		"IsLightweight:="	, False
+	])
+
+
+oModule = oDesign.GetModule("BoundarySetup")
+oModule.AssignFiniteCond(
+	[
+		"NAME:FiniteCond1",
+		"Objects:="		, ["top_wing","bottom_wing"],
+		"UseMaterial:="		, True,
+		"Material:="		, "INSERT_CONDUCTOR_BOUNDARY_MATERIAL", 
+		"UseThickness:="	, False,
+		"Roughness:="		, "0um",
+		"InfGroundPlane:="	, False,
+		"IsTwoSided:="		, False,
+		"IsInternal:="		, True
+	])
+
+
+# generic lumped approach 
+
+INSERT_PORT_SETUP
+
+
+oModule.AssignRadiation(
+	[
+		"NAME:Rad1",
+		"Objects:="		, ["air_box"]
+	])
+
+
+#oProject.Save()
+#end antenna generation

@@ -3,6 +3,15 @@
 #   '.src/gui/page_design/generator/replication/input_panels/panel_rectangularPatch.py'
 #   Class interfacing with the replicator class
 #
+# 1. A. Z. Hood and E. Topsakal, "Particle swarm optimization for dual-band implantable 
+# antennas," 2007 IEEE Antennas and Propagation Society International Symposium, Honolulu,
+#  HI, USA, 2007, pp. 3209-3212, doi: 10.1109/APS.2007.4396219.
+#
+# 2. N. Jin and Y. Rahmat-Samii, "Parallel particle swarm optimization and finite- 
+# difference time-domain (PSO/FDTD) algorithm for multiband and wide-band patch antenna 
+# designs," in IEEE Transactions on Antennas and Propagation, vol. 53, no. 11, pp. 
+# 3459-3468, Nov. 2005, doi: 10.1109/TAP.2005.858842.
+#
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
 #   Last update: December 7, 2023
 ##--------------------------------------------------------------------\
@@ -131,12 +140,14 @@ class EOptionsPage(wx.Panel):
         txt = str(materials_dict[self.conductorDropDown.GetValue()])
 
     def getFeatures(self):
-        features = [["conductor_material", self.conductorDropDown.GetValue()],
+
+        features = [["substrate_material", None],
+                    ["conductor_material", self.conductorDropDown.GetValue()],
                     ["simulation_frequency", -1]]
 
         return features
     
-    def getParams(self):
+    def getParams(self):  #cannot change names without issues with the lead chars for scripting
         paramArr = []
         x = float(self.fieldX.GetValue())
         l = float(self.fieldLength.GetValue())
@@ -147,16 +158,20 @@ class EOptionsPage(wx.Panel):
         w = float(self.fieldWidth.GetValue())
         Wg = float(self.fieldGroundplaneWidth.GetValue())
         h = float(self.fieldGroundDist.GetValue())
+                
 
         paramArr = [["X", x],
                     ["L", l],
                     ["Ls", Ls],
-                    ["Lg", Lg],
                     ["Ps", Ps],
                     ["Ws", Ws],
                     ["W", w],
-                    ["Wg", Wg],
-                    ["h", h]]
+                    ["substrate_width", None],
+                    ["substrate_length", None],
+                    ["ground_plane_width", Wg],
+                    ["ground_plane_length", Lg],
+                    #["conductor_height", None],
+                    ["substrate_height", h]]
         return paramArr
 
     

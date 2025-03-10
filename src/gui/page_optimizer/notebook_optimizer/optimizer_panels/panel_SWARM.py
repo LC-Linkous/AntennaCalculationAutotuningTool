@@ -22,6 +22,7 @@ from gui.page_optimizer.notebook_optimizer.optimizer_panels.swarm_settings_panel
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.swarm_settings_panels.panel_cat_swarm import Cat_Swarm_Panel
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.swarm_settings_panels.panel_sand_cat import Sand_Cat_Panel
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.swarm_settings_panels.panel_chicken_swarm import Chicken_Swarm_Panel
+from gui.page_optimizer.notebook_optimizer.optimizer_panels.swarm_settings_panels.panel_chicken_swarm_2015 import Chicken_Swarm_2015_Panel
 
 
 #directories
@@ -63,7 +64,7 @@ class SWARMPage(wx.Panel):
         self.notebook_settings = SettingsNotebook(self)
 
         boxSelect = wx.StaticBox(self, label='Select an Optimizer:', size=(300, -1))
-        optimizerTypes = ['PSO_basic', 'PSO_time_modulation', 'cat_swarm', 'sand_cat_swarm', 'chicken_swarm']
+        optimizerTypes = ['PSO_basic', 'PSO_time_modulation', 'cat_swarm', 'sand_cat_swarm', 'chicken_swarm', 'improved_chicken_2015']
         self.optimizerDropDown = wx.ComboBox(boxSelect, choices=optimizerTypes, id=1,style=wx.CB_READONLY, size=(280, -1))
         self.optimizerDropDown.SetValue(optimizerTypes[0])
         self.optimizerDropDown.Bind(wx.EVT_COMBOBOX, self.optimizerDesignSelectionChange)
@@ -316,6 +317,7 @@ class TuningPage(wx.Panel):
         self.cat_swarm_panel = Cat_Swarm_Panel(self)
         self.sand_cat_panel = Sand_Cat_Panel(self)
         self.chicken_swarm_panel = Chicken_Swarm_Panel(self)
+        self.chicken_swarm_2015_panel = Chicken_Swarm_2015_Panel(self)
 
         pageSizer = wx.BoxSizer(wx.VERTICAL)
         pageSizer.Add(self.pso_basic_panel, 1, wx.ALL|wx.EXPAND, border=3)
@@ -323,6 +325,7 @@ class TuningPage(wx.Panel):
         pageSizer.Add(self.cat_swarm_panel, 1, wx.ALL|wx.EXPAND, border=3)
         pageSizer.Add(self.sand_cat_panel, 1, wx.ALL|wx.EXPAND, border=3)
         pageSizer.Add(self.chicken_swarm_panel, 1, wx.ALL|wx.EXPAND, border=3)
+        pageSizer.Add(self.chicken_swarm_2015_panel, 1, wx.ALL|wx.EXPAND, border=3)
         self.SetSizer(pageSizer)
 
         
@@ -330,6 +333,7 @@ class TuningPage(wx.Panel):
         self.cat_swarm_panel.Hide()
         self.sand_cat_panel.Hide()
         self.chicken_swarm_panel.Hide()
+        self.chicken_swarm_2015_panel.Hide()
         self.pso_basic_panel.Show()
 
     def set_optimizer_tuning_panel(self, txt):
@@ -348,6 +352,9 @@ class TuningPage(wx.Panel):
         elif txt == 'chicken_swarm':
             self.hideEverythingAndShowSinglePanel(self.chicken_swarm_panel)
             optimizerName = "CHICKEN_SWARM"        
+        elif txt == 'improved_chicken_2015':
+            self.hideEverythingAndShowSinglePanel(self.chicken_swarm_2015_panel)
+            optimizerName = "CHICKEN_2015"
         else:
             print("ERROR in panel_swarm.py unknown optimizer selected")
 
@@ -370,6 +377,8 @@ class TuningPage(wx.Panel):
             df, noError = self.sand_cat_panel.getOptimizerInputs()
         elif optimizerName == "CHICKEN_SWARM" :
             df, noError = self.chicken_swarm_panel.getOptimizerInputs()
+        elif optimizerName == "CHICKEN_2015":
+            df, noError = self.chicken_swarm_2015_panel.getOptimizerInputs()
         else:
             print("ERROR: optimizer name not recognized in panel_SWARM. Select an option from the dropdown menu to continue!")
 

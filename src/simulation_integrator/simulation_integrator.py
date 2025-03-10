@@ -13,7 +13,6 @@
 #   * reportExportTemplateGen()
 #
 #
-#   NOTE: Redoing with the updated ANSYS template to bring everything up to date
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
 #   Last update: November 21, 2024
@@ -235,40 +234,52 @@ class SimulationIntegrator():
             if (aType == 'rectangular_patch') or (aType == 'rep_rectangular_patch'):
                 w = self.DC.getParamsByName("width", unconverted=True)
                 l = self.DC.getParamsByName("length", unconverted=True)
-                d = self.DC.getFeaturesByName("substrate_height")
+                d = self.DC.getParamsByName("substrate_height", unconverted=True)
                 x0 = self.DC.getParamsByName("x0", unconverted=True)
                 y0 = self.DC.getParamsByName("y0", unconverted=True)
                 g = self.DC.getParamsByName("gap", unconverted=True)
                 gp = float(l)*2         
+                groundLength = self.DC.getParamsByName("ground_plane_length", unconverted=True)
+                groundWidth = self.DC.getParamsByName("ground_plane_width", unconverted=True)
+                substrateLength = self.DC.getParamsByName("substrate_length", unconverted=True)
+                substrateWidth =self.DC.getParamsByName("substrate_width", unconverted=True)
+                #conductorHeight = self.DC.getParamsByName("conductor_height", unconverted=True)
+
                 conductorMaterial = self.DC.getFeaturesByName("conductor_material")
                 groundMaterial = self.DC.getFeaturesByName("conductor_material")
                 substrateMaterial = self.DC.getFeaturesByName("substrate_material")
+
+
+
                 fType = features["feed_type"][0]
                 if fType =="microstrip":
                     sw = self.DC.getParamsByName("strip_width", unconverted=True)
                     self.SO.addCommentsToFile("microstrip patch antenna generated through GUI")
                     #TODO: parse this out - the lower level of the SO should 
                     # take care of the name inputs
-                    self.SO.patchStripFedScriptGenerator(w, l,d, sw, x0, y0, g, gp, 
-                                                            conductorMaterial, groundMaterial,substrateMaterial,
-                                                            units="mm")
+                    self.SO.patchStripFedScriptGenerator(w, l, sw, x0, y0, g, #w, l,d, sw, x0, y0, g, gp, 
+                                                         groundLength, groundWidth, d,substrateLength, substrateWidth,
+                                                         conductorMaterial, groundMaterial,substrateMaterial,
+                                                         units="mm")
                 else: #probe fed template
                     self.SO.addCommentsToFile("probe fed patch antenna generated through GUI")
-                    self.SO.patchProbeFedScriptGenerator(w, l, d, x0, y0, gp,
-                                                            cMaterial=conductorMaterial, gpMaterial=groundMaterial, sMaterial=substrateMaterial,
-                                                            units="mm")
+                    self.SO.patchProbeFedScriptGenerator(w, l, x0, y0, # w, l, x0, y0, gp,
+                                                        groundLength, groundWidth, d, substrateLength, substrateWidth,
+                                                        cMaterial=conductorMaterial, gpMaterial=groundMaterial, sMaterial=substrateMaterial,
+                                                        units="mm")
             elif (aType == 'half_wave_dipole') or (aType == 'rep_half_wave_dipole'):
                 l = self.DC.getParamsByName("half_length", unconverted=True)
-                rad = self.DC.getFeaturesByName('conductor_radius')
-                fg = self.DC.getFeaturesByName('feed_gap')
+                rad = self.DC.getParamsByName('conductor_radius', unconverted=True)
+                fg = self.DC.getParamsByName('feed_gap', unconverted=True)
                 conductorName = self.DC.getFeaturesByName("conductor_material")
                 self.SO.halfWaveDipoleScriptGenerator(l, rad, fg, cMaterial=conductorName, units="mm")
+                
 
-            elif aType == 'quarter_wave_monopole':
+            elif (aType == 'quarter_wave_monopole') or (aType == 'rep_quarter_wave_monopole'):
                 l = self.DC.getParamsByName("length", unconverted=True)
-                rad = self.DC.getFeaturesByName('conductor_radius')
-                gp = self.DC.getFeaturesByName('ground_plane_radius')
-                fg = self.DC.getFeaturesByName('feed_gap')
+                rad = self.DC.getParamsByName('conductor_radius', unconverted=True)
+                gp = self.DC.getParamsByName('ground_plane_radius', unconverted=True)
+                fg = self.DC.getParamsByName('feed_gap', unconverted=True)
                 conductorName = self.DC.getFeaturesByName("conductor_material")
                 self.SO.quarterWaveMonopoleScriptGenerator(l, rad, gp, fg, cMaterial=conductorName, units="mm")
 
@@ -276,41 +287,52 @@ class SimulationIntegrator():
                 x = self.DC.getParamsByName("X", unconverted=True)
                 l = self.DC.getParamsByName("L", unconverted=True)
                 ls = self.DC.getParamsByName("Ls", unconverted=True)
-                lg = self.DC.getParamsByName("Lg", unconverted=True)
+                lg = self.DC.getParamsByName("ground_plane_length", unconverted=True)
                 ps = self.DC.getParamsByName("Ps", unconverted=True)
                 ws = self.DC.getParamsByName("Ws", unconverted=True)
                 w = self.DC.getParamsByName("W", unconverted=True)
-                wg = self.DC.getParamsByName("Wg", unconverted=True)
+                wg = self.DC.getParamsByName("ground_plane_width", unconverted=True)
+                #conductorHeight = self.DC.getParamsByName("conductor_height", unconverted=True)
+                #no substrate
                 conductorName = self.DC.getFeaturesByName("conductor_material")
                 groundMaterial = self.DC.getFeaturesByName("conductor_material")
-                self.SO.EMicrostripFedScriptGenerator(x, l, ls, lg, ps, ws, w, wg, cMaterial=conductorName, gpMaterial=groundMaterial, units="mm")
+
+
+                self.SO.EMicrostripFedScriptGenerator(x, l, ls, lg, ps, ws, w, wg, 
+                                                      cMaterial=conductorName, gpMaterial=groundMaterial, units="mm")
 
             elif aType == 'rep_slotted_r_patch':
                 Lr = self.DC.getParamsByName("Lr", unconverted=True)
                 Lh = self.DC.getParamsByName("Lh", unconverted=True)
                 Lv = self.DC.getParamsByName("Lv", unconverted=True)
                 l = self.DC.getParamsByName("L", unconverted=True)
-                Lg= self.DC.getParamsByName("Lg", unconverted=True)
+                Lg= self.DC.getParamsByName("substrate_length", unconverted=True)
                 fx = self.DC.getParamsByName("fx", unconverted=True)
                 Pr = self.DC.getParamsByName("Pr", unconverted=True)
                 Wr = self.DC.getParamsByName("Wr", unconverted=True)
                 Wu = self.DC.getParamsByName("Wu", unconverted=True)
                 w = self.DC.getParamsByName("W", unconverted=True)
-                Wg = self.DC.getParamsByName("Wg", unconverted=True)
+                Wg = self.DC.getParamsByName("substrate_width", unconverted=True)
                 fy = self.DC.getParamsByName("fy", unconverted=True)
-                d = self.DC.getParamsByName("d", unconverted=True)
+                d = self.DC.getParamsByName("substrate_height", unconverted=True)
+                #conductorHeight = self.DC.getParamsByName("conductor_height", unconverted=True)
+                groundLength = self.DC.getParamsByName("ground_plane_length", unconverted=True)
+                groundWidth = self.DC.getParamsByName("ground_plane_width", unconverted=True)
+                
                 conductorName = self.DC.getFeaturesByName("conductor_material")
                 groundMaterial = self.DC.getFeaturesByName("conductor_material")
                 substrateMaterial = self.DC.getFeaturesByName("substrate_material")
-                self.SO.slottedRectangularPatchScriptGenerator(Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg,fy, d,
+                
+                self.SO.slottedRectangularPatchScriptGenerator(Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg,fy, # Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg,fy, d,
+                                                               groundLength, groundWidth, substrateHeight=d,substrateLength=Lg, substrateWidth=Wg,
                                                                cMaterial=conductorName, gpMaterial=groundMaterial, sMaterial=substrateMaterial,
                                                                units="mm")
 
             elif aType == 'rep_db_serpentine':                    
                 lp = self.DC.getParamsByName("Lp", unconverted=True)
-                lsub = self.DC.getParamsByName("Lsub", unconverted=True)
+                lsub = self.DC.getParamsByName("substrate_length", unconverted=True)
                 wp = self.DC.getParamsByName("Wp", unconverted=True)
-                wsub = self.DC.getParamsByName("Wsub", unconverted=True)
+                wsub = self.DC.getParamsByName("substrate_width", unconverted=True)
                 ps1 = self.DC.getParamsByName("Ps1", unconverted=True)
                 ls1 = self.DC.getParamsByName("Ls1", unconverted=True)
                 ws1 = self.DC.getParamsByName("Ws1", unconverted=True)
@@ -327,14 +349,42 @@ class SimulationIntegrator():
                 fy = self.DC.getParamsByName("Fy", unconverted=True)
                 px = self.DC.getParamsByName("Px", unconverted=True)
                 py = self.DC.getParamsByName("Py", unconverted=True)
-                d = self.DC.getParamsByName("d", unconverted=True)
-               
+                d = self.DC.getParamsByName("substrate_height", unconverted=True)
+                
+                groundLength = self.DC.getParamsByName("ground_plane_length", unconverted=True)
+                groundWidth = self.DC.getParamsByName("ground_plane_width", unconverted=True)
+                #conductorHeight = self.DC.getParamsByName("conductor_height", unconverted=True)
 
                 conductorName = self.DC.getFeaturesByName("conductor_material")
                 groundMaterial = self.DC.getFeaturesByName("conductor_material")
                 substrateMaterial = self.DC.getFeaturesByName("substrate_material")
-                self.SO.dualBandSerpentineScriptGenerator(fy, px, py, d, lp, lsub, wp, wsub,
-                                                           ps1, ls1, ws1, ps2, ls2, ws2, ps3, ls3, ws3, ps4, ls4, ws4, lc,
+                
+                self.SO.dualBandSerpentineScriptGenerator(fy, px, py, lp, wp, #fy, px, py, d, lp, lsub, wp, wsub,
+                                                        ps1, ls1, ws1, ps2, ls2, ws2,
+                                                        ps3, ls3, ws3, ps4, ls4, ws4, lc,
+                                                        groundLength, groundWidth, substrateHeight=d, substrateLength=lsub, substrateWidth=wsub,
+                                                        cMaterial=conductorName, gpMaterial=groundMaterial, sMaterial=substrateMaterial,
+                                                        units="mm")
+
+            elif aType == 'rep_coplanar_keyhole':                    
+                outerRad = self.DC.getParamsByName("outer_radius", unconverted=True)
+                innerRad = self.DC.getParamsByName("inner_radius", unconverted=True)
+                feedWidth = self.DC.getParamsByName("feed_width", unconverted=True)
+                inset = self.DC.getParamsByName("feed_length", unconverted=True)
+                gapDist = self.DC.getParamsByName("gap_distance", unconverted=True)
+                #conductorHeight = self.DC.getParamsByName("conductor_height", unconverted=True)
+                groundLength = self.DC.getParamsByName("ground_plane_length", unconverted=True)
+                groundWidth = self.DC.getParamsByName("ground_plane_width", unconverted=True)
+                substrateLength = self.DC.getParamsByName("substrate_length", unconverted=True)
+                substrateWidth =self.DC.getParamsByName("substrate_width", unconverted=True)
+                d = self.DC.getParamsByName("substrate_height", unconverted=True)
+
+                conductorName = self.DC.getFeaturesByName("conductor_material")
+                groundMaterial = self.DC.getFeaturesByName("conductor_material")
+                substrateMaterial = self.DC.getFeaturesByName("substrate_material")
+
+                self.SO.coplanarKeyholeScriptGenerator(outerRad, innerRad, feedWidth, inset, gapDist, #outerRad, innerRad, feedWidth, inset, gapDist, d,
+                                                        groundLength, groundWidth, d, substrateLength, substrateWidth,
                                                         cMaterial=conductorName, gpMaterial=groundMaterial, sMaterial=substrateMaterial,
                                                         units="mm")
 
@@ -344,16 +394,114 @@ class SimulationIntegrator():
                 feedWidth = self.DC.getParamsByName("feed_width", unconverted=True)
                 inset = self.DC.getParamsByName("inset", unconverted=True)
                 gapDist = self.DC.getParamsByName("gap_distance", unconverted=True)
+                d = self.DC.getParamsByName("substrate_height", unconverted=True)
+                #conductorHeight = self.DC.getParamsByName("conductor_height", unconverted=True)
+                groundLength = self.DC.getParamsByName("ground_plane_length", unconverted=True)
+                groundWidth = self.DC.getParamsByName("ground_plane_width", unconverted=True)
+                substrateLength = self.DC.getParamsByName("substrate_length", unconverted=True)
+                substrateWidth =self.DC.getParamsByName("substrate_width", unconverted=True)
 
                 conductorName = self.DC.getFeaturesByName("conductor_material")
                 groundMaterial = self.DC.getFeaturesByName("conductor_material")
                 substrateMaterial = self.DC.getFeaturesByName("substrate_material")
-                self.SO.CircularLoopScriptGenerator(outerRad, innerRad, feedWidth, inset, gapDist,
+                self.SO.circularLoopScriptGenerator(outerRad, innerRad, feedWidth, inset, gapDist,
+                                                    groundLength, groundWidth, d,substrateLength, substrateWidth,
                                                         cMaterial=conductorName, gpMaterial=groundMaterial, sMaterial=substrateMaterial,
-                                                        units="mm")
+                                                        units="mm") 
+
+            elif aType == 'rep_square_loop':                    
+                l = self.DC.getParamsByName("length", unconverted=True)
+                w = self.DC.getParamsByName("width", unconverted=True)
+                feedWidth = self.DC.getParamsByName("feed_width", unconverted=True)
+                gapDist = self.DC.getParamsByName("gap_distance", unconverted=True)
+                d = self.DC.getParamsByName("substrate_height", unconverted=True)
+                #conductorHeight = self.DC.getParamsByName("conductor_height", unconverted=True)
+                groundLength = self.DC.getParamsByName("ground_plane_length", unconverted=True)
+                groundWidth = self.DC.getParamsByName("ground_plane_width", unconverted=True)
+                substrateLength = self.DC.getParamsByName("substrate_length", unconverted=True)
+                substrateWidth =self.DC.getParamsByName("substrate_width", unconverted=True)
+
+                conductorName = self.DC.getFeaturesByName("conductor_material")
+                groundMaterial = self.DC.getFeaturesByName("conductor_material")
+                substrateMaterial = self.DC.getFeaturesByName("substrate_material")
+                self.SO.squareLoopScriptGenerator(l, w, feedWidth, gapDist,
+                                                        groundLength, groundWidth, d, substrateLength, substrateWidth,
+                                                        cMaterial=conductorName, gpMaterial=groundMaterial, sMaterial=substrateMaterial,
+                                                        units="mm") 
+
+            elif aType == 'rep_double_sided_bowtie':                    
+                w2 = self.DC.getParamsByName("W2", unconverted=True)
+                w3 = self.DC.getParamsByName("W3", unconverted=True)
+                w4 = self.DC.getParamsByName("W4", unconverted=True)
+                w5 = self.DC.getParamsByName("W5", unconverted=True)
+                w6 = self.DC.getParamsByName("W6", unconverted=True)
+                w7 = self.DC.getParamsByName("W7", unconverted=True)
+                w8 = self.DC.getParamsByName("W8", unconverted=True)
+                l2 = self.DC.getParamsByName("L2", unconverted=True)
+                l3 = self.DC.getParamsByName("L3", unconverted=True)
+                l4 = self.DC.getParamsByName("L4", unconverted=True)
+                l5 = self.DC.getParamsByName("L5", unconverted=True)
+                l6 = self.DC.getParamsByName("L6", unconverted=True)
+                l7 = self.DC.getParamsByName("L7", unconverted=True)
+                substrateHeight = self.DC.getParamsByName("substrate_height", unconverted=True)
+                #conductorHeight = self.DC.getParamsByName("conductor_height", unconverted=True)
+                groundLength = self.DC.getParamsByName("ground_plane_length", unconverted=True)
+                groundWidth = self.DC.getParamsByName("ground_plane_width", unconverted=True)
+                substrateLength = self.DC.getParamsByName("substrate_length", unconverted=True)
+                substrateWidth =self.DC.getParamsByName("substrate_width", unconverted=True)
+
+                conductorName = self.DC.getFeaturesByName("conductor_material")
+                groundMaterial = self.DC.getFeaturesByName("conductor_material")
+                substrateMaterial = self.DC.getFeaturesByName("substrate_material")
+                self.SO.doubleSidedBowtieScriptGenerator(w2, w3, w4, w5, w6, w7, w8,
+                                                         l2, l3, l4, l5, l6, l7,
+                                                        groundLength, groundWidth, substrateHeight,substrateLength, substrateWidth,
+                                                        cMaterial=conductorName, gpMaterial=groundMaterial, sMaterial=substrateMaterial,
+                                                        units="mm") 
+
+            elif aType == 'rep_planar_bowtie':                    
+                l = self.DC.getParamsByName("length", unconverted=True)
+                w = self.DC.getParamsByName("width", unconverted=True)
+                feedWidth = self.DC.getParamsByName("feed_width", unconverted=True)
+                gapDist = self.DC.getParamsByName("gap_distance", unconverted=True)
+                d = self.DC.getParamsByName("substrate_height", unconverted=True)
+                #conductorHeight = self.DC.getParamsByName("conductor_height", unconverted=True)
+                groundLength = self.DC.getParamsByName("ground_plane_length", unconverted=True)
+                groundWidth = self.DC.getParamsByName("ground_plane_width", unconverted=True)
+                substrateLength = self.DC.getParamsByName("substrate_length", unconverted=True)
+                substrateWidth =self.DC.getParamsByName("substrate_width", unconverted=True)
+
+                conductorName = self.DC.getFeaturesByName("conductor_material")
+                groundMaterial = self.DC.getFeaturesByName("conductor_material")
+                substrateMaterial = self.DC.getFeaturesByName("substrate_material")
+                self.SO.planarBowtieScriptGenerator(l, w, feedWidth, gapDist,
+                                                        groundLength, groundWidth, d, substrateLength, substrateWidth,
+                                                        cMaterial=conductorName, gpMaterial=groundMaterial, sMaterial=substrateMaterial,
+                                                        units="mm") 
+
+            elif aType == 'rep_two_arm_square_spiral':                    
+                initLength = self.DC.getParamsByName("init_length", unconverted=True)
+                initWidth = self.DC.getParamsByName("init_width", unconverted=True)
+                sw = self.DC.getParamsByName("strip_width", unconverted=True)
+                x0 = self.DC.getParamsByName("feed_x", unconverted=True)
+                y0 = self.DC.getParamsByName("feed_y", unconverted=True)
+                spacing = self.DC.getParamsByName("spacing", unconverted=True)
+                d = self.DC.getParamsByName("substrate_height", unconverted=True)
+                #conductorHeight = self.DC.getParamsByName("conductor_height", unconverted=True)
+                groundLength = self.DC.getParamsByName("ground_plane_length", unconverted=True)
+                groundWidth = self.DC.getParamsByName("ground_plane_width", unconverted=True)
+                substrateLength = self.DC.getParamsByName("substrate_length", unconverted=True)
+                substrateWidth =self.DC.getParamsByName("substrate_width", unconverted=True)
+
+                conductorName = self.DC.getFeaturesByName("conductor_material")
+                groundMaterial = self.DC.getFeaturesByName("conductor_material")
+                substrateMaterial = self.DC.getFeaturesByName("substrate_material")
+                self.SO.twoArmSquareSpiralScriptGenerator(initLength, initWidth, sw, x0, y0, spacing, 
+                                                        groundLength, groundWidth, d,substrateLength, substrateWidth,
+                                                        cMaterial=conductorName, gpMaterial=groundMaterial, sMaterial=substrateMaterial,
+                                                        units="mm") 
 
 
-        
         #save out to config file
         script = self.getDesignTemplateScript()
         self.DC.setDesignScript(script)

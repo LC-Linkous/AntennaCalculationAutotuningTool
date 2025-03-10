@@ -65,7 +65,7 @@ class CONTROLLER_PSO_PYTHON():
         TARGETS = list(optimizerParams['target_values'][0])                # Target values for output
         T_MOD = float(optimizerParams['time_modulus'][0])                  # Variable time-step extinction coefficient
         E_TOL = float(optimizerParams['tolerance'][0])                     # Convergence Tolerance (This is a radius)       
-        MAXIT = float(optimizerParams['max_iterations'][0])                # Maximum allowed iterations 
+        MAXIT = int(optimizerParams['max_iterations'][0])                # Maximum allowed iterations 
         BOUNDARY = int(optimizerParams['boundary'][0])                     # int boundary 1 = random,      2 = reflecting
                                                                            #              3 = absorbing,   4 = invisible
 

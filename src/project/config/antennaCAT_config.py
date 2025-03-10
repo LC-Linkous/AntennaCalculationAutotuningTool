@@ -40,12 +40,19 @@ ANTENNACAT_LOGO_FILE =os.path.join('src','media','antennaCAT-icons','transparent
 ANTENNACAT_NEW_PROJECT_FILE = os.path.join('src','media','antennaCAT-icons','new_project_text.png')
 ANTENNACAT_OPEN_PROJECT_FILE = os.path.join('src','media','antennaCAT-icons','open_project_text.png')
 
-DESIGN_REPLICATION_DIPOLE = os.path.join('src','media','design-images','design-dipole.png')
-DESIGN_REPLICATION_RECTANGULAR_PATCH = os.path.join('src','media','design-images','design-rectangular-patch.png')
-DESIGN_REPLICATION_E = os.path.join('src','media','design-images','design-E.png')
-DESIGN_REPLICATION_SLOTTED_PATCH = os.path.join('src','media','design-images','design-slotted-patch.png')
-DESIGN_REPLICATION_SERPENTINE = os.path.join('src','media','design-images','design-serpentine-patch.png')
+
 DESIGN_REPLICATION_CIRCULAR_LOOP = os.path.join('src','media','design-images','design-circular-loop.png')
+DESIGN_REPLICATION_DIPOLE = os.path.join('src','media','design-images','design-dipole.png')
+DESIGN_REPLICATION_E = os.path.join('src','media','design-images','design-E.png')
+DESIGN_REPLICATION_COPLANAR_KEYHOLE = os.path.join('src','media','design-images','design-coplanar-keyhole.png')
+DESIGN_REPLICATION_QUARTER_MONOPOLE = os.path.join('src','media','design-images','design-monopole.png')
+DESIGN_REPLICATION_PLANAR_BOWTIE = os.path.join('src','media','design-images','design-planar-bowtie.png')
+DESIGN_REPLICATION_RECTANGULAR_PATCH = os.path.join('src','media','design-images','design-rectangular-patch.png')
+DESIGN_REPLICATION_SERPENTINE = os.path.join('src','media','design-images','design-serpentine-patch.png')
+DESIGN_REPLICATION_SLOTTED_PATCH = os.path.join('src','media','design-images','design-slotted-patch.png')
+DESIGN_REPLICATION_SQUARE_LOOP = os.path.join('src','media','design-images','design-square-loop.png')
+DESIGN_REPLICATION_TWO_ARM_SQUARE_SPIRAL = os.path.join('src','media','design-images','design-two-arm-square-spiral.png')
+DESIGN_REPLICATION_TWO_SIDED_BOWTIE = os.path.join('src','media','design-images','design-two-sided-bowtie.png')
 
 # Static user-created PROJECT filepaths
 ## base directories
@@ -123,10 +130,23 @@ ANTENNA_TYPE_DICT = {
     '(calculate) Quarter Wave Monopole': 'quarter_wave_monopole',
     '(replicate) Rectangular Patch': 'rep_rectangular_patch',
     '(replicate) Half Wave Dipole': 'rep_half_wave_dipole',
+    '(replicate) Quarter Wave Monopole': 'rep_quarter_wave_monopole',
+    'PLANAR': 'placeholder',
     '(replicate) E': 'rep_E',
     '(replicate) Slotted Rectangular Patch': 'rep_slotted_r_patch',
-    '(replicate) Dual Band Serpentine': 'rep_db_serpentine'
+    '(replicate) Dual Band Serpentine': 'rep_db_serpentine',
+    '(replicate) Planar Bowtie': 'rep_planar_bowtie',
+    '(replicate) Two Arm Square Spiral': 'rep_two_arm_square_spiral',
+    'LOOP AND COIL': 'placeholder',
+    '(replicate) Coplanar Keyhole': 'rep_coplanar_keyhole',
+    '(replicate) Circular Loop': 'rep_circular_loop',
+    '(replicate) Square Loop': 'rep_square_loop',
+    'TWO SIDED': 'placeholder',
+    '(replicate) Double Sided Bowtie': 'rep_double_sided_bowtie'
 }
+
+
+
 
 
 FEED_TYPE_DICT = {'microstrip': 'microstrip', 'probe': 'probe'}

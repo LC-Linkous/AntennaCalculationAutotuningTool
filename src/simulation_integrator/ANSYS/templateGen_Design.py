@@ -15,13 +15,23 @@ import sys
 sys.path.insert(0, './src/simulation_integrator/ANSYS/')
 
 # split up the scrip gen code into helper functions to increase readibility with expansion
-import design_template_integration.patchStripFedScriptGenerator as patch_sf_sg
-import design_template_integration.patchProbeFedScriptGenerator as patch_pf_sg
-import design_template_integration.halfWaveDipoleScriptGenerator as dipole_hw_sg
-import design_template_integration.quarterWaveMonopoleScriptGenerator as monopole_qw_sg
-import design_template_integration.EMicrostripFedScriptGenerator as E_sf_sg
-import design_template_integration.slottedRectangularPatchScriptGenerator as patch_slotted_sg
-import design_template_integration.dualBandSerpentineScriptGenerator as serpentine_db_sg
+import design_template_integration.calculator.patchStripFedScriptGenerator as patch_sf_sg
+import design_template_integration.calculator.patchProbeFedScriptGenerator as patch_pf_sg
+import design_template_integration.calculator.halfWaveDipoleScriptGenerator as dipole_hw_sg
+import design_template_integration.calculator.quarterWaveMonopoleScriptGenerator as monopole_qw_sg
+import design_template_integration.planar.EMicrostripFedScriptGenerator as E_sf_sg
+import design_template_integration.planar.slottedRectangularPatchScriptGenerator as patch_slotted_sg
+import design_template_integration.planar.dualBandSerpentineScriptGenerator as serpentine_db_sg
+import design_template_integration.planar.planarBowtie as planar_bowtie_sg
+import design_template_integration.planar.twoArmSquareSpiral as two_arm_sq_spiral_sg
+import design_template_integration.loop_and_coil.circularLoop as circular_loop_sg
+import design_template_integration.loop_and_coil.coplanarKeyhole as coplanar_keyhole_sg
+import design_template_integration.loop_and_coil.squareLoop as square_loop_sg
+import design_template_integration.two_sided.doubleSidedBowtie as double_sided_bowtie_sg
+
+
+
+
 
 
 
@@ -295,53 +305,115 @@ class DesignTemplate:
                     line = re.sub('INSERT_PARAM_VALUE', li, line)  
                 self.templateTxt.append(line)
 
-    def patchStripFedScriptGenerator(self, w, l, d, sw, x0, y0, g, gp, cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy", units="mm", networkType="modal"):
-              
-       patch_sf_sg.patchStripFedScriptGenerator(self, w, l, d, sw, x0, y0, g, gp, cMaterial, gpMaterial, sMaterial, units, networkType)
 
+    def patchStripFedScriptGenerator(self, w, l, sw, x0, y0, g,  
+                                     groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                     cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy", units="mm", networkType="modal"):
+       patch_sf_sg.patchStripFedScriptGenerator(self, w, l, sw, x0, y0, g,  
+                                                groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                 cMaterial, gpMaterial, sMaterial, units, networkType)
+
+   
+    def patchProbeFedScriptGenerator(self, w, l, x0, y0, 
+                                     groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                     cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy", units="mm", networkType="modal"):
+        patch_pf_sg.patchProbeFedScriptGenerator(self, w, l, x0, y0,  
+                                                 groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                 cMaterial, gpMaterial, sMaterial, units, networkType)
+        
+
+    def halfWaveDipoleScriptGenerator(self, l, r, fg, 
+                                      cMaterial="copper", units="mm", networkType="modal"):
+        dipole_hw_sg.halfWaveDipoleScriptGenerator(self, l, r, fg, 
+                                                   cMaterial, units, networkType)
+
+
+    def quarterWaveMonopoleScriptGenerator(self, l, r, gp, fg, 
+                                           cMaterial="copper", units="mm", networkType="modal"):
+        monopole_qw_sg.quarterWaveMonopoleScriptGenerator(self, l, r, gp, fg, 
+                                                          cMaterial, units, networkType)
     
-    def patchProbeFedScriptGenerator(self, w, l, d, x0, y0, gp, cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy", units="mm", networkType="modal"):
-        
-        patch_pf_sg.patchProbeFedScriptGenerator(self, w, l, d, x0, y0, gp, cMaterial, gpMaterial, sMaterial, units, networkType)
-        
-      
-    def halfWaveDipoleScriptGenerator(self, l, r, fg, cMaterial="copper", units="mm", networkType="modal"):
 
-        dipole_hw_sg.halfWaveDipoleScriptGenerator(self, l, r, fg, cMaterial, units, networkType)
-
-
-    def quarterWaveMonopoleScriptGenerator(self, l, r, gp, fg, cMaterial="copper", units="mm", networkType="modal"):
-       
-        monopole_qw_sg.quarterWaveMonopoleScriptGenerator(self, l, r, gp, fg, cMaterial, units, networkType)
-    
-    def EMicrostripFedScriptGenerator(self, x, l, ls, lg, ps, ws, w, wg, cMaterial="copper", gpMaterial="copper", units="mm", networkType="modal"):
-       
-        E_sf_sg.EMicrostripFedScriptGenerator(self, x, l, ls, lg, ps, ws, w, wg, cMaterial, gpMaterial, units, networkType)
-        
-
-    def slottedRectangularPatchScriptGenerator(self, Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg, fy, d, cMaterial="copper", gpMaterial="copper",sMaterial="FR4_epoxy",units="mm", networkType="modal"):
-        
-        patch_slotted_sg.slottedRectangularPatchScriptGenerator(self, Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg, fy, d, cMaterial, gpMaterial,sMaterial,units, networkType)
-        
- 
-
-
-    def dualBandSerpentineScriptGenerator(self, fy, px, py, d, lp, lsub, wp, wsub,
-                                                   ps1, ls1, ws1, ps2, ls2, ws2, ps3, ls3, ws3, ps4, ls4, ws4, lc,
-                                                   cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
-        
-
-        serpentine_db_sg.dualBandSerpentineScriptGenerator(self, fy, px, py, d, lp, lsub, wp, wsub,
-                                                   ps1, ls1, ws1, ps2, ls2, ws2, ps3, ls3, ws3, ps4, ls4, ws4, lc,
-                                                   cMaterial, gpMaterial, sMaterial,units, networkType)        
+    def EMicrostripFedScriptGenerator(self, x, l, ls, lg, ps, ws, w, wg,
+                                    cMaterial="copper", gpMaterial="copper", units="mm", networkType="modal"):
+        E_sf_sg.EMicrostripFedScriptGenerator(self, x, l, ls, lg, ps, ws, w, wg, 
+                                              cMaterial, gpMaterial, units, networkType)
 
 
 
+    def slottedRectangularPatchScriptGenerator(self, Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg,fy,
+                                               groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                               cMaterial="copper", gpMaterial="copper",sMaterial="FR4_epoxy",units="mm", networkType="modal"):
+        patch_slotted_sg.slottedRectangularPatchScriptGenerator(self, Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg,fy,
+                                               groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                                cMaterial, gpMaterial,sMaterial,units, networkType)
+  
 
-    def CircularLoopScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist,
+
+    def dualBandSerpentineScriptGenerator(self, fy, px, py, lp, wp,
+                                          ps1, ls1, ws1, ps2, ls2, ws2,
+                                          ps3, ls3, ws3, ps4, ls4, ws4, lc,
+                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                          cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
+        serpentine_db_sg.dualBandSerpentineScriptGenerator(self, fy, px, py, lp, wp,
+                                          ps1, ls1, ws1, ps2, ls2, ws2,
+                                          ps3, ls3, ws3, ps4, ls4, ws4, lc,
+                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                          cMaterial, gpMaterial, sMaterial,units, networkType)        
+
+
+    def coplanarKeyholeScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist,
+                                       groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
                                    cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
-        pass
-        #marker of where to start the next iteration of replication studies being added in
+        coplanar_keyhole_sg.coplanarKeyholeScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist, 
+                                                        groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                        cMaterial, gpMaterial, sMaterial, units, networkType)
+
+
+
+    def circularLoopScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist,
+                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                   cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
+        
+        circular_loop_sg.circularLoopScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist,
+                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                        cMaterial, gpMaterial, sMaterial, units, networkType)
+
+
+    def squareLoopScriptGenerator(self, l, w, feedWidth, gapDist,
+                                  groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                   cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
+        square_loop_sg.squareLoopScriptGenerator(self, l, w, feedWidth, gapDist,
+                                  groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                        cMaterial, gpMaterial, sMaterial, units, networkType)
+
+
+    def doubleSidedBowtieScriptGenerator(self, w2, w3, w4, w5, w6, w7, w8, l2, l3, l4, l5, l6, l7,
+                                         groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                   cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
+        double_sided_bowtie_sg.doubleSidedBowtieScriptGenerator(self, w2, w3, w4, w5, w6, w7, w8, l2, l3, l4, l5, l6, l7,
+                                         groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                        cMaterial, gpMaterial, sMaterial, units, networkType)
+
+
+
+    def planarBowtieScriptGenerator(self, l, w, feedWidth, gapDist,
+                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                   cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
+        planar_bowtie_sg.planarBowtieScriptGenerator(self, l, w, feedWidth, gapDist,
+                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                        cMaterial, gpMaterial, sMaterial, units, networkType)
+
+
+        
+        
+
+    def twoArmSquareSpiralScriptGenerator(self, initLength, initWidth, width, x0, y0, spacing, 
+                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                   cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
+        two_arm_sq_spiral_sg.twoArmSquareSpiralScriptGenerator(self, initLength, initWidth, width, x0, y0, spacing, 
+                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                        cMaterial, gpMaterial, sMaterial, units)
 
 
 

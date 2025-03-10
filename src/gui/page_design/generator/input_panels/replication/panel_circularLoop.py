@@ -53,6 +53,14 @@ class CircularLoopOptionsPage(wx.Panel):
         lblGapDistance = wx.StaticText(self, label="Gap Distance (mm): ")
         self.fieldGapDistance  = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
         self.fieldGapDistance.SetValue("1.5")
+        lblSubstrateWidth = wx.StaticText(self, label="Substrate Width (mm): ")
+        self.fieldSubstrateWidth  = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateWidth.SetValue("50")
+        lblSubstrateLength = wx.StaticText(self, label="Substrate Length (mm): ")
+        self.fieldSubstrateLength  = wx.TextCtrl(self, value="", size=(INPUT_BOX_WIDTH, 20))
+        self.fieldSubstrateLength.SetValue("50")
+
+
 
   
 
@@ -70,15 +78,12 @@ class CircularLoopOptionsPage(wx.Panel):
         boxInputSizer = wx.BoxSizer(wx.HORIZONTAL)
         boxInputLeft = wx.BoxSizer(wx.VERTICAL)
         boxInputRight = wx.BoxSizer(wx.VERTICAL)
-        boxInputLeft.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)
         boxInputLeft.Add(lblConductor, 0, wx.ALL|wx.EXPAND, border=7)
         boxInputLeft.Add(lblSimSubstrate, 0, wx.ALL|wx.EXPAND, border=7)
-
-
-        boxInputRight.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
+        boxInputLeft.Add(lblSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=5)        
         boxInputRight.Add(self.conductorDropDown, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputRight.Add(self.substrateDropDown, 0, wx.ALL|wx.EXPAND, border=3)
-
+        boxInputRight.Add(self.fieldSubstrateHeight, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputSizer.Add(boxInputLeft, 0, wx.ALL|wx.EXPAND,border=10)
         boxInputSizer.Add(boxInputRight, 0, wx.ALL|wx.EXPAND,border=10)
 
@@ -89,19 +94,22 @@ class CircularLoopOptionsPage(wx.Panel):
         boxSmallInput3 = wx.BoxSizer(wx.VERTICAL)
         boxSmallInput4 = wx.BoxSizer(wx.VERTICAL)
 
+        boxSmallInput1.Add(lblSubstrateLength, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput1.Add(lblOuterRadius, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput1.Add(lblInnerRadius, 0, wx.ALL|wx.EXPAND, border=5)
         boxSmallInput1.Add(lblFeedWidth, 0, wx.ALL|wx.EXPAND, border=5)
-
+        boxSmallInput2.Add(self.fieldSubstrateLength, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput2.Add(self.fieldOuterRadius, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput2.Add(self.fieldInnerRadius, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput2.Add(self.fieldFeedWidth, 0, wx.ALL|wx.EXPAND, border=3)
 
+        boxSmallInput3.Add(lblSubstrateWidth, 0, wx.ALL|wx.EXPAND, border=5)
         boxSmallInput3.Add(lblInset, 0, wx.ALL|wx.EXPAND, border=5)
         boxSmallInput3.Add(lblGapDistance, 0, wx.ALL|wx.EXPAND, border=5)
-
+        boxSmallInput4.Add(self.fieldSubstrateWidth, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput4.Add(self.fieldInset, 0, wx.ALL|wx.EXPAND, border=3)
         boxSmallInput4.Add(self.fieldGapDistance, 0, wx.ALL|wx.EXPAND, border=3)
+
 
         boxSmallInputSizer.Add(boxSmallInput1, 0, wx.ALL|wx.EXPAND,border=5)
         boxSmallInputSizer.Add(boxSmallInput2, 0, wx.ALL|wx.EXPAND,border=5)
@@ -114,37 +122,41 @@ class CircularLoopOptionsPage(wx.Panel):
         pageSizer.Add(boxSmallInputSizer, 0, wx.ALL|wx.CENTER, border=0)
         pageSizer.Add(img_panel, 0, wx.ALL|wx.CENTER, border=5)
         self.SetSizer(pageSizer)
-        
+
 
     def conductorSelected(self,evt):
-        txt = str(materials_dict[self.conductorDropDown.GetValue()])
-        self.fieldDielectric.SetValue(txt)
+        txt = str(materials_dict[self.conductorDropDown.GetValue()])   
 
-    def getFeatures(self):
+    def getFeatures(self): #cannot change names without issues with the lead chars for scripting
         features = [["substrate_material", self.substrateDropDown.GetValue()],
                     ["conductor_material", self.conductorDropDown.GetValue()],
-                    ["conductor_height", None],
-                    ["substrate_height", self.fieldSubstrateHeight.GetValue()],
                     ["simulation_frequency", -1]]
 
         return features
     
-    def getParams(self):
+    def getParams(self): #vars where the name can change in script wiht leading chars
 
         paramArr = []
         outerRad = float(self.fieldOuterRadius.GetValue())
         innerRad = float(self.fieldInnerRadius.GetValue())
         feedWidth = float(self.fieldFeedWidth.GetValue())
-        inset = float(self.fieldOuterRadius.GetValue())
-        gapDist = float(self.fieldInnerRadius.GetValue())
-        h = float(self.fieldSubstrateHeight.GetValue())
+        inset = float(self.fieldInset.GetValue())
+        gapDist = float(self.fieldGapDistance.GetValue())
+        subWidth =float(self.fieldSubstrateWidth.GetValue())
+        subLength =float(self.fieldSubstrateLength.GetValue())  
+        subHeight = float(self.fieldSubstrateHeight.GetValue())
+
 
         paramArr = [["outer_radius", outerRad],
                     ["inner_radius", innerRad],
                     ["feed_width", feedWidth],
                     ["inset", inset],
-                    ["gap_distance", gapDist]]
+                    ["gap_distance", gapDist],
+                    ["substrate_width", subWidth],
+                    ["substrate_length", subLength],
+                    ["ground_plane_width", subWidth],
+                    ["ground_plane_length", subLength],
+                    #["conductor_height", None],
+                    ["substrate_height", subHeight]]
 
         return paramArr
-
-    
