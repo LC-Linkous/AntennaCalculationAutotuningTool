@@ -1,13 +1,28 @@
 #! /usr/bin/python3
+
+##--------------------------------------------------------------------\
+#   multi_glods_surrogate
+#   './multi_glods_surrogate/src/configs_F.py'
+#   The main multiglods algorithm where the math happens
+#   NOTE: multiglods.py is the statemachine, 
+#       and multiglods_ctl.py is the controller
+#
+#
+#   Author(s): Jonathan Lundquist, Lauren Linkous 
+#   Last update: March 13, 2025
+##--------------------------------------------------------------------\
+
+
 import numpy as np
 import copy
-
-#unit testing vs. program call
-try:
+import sys
+try: # for outside func calls, program calls
+    sys.path.insert(0, './multi_glods_python/src/')
     from multiglods_helpers import logical_index_1d
     from multiglods_helpers import logical_index_h2d
     from multiglods_helpers import logical_index_h2d_Plist
-except:
+
+except:# for local, unit testing
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_helpers import logical_index_1d
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_helpers import logical_index_h2d
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_helpers import logical_index_h2d_Plist

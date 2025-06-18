@@ -111,15 +111,28 @@ def doubleSidedBowtieScriptGenerator(parent, w2, w3, w4, w5, w6, w7, w8, l2, l3,
             elif re.search('INSERT_GP_WIDTH_VALUE', line):
                 li = groundWidthVal
                 line = re.sub('INSERT_GP_WIDTH_VALUE', li, line)    
-            elif re.search('INSERT_SUB_HEIGHT_VALUE', line):
+            # elif re.search('INSERT_SUB_HEIGHT_VALUE', line):
+            #     li = substrateHeightVal
+            #     line = re.sub('INSERT_SUB_HEIGHT_VALUE', li, line)             
+            # elif re.search('INSERT_SUB_LENGTH_VALUE', line):
+            #     li = substrateLengthVal
+            #     line = re.sub('INSERT_SUB_LENGTH_VALUE', li, line)             
+            # elif re.search('INSERT_SUB_WIDTH_VALUE', line):
+            #     li = substrateWidthVal
+            #     line = re.sub('INSERT_SUB_WIDTH_VALUE', li, line)
+            elif re.search('INSERT_SUBSTRATE_HEIGHT_VALUE', line):
                 li = substrateHeightVal
-                line = re.sub('INSERT_SUB_HEIGHT_VALUE', li, line)             
-            elif re.search('INSERT_SUB_LENGTH_VALUE', line):
+                line = re.sub('INSERT_SUBSTRATE_HEIGHT_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_LENGTH_VALUE', line):
                 li = substrateLengthVal
-                line = re.sub('INSERT_SUB_LENGTH_VALUE', li, line)             
-            elif re.search('INSERT_SUB_WIDTH_VALUE', line):
+                line = re.sub('INSERT_SUBSTRATE_LENGTH_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_WIDTH_VALUE', line):
                 li = substrateWidthVal
-                line = re.sub('INSERT_SUB_WIDTH_VALUE', li, line)  
+                line = re.sub('INSERT_SUBSTRATE_WIDTH_VALUE', li, line)  
+
+
+
+
             elif re.search('INSERT_GROUND_PLANE_MATERIAL', line):
                 li = groundPlaneMaterial
                 line = re.sub('INSERT_GROUND_PLANE_MATERIAL', li, line)             

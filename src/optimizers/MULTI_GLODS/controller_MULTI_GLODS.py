@@ -4,14 +4,14 @@
 #   Class interfacing with the GLODS optimizer
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu), Jonathan Lundquist
-#   Last update: July 06, 2024
+#   Last update: March 19, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
+import pandas as pd
 from optimizers.MULTI_GLODS.multi_glods_python.multi_glods import multi_glods
 from optimizers.MULTI_GLODS.multi_glods_python.constr_default import constr_default
-
 
 
 class CONTROLLER_MULTI_GLODS():
@@ -19,11 +19,27 @@ class CONTROLLER_MULTI_GLODS():
         self.parent = parent
 
         # class vars
-        self.optimizer = None           # init as a none obj 
-        self.sm = None                  # init surrogate model as none obj
-        self.suppress_output = False    # Suppress the console output of multiglods
+        self.optimizer = None           # init as a none obj. THIS optimizer 
 
+        self.suppress_output = False    # Suppress the console output
         self.allow_update = True        # Allow objective call to update state 
+        self.evaluate_threshold = False # use target or threshold. True = THRESHOLD, False = EXACT TARGET
+                                        # default is False
+
+
+        # Functions for using a surrogate mode with secondary, internal optimizer
+        # NOTE: this optimizer can solve the surrogate models,
+        # but it CANNOT be the driving optimizer with a surrogate model internal
+        # This is related to how the state machine for this optimizer works.
+
+        self.useSurrogateModel = False          
+        self.sm_approx = None     # the surrogate approximator. The kernel
+        self.sm_opt = None        # the internal optimizer used to solve the surrogate model.
+        self.sm_tol = 10*-6       # default internal optimizer tolerance
+        self.sm_maxit = 1000      # default internal optimizer maximum iterations
+        self.sm_opt_df = None     # default data frame of params for internal optimizer
+        self.out_vars = None      # used to shape surrogate model approx.                     
+        self.sm = None                  
 
 
 
@@ -31,7 +47,7 @@ class CONTROLLER_MULTI_GLODS():
 # GUI interfacing
 ####################################################
 
-    def updateStatusText(self, t):
+    def debug_message_printout(self, t):
         self.parent.updateStatusText(t)
 
 ####################################################
@@ -41,7 +57,7 @@ class CONTROLLER_MULTI_GLODS():
     def setAllowUpdate(self, b):
         self.allow_update = b
 
-    def getAllowUpdate(self, b):
+    def getAllowUpdate(self):
         return self.allow_update
 
 
@@ -58,33 +74,79 @@ class CONTROLLER_MULTI_GLODS():
 #######################################################
 
     def unpackOptimizerParameters(self, optimizerParams, func_F):
-        NO_OF_VARS = float(optimizerParams['num_input'][0])    # Number of input variables (x-values)
-        TOL = float(optimizerParams['tolerance'][0])           # Convergence Tolerance (This is a radius 
+        E_TOL = float(optimizerParams['tolerance'][0])         # Convergence tolerance, error tolerance
+        R_TOL = float(optimizerParams['rad_tolerance'][0])     # Convergence Tolerance (This is a radius 
                                                                # based tolerance, not target based tolerance)
-        LB = list(optimizerParams['lower_bounds'][0])          # Lower boundaries
-        UB = list(optimizerParams['upper_bounds'][0])          # Upper Boundaries
+        self.LB = list(optimizerParams['lower_bounds'][0])     # Lower boundaries
+        self.UB = list(optimizerParams['upper_bounds'][0])     # Upper Boundaries
         BP = float(optimizerParams['beta'][0])                 # Beta Par
         GP = float(optimizerParams['gamma'][0])                # Gamma Par
         SF = float(optimizerParams['search_frequency'][0])     # Search Frequency
-        TARGETS = list(optimizerParams['target_values'][0])    # Target values for output
-        MAXIT = int(optimizerParams['max_iterations'][0])    # Maximum allowed iterations 
-        targetMetrics = optimizerParams['target_metrics']
-        F = np.zeros((np.prod(np.shape(TARGETS)), 1))
-
-        self.out_vars = len(TARGETS)
+        self.TARGETS = list(optimizerParams['target_values'][0])    # Target values for output
+        MAXIT = int(optimizerParams['max_iterations'][0])      # Maximum allowed iterations 
 
 
+        THRESHOLD = list(optimizerParams['target_threshold'][0])          # Threshold symbols ["=", "≤", "≥"]
+
+        self.useSurrogateModel = optimizerParams['use_surrogate_bool'][0]   # UPDATE THIS IN THE UI. The model is set up from an external call, (where the swarm obj is created)
+        self.out_vars = len(self.TARGETS)
+        #convert threshold from symbolics to ints:
+        threshold_dict = {"=": 0, "≤": 1, "<": 1, "≥": 2, ">":2}
+        self.THRESHOLD = np.array([threshold_dict.get(x, x) for x in THRESHOLD])
+
+        # ERROR CHECK THRESHOLD
+        # threshold is same dims as TARGETS
+        # 0 = use target value as actual target. value should EQUAL target
+        # 1 = use as threshold. value should be LESS THAN OR EQUAL to target
+        # 2 = use as threshold. value should be GREATER THAN OR EQUAL to target
+
+        if not np.any(self.THRESHOLD): # ALL TARGET values are to be evaluated at EXACTLY the target val
+            self.evaluate_threshold = False 
+        else: #Evaulate at least one value in the TARGET list as a THRESHOLD
+            self.evaluate_threshold = True 
+
+        # ERROR CHECK SURROGATE MODEL
+        ## MULTIG_GLODS is the base optimizer. It CANNOT currently have an internal optimizer for a surrogate model
+        if self.useSurrogateModel == True: # user has set this on menu to use surrogate model
+            # if (self.sm_approx == None) or (self.sm_opt == None):    # surrogate model and internal optimizer not setup properly
+            #     msg = "WARNING: missing surrogate model or kernal. Defaulting to NO surrogate model in solver."
+            #     self.debug_message_printout(msg)
+            #     self.useSurrogateModel = False
+
+            msg = "WARNING: MultiGLODS optimizer cannot currently be used as the driving optimizer for ested surrogate model optimization."
+            self.debug_message_printout(msg)
+            self.useSurrogateModel = False
+
+
+        # Constant variables
+        opt_params = {'BP': [BP],               # Beta Par
+                    'GP': [GP],                 # Gamma Par
+                    'SF': [SF],                 # Search Frequency
+                    'R_TOL': [R_TOL]}           # Radial tolerance, NOT ERROR tolerance   
+
+
+        opt_df = pd.DataFrame(opt_params)
         # instantiation of multiglods optimizer 
-        self.optimizer = multi_glods(NO_OF_VARS, LB, UB, 
-                                      TARGETS, TOL, MAXIT,
-                                      func_F=func_F, constr_func=constr_default, 
-                                      BP=BP, GP=GP, SF=SF,
-                                      parent=self)
-        
+        # error tolerance is used twice to keep the format
+        self.optimizer  = multi_glods(self.LB, self.UB, self.TARGETS, E_TOL, MAXIT,
+                                obj_func=func_F, constr_func=constr_default,  
+                                opt_df=opt_df,
+                                parent=self,
+                                evaluate_threshold=self.evaluate_threshold, 
+                                obj_threshold=self.THRESHOLD, 
+                                useSurrogateModel=self.useSurrogateModel, 
+                                surrogateOptimizer=self.sm_opt)     
 
 
         msg = "optimizer configured"
-        self.updateStatusText(msg)
+        self.debug_message_printout(msg)
+
+        # returns for the controller integrator and initial setup for the optimization process
+        targetMetrics = optimizerParams['target_metrics'] #this is the NAME of the TARGET value for pattern matching a few levels up
+        F = np.zeros((np.prod(np.shape(self.TARGETS)), 1)) # set the initial F evaluation to an array of ZEROs. 
+
+        msg = "initial values set"
+        self.debug_message_printout(msg)
 
         return F, targetMetrics
 
@@ -116,22 +178,122 @@ class CONTROLLER_MULTI_GLODS():
         return self.optimizer.get_optimized_outs()
     
 ######################################################
-# SURROGATE MODEL FUNCS
+# SURROGATE MODEL APPROXIMATOR FUNCS
 ######################################################
 
     def fit_model(self, x, y):
         # call out to parent class to use surrogate model
-        self.sm.fit(x,y)
+        self.sm_approx.fit(x,y)
         
 
-    def model_predict(self, x):
+    def model_predict(self, x, output_size=None):
         # call out to parent class to use surrogate model
         #'mean' is regressive definition. not statistical
         #'variance' only applies for some surrogate models
-        mean, noErrors = self.sm.predict(x, self.out_vars)
+
+        if output_size == None:
+            output_size = self.out_vars
+
+        mean, noErrors = self.sm_approx.predict(x, output_size)
         return mean, noErrors
 
+
     def model_get_variance(self):
-        variance = self.sm.calculate_variance()
+        variance = self.sm_approx.calculate_variance()
         return variance
+
+
+
+######################################################
+# SURROGATE MODEL SOLVED WITH INTERNAL OPTIMIZER 
+#
+#
+#   NOTE: the PARENT OPTIMIZER (the BASE OPTIMIZER) will always be the one that is called
+#       for the surrogate model creation. If PSO_BASIC is used with a CAT_SWARM model,
+#       then the functions below for PSO_BASIC will be used for the surrogate model 
+#       driver and solver 
+#
+#
+#
+#
+######################################################
+
     
+    def fit_and_create_surogate(self, opt_M, opt_F_Pb,surrogateOptimizer):
+        # opt_M : 'base' optimizer particle locs
+        # opt_F_Pb: 'base' optimizer personal best fitness
+        # surrogateOptimizer : the surrogate optimizer class obj. 
+    
+        #called at the controller level so that the params don't 
+        # get passed down and then used at this level anyways
+
+        # fit surrogate model using current particle positions
+        # this model needs to be fit to create something that can then be modeled
+        self.fit_model(opt_M, opt_F_Pb)
+
+        # define objective function pass through via parent 
+        func_f = self.model_predict   
+
+        # use the default constraint function. these can be customized later
+        constr_F = constr_default
+
+        # to make models modular & not deal with 
+        # re-converting values or storing duplicates, the surrogate optimizer
+        # is set up here. 
+
+        setup_sm_opt = surrogateOptimizer(self.LB, self.UB, self.TARGETS, self.sm_tol, self.sm_maxit,  
+                                            obj_func=func_f, constr_func=constr_F, 
+                                            opt_df=self.sm_opt_df, 
+                                            parent=self,
+                                            evaluate_threshold=self.evaluate_threshold, 
+                                            obj_threshold=self.THRESHOLD, 
+                                            useSurrogateModel=False, # IS SURROGATE MODEL
+                                            surrogateOptimizer=None)  # Do NOT put surrogate model INTO this optimizer
+                
+                
+
+        return setup_sm_opt
+
+
+    def create_internal_optimizer(self, optimizerParams):
+        # this is SEPERATE from the main optimizer creation to ensure that there's no crossover right now
+        # this can be streamlined in the next release after the surrogate modeling features are more developed
+
+        R_TOL = float(optimizerParams['sm_rad_tolerance'][0])     # Convergence Tolerance (This is a radius 
+                                                                  # based tolerance, not target based tolerance)
+        BP = float(optimizerParams['sm_beta'][0])                 # Beta Par
+        GP = float(optimizerParams['sm_gamma'][0])                # Gamma Par
+        SF = float(optimizerParams['sm_search_frequency'][0])     # Search Frequency
+    
+
+        INIT_SAMPLES = int(optimizerParams['sm_init_samples'][0])
+        SURROGATE_MODEL = optimizerParams['sm_model_name'][0] #swapped to the written out name. int kept until cleanup
+        # SURROGATE_MODEL = int(optimizerParams['sm_surrogate_model'][0]) # integer representation of surrogate model (for later variations)
+        #                                                                 #0 = RBF network, 1 = Gaussian process, 2 = Kriging
+        #                                                                 #3 = Polynomial regression, 4 = polynomial chaos expansion,
+        #                                                                 #5 = KNN regression, 6 = Decision Tree Regression
+        
+
+        # inbuilt error checking and surrogate model approximation selection/config
+        sm_approx, noError, errMsg = self.parent.check_model_approximator(SURROGATE_MODEL, INIT_SAMPLES, optimizerParams, is_internal_optimizer=True)
+        if noError == False:
+            msg = "ERROR in CAT_QUANTUM OPTIMIZATION CONTROLLER. Incorrect surrogate model configuration not recoverable by automated defaults."
+            self.debug_message_printout(msg)
+            self.debug_message_printout(errMsg)
+            return
+        
+
+
+        # SETUP THE MAIN OPTIMIZER
+        # Constant variables
+        opt_params = {'BP': [BP],         # Beta Par
+                    'GP': [GP],           # Gamma Par
+                    'SF': [SF],           # Search Frequency
+                    'R_TOL': [R_TOL]}     # radial tolerance for surrogate modeling      
+                
+
+        opt_df = pd.DataFrame(opt_params)
+        sm_optimizer = multi_glods
+    
+        return sm_approx, opt_df, sm_optimizer #sm_approx is the kernel approximator model
+

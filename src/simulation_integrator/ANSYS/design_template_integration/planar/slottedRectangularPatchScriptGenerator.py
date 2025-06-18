@@ -11,7 +11,7 @@ import os
 import re
 
 #def slottedRectangularPatchScriptGenerator(parent,Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg, fy, d, cMaterial="copper", gpMaterial="copper",sMaterial="FR4_epoxy",units="mm", networkType="modal"):
-def slottedRectangularPatchScriptGenerator(parent,Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg,fy,groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth, cMaterial="copper", gpMaterial="copper",sMaterial="FR4_epoxy",units="mm", networkType="modal"):
+def slottedRectangularPatchScriptGenerator(parent,Lr,Lh,Lv,l,fx,Pr,Wr,Wu,w,fy,substrateHeight, substrateLength, substrateWidth, cMaterial="copper", gpMaterial="copper",sMaterial="FR4_epoxy",units="mm", networkType="modal"):
     
     filepath = os.path.join(parent.replicatorTemplatesDir, 'slotted-rectangular-patch.txt')
     if os.path.isfile(filepath) == True:
@@ -26,20 +26,21 @@ def slottedRectangularPatchScriptGenerator(parent,Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg
     LhVal = str(Lh) + " " + str(units)
     LvVal = str(Lv) + " " + str(units)
     lVal = str(l) + " " + str(units)
-    LgVal = str(Lg) + " " + str(units)
+    #LgVal = str(Lg) + " " + str(units)
     fxVal = str(fx) + " " + str(units)
     PrVal = str(Pr) + " " + str(units)
     WrVal = str(Wr) + " " + str(units)
     WuVal = str(Wu) + " " + str(units)
     wVal = str(w) + " " + str(units)
-    WgVal = str(Wg) + " " + str(units)
+    #WgVal = str(Wg) + " " + str(units)
     fyVal = str(fy) + " " + str(units)
-    dVal = str(substrateHeight) + " " + str(units)
-    groundLengthVal = str(groundLength) + " " + str(units)
-    groundWidthVal = str(groundWidth) + " " + str(units)
+    #dVal = str(substrateHeight) + " " + str(units)
+    # groundLengthVal = str(groundLength) + " " + str(units)
+    # groundWidthVal = str(groundWidth) + " " + str(units)
     substrateHeightVal = str(substrateHeight) + " " + str(units)
     substrateLengthVal = str(substrateLength) + " " + str(units)
     substrateWidthVal = str(substrateWidth) + " " + str(units)
+    # for this design, the grounplane is ALWAYS the size of the substrate.
 
 
     groundPlaneMaterial = str(gpMaterial)
@@ -77,9 +78,9 @@ def slottedRectangularPatchScriptGenerator(parent,Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg
             elif re.search('INSERT_L_VALUE', line):
                 li = lVal
                 line = re.sub('INSERT_L_VALUE', li, line)  
-            elif re.search('INSERT_LG_VALUE', line):
-                li = LgVal
-                line = re.sub('INSERT_LG_VALUE', li, line)              
+            # elif re.search('INSERT_LG_VALUE', line):
+            #     li = LgVal
+            #     line = re.sub('INSERT_LG_VALUE', li, line)              
             elif re.search('INSERT_FX_VALUE', line):
                 li = fxVal
                 line = re.sub('INSERT_FX_VALUE', li, line)     
@@ -95,15 +96,33 @@ def slottedRectangularPatchScriptGenerator(parent,Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg
             elif re.search('INSERT_W_VALUE', line):
                 li = wVal
                 line = re.sub('INSERT_W_VALUE', li, line)     
-            elif re.search('INSERT_WG_VALUE', line):
-                li = WgVal
-                line = re.sub('INSERT_WG_VALUE', li, line)  
+            # elif re.search('INSERT_WG_VALUE', line):
+            #     li = WgVal
+            #     line = re.sub('INSERT_WG_VALUE', li, line)  
             elif re.search('INSERT_FY_VALUE', line):
                 li = fyVal
                 line = re.sub('INSERT_FY_VALUE', li, line)              
-            elif re.search('INSERT_DEPTH_VALUE', line):
-                li = dVal
-                line = re.sub('INSERT_DEPTH_VALUE', li, line)     
+            # elif re.search('INSERT_DEPTH_VALUE', line):
+            #     li = dVal
+            #     line = re.sub('INSERT_DEPTH_VALUE', li, line)   
+            # elif re.search('INSERT_GROUND_LENGTH_VALUE', line):
+            #     li = groundLengthVal
+            #     line = re.sub('INSERT_GROUND_LENGTH_VALUE', li, line)   
+            # elif re.search('INSERT_GROUND_WIDTH_VALUE', line):
+            #     li = groundWidthVal
+            #     line = re.sub('INSERT_GROUND_WIDTH_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_HEIGHT_VALUE', line):
+                li = substrateHeightVal
+                line = re.sub('INSERT_SUBSTRATE_HEIGHT_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_LENGTH_VALUE', line):
+                li = substrateLengthVal
+                line = re.sub('INSERT_SUBSTRATE_LENGTH_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_WIDTH_VALUE', line):
+                li = substrateWidthVal
+                line = re.sub('INSERT_SUBSTRATE_WIDTH_VALUE', li, line)     
+
+
+
             elif re.search('INSERT_GROUND_PLANE_MATERIAL', line):
                 li = groundPlaneMaterial
                 line = re.sub('INSERT_GROUND_PLANE_MATERIAL', li, line)   

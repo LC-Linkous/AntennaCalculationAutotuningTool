@@ -1,12 +1,12 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   chicken_swarm_python
-#   './chicken_swarm_python/src/chicken_swarm.py'
+#   surrogate_model_optimization
+#   './surrogate_model_optimization/src/surrogate_chicken_swarm.py'
 #   A basic chicken swarm optimization class. 
 #
 #   Author(s): Lauren Linkous, Jonathan Lundquist
-#   Last update: August 18, 2024
+#   Last update: May 18, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -17,28 +17,65 @@ np.seterr(all='raise')
 
 
 class swarm:
-    # arguments should take form: 
-    # swarm(int, [[float, float, ...]], [[float, float, ...]], 
-    # int, [[float, ...]], 
-    # float, int, int, 
+    # arguments should take the form: 
+    # swarm([[float, float, ...]], [[float, float, ...]], [[float, ...]], float, int,
     # func, func,
-    # int, int, int, int, int,
-    # class obj, bool) 
-    # int boundary 1 = random,      2 = reflecting
-    #              3 = absorbing,   4 = invisible
-    def __init__(self, NO_OF_PARTICLES, lbound, ubound,
-                 output_size, targets,
-                 E_TOL, maxit, boundary, 
-                 obj_func, constr_func,
-                 RN=3, HN=12, MN=8, CN=15, G = 150,
-                 parent=None, detailedWarnings=False):  
+    # dataFrame,
+    # class obj,
+    # bool, [int, int, ...]
+    # bool, class obj) 
+    #  
+    # opt_df contains class-specific tuning parameters
+    # boundary: int. 1 = random, 2 = reflecting, 3 = absorbing,   4 = invisible
+    # RN: int
+    # HN: int
+    # MN: int
+    # CN: int
+    # G: int
+    #
 
-        
+    def __init__(self,  lbound, ubound, targets,E_TOL, maxit,
+                 obj_func, constr_func, 
+                 opt_df,
+                 parent=None, 
+                 evaluate_threshold=False, obj_threshold=None, 
+                 useSurrogateModel=False, surrogateOptimizer=None): 
+
         # Optional parent class func call to write out values that trigger constraint issues
         self.parent = parent 
-        # Additional output for advanced debugging to TERMINAL. 
-        # Some of these messages will be returned via debugTigger
-        self.detailedWarnings = detailedWarnings 
+        # vars for using surrogate model
+        self.useSurrogateModel = useSurrogateModel # bool for if using surrogate model
+        self.surrogateOptimizer = surrogateOptimizer     # pass in the class for the surrogate model
+                                                   # optimizer. this is configured as needed 
+
+
+        #evaluation method for targets
+        # True: Evaluate as true targets
+        # False: Evaluate as thesholds based on information in obj_threshold
+        if evaluate_threshold==False:
+            self.evaluate_threshold = False
+            self.obj_threshold = None
+
+        else:
+            if not(len(obj_threshold) == len(targets)):
+                self.debug_message_printout("WARNING: THRESHOLD option selected.  +\
+                Dimensions for THRESHOLD do not match TARGET array. Defaulting to TARGET search.")
+                self.evaluate_threshold = False
+                self.obj_threshold = None
+            else:
+                self.evaluate_threshold = evaluate_threshold #bool
+                self.obj_threshold = np.array(obj_threshold).reshape(-1, 1) #np.array
+        
+
+
+        #unpack the opt_df standardized vals
+        boundary = opt_df['BOUNDARY'][0]
+        RN = opt_df['RN'][0]
+        HN = opt_df['HN'][0]
+        MN = opt_df['MN'][0]
+        CN = opt_df['CN'][0]
+        G = opt_df['G'][0]
+        NO_OF_PARTICLES =  RN + HN + MN + CN
 
 
         heightl = np.shape(lbound)[0]
@@ -82,11 +119,11 @@ class swarm:
             self.HN = HN    # hen number
             self.MN = MN    # mother hen number
             self.CN = CN    # chick number
-
-            total_chickens = RN + HN + MN + CN
+            total_chickens = RN + HN + MN + CN       
 
             self.G = G                       # num full cycles before updating the 
             self.G_steps = G*total_chickens  # how many iterations happen in a generation
+
  
             # error checking on population split
             if (NO_OF_PARTICLES < total_chickens):
@@ -219,13 +256,13 @@ class swarm:
             self.Mlast                  : Last location of particle
             '''
 
-            self.output_size = output_size
+            self.output_size = len(targets)
             self.Active = np.ones((NO_OF_PARTICLES))                        
             self.Gb = sys.maxsize*np.ones((1,np.max([heightl, widthl])))   
-            self.F_Gb = sys.maxsize*np.ones((1,output_size))                
+            self.F_Gb = sys.maxsize*np.ones((1,self.output_size))                
             self.Pb = sys.maxsize*np.ones(np.shape(self.M))                 
-            self.F_Pb = sys.maxsize*np.ones((NO_OF_PARTICLES,output_size))  
-            self.targets = np.array(targets).reshape(-1, 1)                
+            self.F_Pb = sys.maxsize*np.ones((NO_OF_PARTICLES,self.output_size))  
+            self.targets = np.array(targets).reshape(-1, 1)                    
             self.maxit = maxit                                             
             self.E_TOL = E_TOL                                              
             self.obj_func = obj_func                                             
@@ -240,9 +277,71 @@ class swarm:
             self.Mlast = 1*self.ubound                                      
                                          
 
-            self.error_message_generator("swarm successfully initialized")
-            
+            self.debug_message_printout("swarm successfully initialized")
 
+
+
+
+    def minimize_surrogate_model(self):
+        canUseSurrogate = False
+        if self.parent == None:
+            self.debug_message_printout("ERROR: no parent selected. cannot use surrogate model. continuing with optimization")
+            return canUseSurrogate
+        
+        if self.surrogateOptimizer == None:
+            self.debug_message_printout("ERROR: no second optimizer selected. cannot use surrogate model. continuing with optimization")
+            return canUseSurrogate           
+
+        try:
+
+                # call up to the parent function to define and fit the surrogate func, 
+            # and set up the surrogate optimizer 
+            surrogateOptimizer = self.parent.fit_and_create_surogate(self.M, self.F_Pb,self.surrogateOptimizer)
+
+
+            best_eval = 10 # set high for testing
+            # sometimes an optimizer doesn't call the objective function, so only print out when it does
+            last_iter = 0
+
+            while not surrogateOptimizer.complete():
+                # step through optimizer processing
+                surrogateOptimizer.step(suppress_output=False)
+
+                # call the objective function, control 
+                # when it is allowed to update and return 
+                # control to optimizer
+                surrogateOptimizer.call_objective(allow_update=True)
+                iter, eval = surrogateOptimizer.get_convergence_data()
+                if (eval < best_eval) and (eval != 0):
+                    best_eval = eval
+                if iter > last_iter:
+                    last_iter = iter
+
+            print("************************************************")
+            print("Internal Objective Function Iterations: " + str (iter))
+            print("Internal Best Eval: " + str(best_eval))
+
+            # check if G_best of surrogate optimizer is better than what the main optimizer is finding
+            potential_Gb =  np.array(surrogateOptimizer.get_optimized_soln()).reshape(1 ,-1)
+            potential_F_Gb =  np.array(surrogateOptimizer.get_optimized_outs()).reshape(1 ,-1)
+            if np.linalg.norm(potential_F_Gb) < np.linalg.norm(self.F_Gb):
+                self.F_Gb = np.array(potential_F_Gb)
+                self.Gb = np.array(potential_Gb[0])
+                print("NEW BEST!!!!!!")      
+                print("self.F_Gb")
+                print(self.F_Gb)
+                print("self.Gb")
+                print(self.Gb)
+            
+            canUseSurrogate = True
+            
+        except Exception as e:
+            print(e)
+            self.debug_message_printout("ERROR: failed to set up and minimize surrogate model")
+
+        return canUseSurrogate
+    
+    
     def call_objective(self, allow_update):
         if self.Active[self.current_particle]:
             # call the objective function. If there's an issue with the function execution, 'noError' returns False
@@ -250,13 +349,81 @@ class swarm:
             if noError == True:
                 self.Fvals = np.array(newFVals).reshape(-1, 1)
                 if allow_update:
-                    self.Flist = abs(self.targets - self.Fvals)
+                    # EVALUATE OBJECTIVE FUNCTION - TARGET OR THRESHOLD
+                    self.Flist = self.objective_function_evaluation(self.Fvals, self.targets)# abs(self.targets - self.Fvals)
                     self.iter = self.iter + 1
                     self.allow_update = 1
                 else:
                     self.allow_update = 0
             return noError# return is for error reporting purposes only
-   
+
+
+    def objective_function_evaluation(self, Fvals, targets):
+        #pass in the Fvals & targets so that it's easier to track bugs
+
+        # this uses the fitness values and target (or threshold) to determine the Flist values
+        # Option #1: TARGET
+        # get DISTANCE FROM TARGET
+        # Option #2: THRESHOLD
+        # use THRESHOLD TO DETERMINE INTEREST
+        # if threshold is met, the distance is set to a small value (epsilon).
+        #  Setting the 'distance' to epsilon, the convergence value check can
+        # also remain the same format. 
+
+
+        # testing different values of epsilon
+        epsilon = np.finfo(float).eps #smallest system constant
+        # Ex: 2.220446049250313e-16  
+        # #may be greater than tolerance if tolerance is set very low for testing
+        #epsilon = 10**-18
+        #epsilon = 0  # causes issues with imag. numbers
+
+        Flist = np.zeros(len(Fvals))
+
+
+        if self.evaluate_threshold == True: #THRESHOLD
+            ctr = 0
+            for i in targets:
+                o_thres = int(self.obj_threshold[ctr]) #force type as err check
+                t = targets[ctr]
+                fv = Fvals[ctr]
+
+                if o_thres == 0: #TARGET. default
+                    # sets Flist[ctr] as abs distance of  Fvals[ctr] from target
+                    Flist[ctr] = abs(t - fv)
+
+                elif o_thres == 1: #LESS THAN OR EQUAL 
+                    # checks if the Fvals[ctr] is LESS THAN OR EQUAL to target
+                    # if yes, then distance is 0 (considered 'on target)
+                    # if no, then Flist is abs distance of  Fvals[ctr] from target
+                    if fv <= t:
+                        Flist[ctr] = epsilon
+                    else:
+                        Flist[ctr] = abs(t - fv)
+
+                elif o_thres == 2: #GREATER THAN OR EQUAL
+                    # checks if the Fvals[ctr] is GREATER THAN OR EQUAL to target
+                    # if yes, then distance is 0 (considered 'on target)
+                    # if no, then Flist is abs distance of  Fvals[ctr] from target
+                    if fv >= t:
+                        Flist[ctr] = epsilon
+                    else:
+                        Flist[ctr] = abs(t - fv)
+
+                else: #o_thres == 0. #TARGET. default
+                    self.parent.debug_message_printout("ERROR: unrecognized threshold value. Evaluating as TARGET")
+                    Flist[ctr] = abs(t - fv)
+
+                ctr = ctr + 1
+
+        else: #TARGET as default
+            # arrays are already the same dimensions. 
+            # no need to loop and compare to anything
+            Flist = abs(targets - Fvals)
+
+        return Flist
+
+
     # MOVEMENT MODELS
 
     def move_rooster(self, particle):
@@ -277,7 +444,7 @@ class swarm:
             # exp((fitness_random_rooster - fitness_this_rooster)/(abs(fitness_this_rooster)-epsilon))
             #sig_squared = np.exp((random_rooster_fitness-this_rooster_fitness)/(abs(this_rooster_fitness)+epsilon))
             # -709.00 and 709.00 are the integer limits to np.exp() on system that handles float64 at most (Windows)
-            clipped_val = np.clip(((random_rooster_fitness-this_rooster_fitness)/(abs(this_rooster_fitness)+epsilon)), -709.00, 709.00)
+            clipped_val = np.clip(((random_rooster_fitness-this_rooster_fitness)/(abs(this_rooster_fitness)+epsilon)), -700.00, 700.00)
             sig_squared = np.exp(clipped_val)
 
 
@@ -318,7 +485,7 @@ class swarm:
 
         # exp((FitnessThisChicken-FitnessRoosterGroupmate)/(abs(FitnessThisChicken)+epsilon))
         #S1 = np.exp((fitness_this_chicken-fitness_rooster)/(np.abs(fitness_this_chicken) + epsilon))
-        clipped_val = np.clip(((fitness_this_chicken-fitness_rooster)/(np.abs(fitness_this_chicken) + epsilon)), -709.00, 709.00)
+        clipped_val = np.clip(((fitness_this_chicken-fitness_rooster)/(np.abs(fitness_this_chicken) + epsilon)), -700.00, 700.00)
         S1 = np.exp(clipped_val)
         # S1*RANDOM(0-to-1)*(LocationRoosterGroupmate-thisChickenLocation)
         # these terms can overflow because of the exp()
@@ -335,7 +502,7 @@ class swarm:
 
         #S2 = np.exp(float(fitness_random_chicken-fitness_this_chicken))
         #np.exp(...) throws overflow errors. Using clip as a generic catch
-        clipped_val = np.clip((fitness_random_chicken-fitness_this_chicken), -709.00, 709.00)
+        clipped_val = np.clip((fitness_random_chicken-fitness_this_chicken), -700.00, 700.00)
         S2 = np.exp(clipped_val)
         #S2*RANDOM(0-to-1)*(LoctionRandomChickenInSwarm-thisChickenLocation)
 
@@ -508,7 +675,7 @@ class swarm:
         elif self.boundary == 4:
             self.invisible_bound(particle)
         else:
-            self.error_message_generator("Error: No boundary is set!")
+            self.debug_message_printout("Error: No boundary is set!")
 
     def check_global_local(self, Flist, particle):
 
@@ -525,7 +692,7 @@ class swarm:
         return convergence
     
     def maxed(self):
-        max_iter = self.iter > self.maxit
+        max_iter = self.iter >= self.maxit
         return max_iter
     
     def complete(self):
@@ -546,15 +713,17 @@ class swarm:
                 "Absolute mean deviation\n" + \
                 str(self.absolute_mean_deviation_of_particles()) +"\n" + \
                 "-----------------------------"
-            self.error_message_generator(msg)
+            self.debug_message_printout(msg)
             
         if self.allow_update: # The first time step is called, this is false
             if self.Active[self.current_particle]:
                 # save global best
                 self.check_global_local(self.Flist,self.current_particle)
 
-                # every self.G cycle iterations, reorganize the swarm
+                # every self.G full cycle iterations reorganize the swarm
+                #  self.G_steps is the # of chickens multiplied by the generations for the number of iterations
                 if self.iter%self.G_steps == 0:
+
                     self.reorganize_swarm()
                     #start with the new best rooster
                     self.current_particle = 0
@@ -581,13 +750,17 @@ class swarm:
 
             self.current_particle = self.current_particle + 1
             if self.current_particle == self.number_of_particles:
+                if self.useSurrogateModel == True:
+                    print("MINIMIZING SURROGATE MODEL")
+                    self.minimize_surrogate_model()
                 self.current_particle = 0
+
             if self.complete() and not suppress_output:
                 msg =  "\nPoints: \n" + str(self.Gb) + "\n" + \
                     "Iterations: \n" + str(self.iter) + "\n" + \
                     "Flist: \n" + str(self.F_Gb) + "\n" + \
                     "Norm Flist: \n" + str(np.linalg.norm(self.F_Gb)) + "\n"
-                self.error_message_generator(msg)
+                self.debug_message_printout(msg)
 
     def export_swarm(self):
         swarm_export = {'lbound': self.lbound,
@@ -645,10 +818,10 @@ class swarm:
         return iteration, best_eval
         
     def get_optimized_soln(self):
-        return self.Gb 
+        return self.Gb.reshape(-1, 1) #standardization  
     
     def get_optimized_outs(self):
-        return self.F_Gb
+        return self.F_Gb[0] #correction for extra brackets that happen with the math/passing
     
     def absolute_mean_deviation_of_particles(self):
         mean_data = np.array(np.mean(self.M, axis=0)).reshape(1, -1)
@@ -659,8 +832,9 @@ class swarm:
         abs_mean_dev = np.linalg.norm(np.mean(abs_data,axis=0))
         return abs_mean_dev
 
-    def error_message_generator(self, msg):
+    def debug_message_printout(self, msg):
         if self.parent == None:
             print(msg)
         else:
-            self.parent.updateStatusText(msg)
+            self.parent.debug_message_printout(msg)
+

@@ -22,13 +22,19 @@ oProject.ChangeProperty(
 					"Value:="		, "INSERT_LENGTH_VALUE"
 				],
 				[
-					"NAME:$feedgap",
+					"NAME:$half_length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "$length/2"
+				],
+				[
+					"NAME:$feed_gap",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "INSERT_FEEDGAP_VALUE"
 				],
 				[
-					"NAME:$radius",
+					"NAME:$conductor_radius",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "INSERT_RADIUS_VALUE"
@@ -45,9 +51,9 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "0mm",
 		"YCenter:="		, "0mm",
-		"ZCenter:="		, "$feedgap/2",
-		"Radius:="		, "$radius",
-		"Height:="		, "$length/4-$feedgap/2",
+		"ZCenter:="		, "$feed_gap/2",
+		"Radius:="		, "$conductor_radius",
+		"Height:="		, "$half_length-$feed_gap/2",
 		"WhichAxis:="		, "Z",
 		"NumSides:="		, "0"
 	], 
@@ -74,9 +80,9 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "0mm",
 		"YCenter:="		, "0mm",
-		"ZCenter:="		, "-$feedgap/2",
-		"Radius:="		, "$radius",
-		"Height:="		, "-$length/4+$feedgap/2",
+		"ZCenter:="		, "-$feed_gap/2",
+		"Radius:="		, "$conductor_radius",
+		"Height:="		, "-$half_length+$feed_gap/2",
 		"WhichAxis:="		, "Z",
 		"NumSides:="		, "0"
 	], 
@@ -105,10 +111,10 @@ oEditor.CreateRectangle(
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
 		"XStart:="		, "0mm",
-		"YStart:="		, "-$radius",
-		"ZStart:="		, "$feedgap/2",
-		"Width:="		, "2*$radius",
-		"Height:="		, "-$feedgap",
+		"YStart:="		, "-$conductor_radius",
+		"ZStart:="		, "$feed_gap/2",
+		"Width:="		, "2*$conductor_radius",
+		"Height:="		, "-$feed_gap",
 		"WhichAxis:="		, "X"
 	], 
 	[

@@ -4,7 +4,7 @@
 #   Class for batch data collection page
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: December 13, 2023
+#   Last update: June 10, 2025
 ##--------------------------------------------------------------------\
 # system level imports
 import os
@@ -50,6 +50,7 @@ class OptimizerPage(wx.Panel):
 
         # optimizer notebook
         self.notebook_optimizer = OptimizerNotebook(self, self.DC, self.PC, self.SO)
+        self.notebook_optimizer.SetMaxSize(wx.Size(-1, 450))  # set a max so the controllable parameters menu is readable
         # controllable parameters panel
         self.notebook_params  = ParamsNotebook(self)
         # summary notebook
@@ -185,6 +186,134 @@ class OptimizerPage(wx.Panel):
         self.OI.openSaved(pth)
     
     def btnSelectClicked(self, optimizerName, noError):
+        # TODO This should probably be pulled out one level higher or to a different file, 
+        # but that needs to be hashed out with the balance between 
+        # UI driven controls & segmentation vs. pulling commands out of the GUI state machine
+
+        self.set_up_optimizer(optimizerName, noError)
+
+       
+    def btnExportClicked(self, evt=None):
+        if self.optimizerSelected == False:
+            msg = "an optimizer must be selected before state can be exported"
+            self.updateStatusText(msg)
+            return
+
+        self.export_optimizer_settings()        
+
+
+    def btnDetectClicked(self, evt=None):
+        # check that a design was created
+        if self.PC.getDesignConfigBool() == False:
+            wx.MessageBox('No design configuration detected.', 'Error', wx.OK | wx.ICON_ERROR)
+            return        
+        #clear old rows
+        self.clearCurrent()
+        #if design was created, then there's something in:
+        # 1) design script (even if it's just a call to open a file)
+        # and 2) self.DC.self.designParams <- any provided/calculated params
+        # future expansion: self.DC.designFeatures <- like layer height (to make substrate dynamic)
+        designParams = self.DC.getParams()
+        self.populateDetectedKeywords(designParams)
+        if self.paramList == [] or self.paramList == None:
+            wx.MessageBox('No design configuration detected.', 'Error', wx.OK | wx.ICON_ERROR)            
+        else:
+            self.notebook_params.addParamRows(self.paramList, self.paramValLst)
+
+
+    def btnApplyClicked(self, evt=None):
+        #check that there's either a loaded design, or that the param list isn't empty
+        if (self.PC.getDesignConfigBool() == False) or (self.paramList == [] or self.paramList == None):
+            wx.MessageBox('No design configuration detected.', 'Error', wx.OK | wx.ICON_ERROR)
+            return        
+        
+        self.check_and_set_optimizer_params()
+       
+
+
+
+#######################################################
+# Actions called by buttons
+#
+# populateDetectedKeywords()   : called by btnDetectClicked()
+# check_and_set_optimizer_params() : called by btnApplyClicked()
+# checkCanBeFloat()            : called by btnApplyClicked()
+#
+#  set_up_optimizer()          : called by btnSelectClicked()
+#  export_optimizer_settings() : called by btnExportClicked()
+#######################################################
+
+# TODO This should probably be pulled out one level higher or to a different file, 
+# but that needs to be hashed out with the balance between 
+# UI driven controls & segmentation vs. pulling commands out of the GUI state machine
+
+
+    def check_and_set_optimizer_params(self):
+
+        #get the vals from the scrollbox
+        # set vals to array/tuple
+        paramInput = pd.DataFrame({})
+        paramFields, originalVal, unitVal, lowerFields, upperFields, ignoreVal = self.notebook_params.getParamInputBoxVals()
+        paramsCheckedCtr = 0
+        for i in range(0, len(paramFields)):
+            a = paramFields[i].GetValue()
+            b = originalVal[i].GetValue()
+            c = unitVal[i].GetValue()
+            d = lowerFields[i].GetValue()
+            e = upperFields[i].GetValue()
+            f = ignoreVal[i].IsChecked()
+            
+            # check if the vals can be converted to floats (to cover ints and other number formats).
+            # they dont stay floats since it's not an actual conversion.
+            # check if f is UNCHECKED (being used) and originalVal value is NOT NUMERIC
+            checkIsOnlyNumbers = self.checkCanBeFloat(b,f) 
+            if checkIsOnlyNumbers == False:
+                wx.MessageBox('Parameters used for optimization must be numbers (Int or Floats), not NaN or strings.', 'Error', wx.OK | wx.ICON_ERROR)
+                return  
+
+            paramInput[str(a)] = pd.Series([b,c,d,e,f])
+            if f == False:
+                paramsCheckedCtr = paramsCheckedCtr + 1
+        #put params into optimizer integrator. let integrator deal with processing
+       
+        # set to class varriable after checking if it's a valid setup
+        self.paramInput = paramInput 
+
+
+        numControllable = len(self.paramInput) + 1
+        msg = str(numControllable) + " controllable parameters detected."
+        self.updateStatusText(msg)
+
+        self.OI.setControllableParams(self.paramInput)
+        self.notebook_optimizer.parameterSummaryUpdate(numControllable, self.paramInput)
+
+        msg = str(paramsCheckedCtr) + " parameters selected for optimization."
+        self.updateStatusText(msg)
+
+
+    def populateDetectedKeywords(self, paramVals):
+        #read design params into class variables
+        for p in paramVals:
+           self.paramList.append(str(p)) #name in list
+           val = paramVals[str(p)][0] # get value by name
+           self.paramValLst.append(str(val)) #set val to list
+
+
+    def checkCanBeFloat(self, origVal, ignoreBool):
+        # send a value from self.paramList to make sure that the string value can be converted
+        # to a float. This will rule out any NaN, nan, None, True, False, or string vals
+        # the optimization algs can ONLY take numbers
+        try:
+            if (origVal.lower()=='nan') or (origVal.lower()=='none'):
+                if ignoreBool == False:
+                    return False
+            float(origVal)
+            return True
+        except:
+            return False
+
+
+    def set_up_optimizer(self, optimizerName, noError):
         #make sure a project has been created first, or prompt for new project
         #check if save location has been selected
         if self.PC.getProjectDirectory()== None:
@@ -253,7 +382,6 @@ class OptimizerPage(wx.Panel):
                 # this is NOT a fatal condition (yet)
 
                
-
         self.OI.setOptimizerParams(optimizerParams)
 
         # get the data collection bools
@@ -268,12 +396,7 @@ class OptimizerPage(wx.Panel):
             self.OI.enableRun() 
 
 
-
-    def btnExportClicked(self, evt=None):
-        if self.optimizerSelected == False:
-            msg = "an optimizer must be selected before state can be exported"
-            self.updateStatusText(msg)
-            return
+    def export_optimizer_settings(self):
         
         #GET optimizer state and write out current
         st = self.OI.getState()
@@ -300,66 +423,6 @@ class OptimizerPage(wx.Panel):
             except Exception as e:
                 print(e)
  
-
-    def btnDetectClicked(self, evt=None):
-        # check that a design was created
-        if self.PC.getDesignConfigBool() == False:
-            wx.MessageBox('No design configuration detected.', 'Error', wx.OK | wx.ICON_ERROR)
-            return        
-        #clear old rows
-        self.clearCurrent()
-        #if design was created, then there's something in:
-        # 1) design script (even if it's just a call to open a file)
-        # and 2) self.DC.self.designParams <- any provided/calculated params
-        # future expansion: self.DC.designFeatures <- like layer height (to make substrate dynamic)
-        designParams = self.DC.getParams()
-        self.populateDetectedKeywords(designParams)
-        if self.paramList == [] or self.paramList == None:
-            wx.MessageBox('No design configuration detected.', 'Error', wx.OK | wx.ICON_ERROR)            
-        else:
-            self.notebook_params.addParamRows(self.paramList, self.paramValLst)
-
-    def populateDetectedKeywords(self, paramVals):
-        #read design params into class variables
-        for p in paramVals:
-           self.paramList.append(str(p)) #name in list
-           val = paramVals[str(p)][0] # get value by name
-           self.paramValLst.append(str(val)) #set val to list
-
-    def btnApplyClicked(self, evt=None):
-        #check that there's either a loaded design, or that the param list isn't empty
-        if (self.PC.getDesignConfigBool() == False) or (self.paramList == [] or self.paramList == None):
-            wx.MessageBox('No design configuration detected.', 'Error', wx.OK | wx.ICON_ERROR)
-            return        
-        
-        
-        #get the vals from the scrollbox
-        # set vals to array/tuple
-        self.paramInput = pd.DataFrame({})
-        paramFields, originalVal, unitVal, lowerFields, upperFields, ignoreVal = self.notebook_params.getParamInputBoxVals()
-        paramsCheckedCtr = 0
-        for i in range(0, len(paramFields)):
-            a = paramFields[i].GetValue()
-            b = originalVal[i].GetValue()
-            c = unitVal[i].GetValue()
-            d = lowerFields[i].GetValue()
-            e = upperFields[i].GetValue()
-            f = ignoreVal[i].IsChecked()
-            self.paramInput[str(a)] = pd.Series([b,c,d,e,f])
-            if f == False:
-                paramsCheckedCtr = paramsCheckedCtr + 1
-        #put params into optimizer integrator. let integrator deal with processing
-
-        numControllable = len(self.paramInput) + 1
-        msg = str(numControllable) + " controllable parameters detected."
-        self.updateStatusText(msg)
-
-        self.OI.setControllableParams(self.paramInput)
-        self.notebook_optimizer.parameterSummaryUpdate(numControllable, self.paramInput)
-
-        msg = str(paramsCheckedCtr) + " parameters selected for optimization."
-        self.updateStatusText(msg)
-
 
 #######################################################
 # Error checking

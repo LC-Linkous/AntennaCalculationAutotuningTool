@@ -1,14 +1,14 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_python
-#   './multi_glods_python/src/multiglods_helpers.py'
+#   surrogate_model_optimization
+#   './surrogate_model_optimization/src/optimizers/multi_glods/multiglods_helpers.py'
 #   MultiGLODS helper functions for supporting algorithm, controller, 
 #       and statemachine
 #
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: June 28, 2024
+#   Last update: May 18, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -226,40 +226,143 @@ def  f_eval(state, xlist, prob, location):
 def f_eval_return(state, prob, alg, location):
     if state['eval_return'] and (state['location'] == location):
         state['eval_return'] = 0
-        prob['Ftemp'] = abs(alg['targets']-prob['FValtemp'])
+
+        ## We can either use the distance to target, 
+        ## or include a threshold evaulation. 
+
+
+        # The values for 'Ftemp' will 
+        # be set to ctl['Flist'] in post_objective_init_loop
+
+        prob['Ftemp'] = objective_function_evaluation(prob['FValtemp'], 
+                                                    alg['targets'],
+                                                    alg['evaluate_threshold'],
+                                                    alg['threshold'])
+    
+        
+        # # IF TARGET:
+        # if alg['evaluate_threshold'] == False:
+        #     prob['Ftemp'] = abs(alg['targets']-prob['FValtemp'])
+
+            # target format here is:
+            # [[0]
+            #  [0]]
+
+        # IF THRESHOLD:
         
     return state, prob
 
 # call objective function, allow it to update when desired
 def f_eval_objective_call(state, prob, ctl, allow_update):
+
+    noErrorBool = True #this is pretty stable, 
+                        # so default of true when NOT evaluating 
+                        # has not shown issues in testing. 
+
+
     if state['evaluate']:
         # NOTE: this is a change from the original multiglods_helpers.py
         # the new objective functioon configuration takes a horizontal array.
         # prob['FValtemp'], noErrorBool = ctl['obj_func'](prob['parent'], prob['xtemp'])
-        # print("multiglods_helpers.py")
-        # print("(np.hstack(prob['xtemp']))")
-        # print((np.hstack(prob['xtemp'])))
-        # print("ctl['obj_func'](np.hstack(prob['xtemp']))")
-        # print(ctl['obj_func'](np.hstack(prob['xtemp'])))
         FVals, noErrorBool = ctl['obj_func'](np.hstack(prob['xtemp']))
         # NOTE: multiGLODS needs a vertically stacked array
         # print("SHAPE FVALS in multiglods_holders")
         # print(FVals)
         # print(np.shape(FVals))
         if noErrorBool == True:
+            # this is the standard setup/shape for the AntennaCAT optimizer set. 
+            # left here for featuing matching between optimizers. 
             prob['FValtemp'] = np.array(FVals).reshape(-1, 1)
             # print(prob['FValtemp'])
             # print(np.shape(prob['FValtemp']))   
-            # adjust the fitness values output to be vertical to match multiGLODS expecations
-            prob['FValtemp'] = np.vstack(prob['FValtemp'])    
+
+            # adjust the fitness values output to be vertical to match multiGLODS expectations
+            prob['FValtemp'] = np.vstack(prob['FValtemp'])  
+
+
+
+            if allow_update:
+                state['evaluate'] = 0
+                state['eval_return'] = 1
+                ctl['objective_iter'] = ctl['objective_iter']  + 1
+
+
         else:
             print("ERROR: error in evaluation of the objective function. Check evaluation")
 
 
-        if allow_update:
-            state['evaluate'] = 0
-            state['eval_return'] = 1
-            ctl['objective_iter'] = ctl['objective_iter']  + 1
+        # if allow_update:
+        #     state['evaluate'] = 0
+        #     state['eval_return'] = 1
+        #     ctl['objective_iter'] = ctl['objective_iter']  + 1
 
-    return state, prob
+    return state, prob, noErrorBool
  
+
+def objective_function_evaluation(Fvals, targets, evaluate_threshold, obj_threshold):
+        #pass in the Fvals & targets so that it's easier to track bugs
+        # this is pulled directly from the antennaCAT optimizer set as a way to 
+        # streamline the development. 
+
+        # this uses the fitness values and target (or threshold) to determine the Flist values
+        # Option #1: TARGET
+        # get DISTANCE FROM TARGET
+        # Option #2: THRESHOLD
+        # use THRESHOLD TO DETERMINE INTEREST
+        # if threshold is met, the distance is set to a small value (epsilon).
+        #  Setting the 'distance' to epsilon, the convergence value check can
+        # also remain the same format. 
+
+
+        # testing different values of epsilon
+        epsilon = np.finfo(float).eps #smallest system constant
+        # Ex: 2.220446049250313e-16  
+        # #may be greater than tolerance if tolerance is set very low for testing
+        #epsilon = 10**-18
+        #epsilon = 0  # causes issues with imag. numbers
+
+        Flist = np.zeros_like(Fvals)
+
+        if evaluate_threshold == True: #THRESHOLD
+            ctr = 0
+            for i in targets:
+                o_thres = int(obj_threshold[ctr]) #force type as err check
+                t = targets[ctr]
+                fv = Fvals[ctr]
+
+                if o_thres == 0: #TARGET. default
+                    # sets Flist[ctr] as abs distance of  Fvals[ctr] from target
+                    Flist[ctr] = abs(t - fv)
+
+                elif o_thres == 1: #LESS THAN OR EQUAL 
+                    # checks if the Fvals[ctr] is LESS THAN OR EQUAL to target
+                    # if yes, then distance is 0 (considered 'on target)
+                    # if no, then Flist is abs distance of  Fvals[ctr] from target
+                    if fv <= t:
+                        Flist[ctr] = epsilon
+                    else:
+                        Flist[ctr] = abs(t - fv)
+
+                elif o_thres == 2: #GREATER THAN OR EQUAL
+                    # checks if the Fvals[ctr] is GREATER THAN OR EQUAL to target
+                    # if yes, then distance is 0 (considered 'on target)
+                    # if no, then Flist is abs distance of  Fvals[ctr] from target
+                    if fv >= t:
+                        Flist[ctr] = epsilon
+                    else:
+                        Flist[ctr] = abs(t - fv)
+
+                else: #o_thres == 0. #TARGET. default
+                    print("ERROR: unrecognized threshold value. Evaluating as TARGET")
+                    Flist[ctr] = abs(t - fv)
+
+                ctr = ctr + 1
+
+        else: #TARGET as default
+            # arrays are already the same dimensions. 
+            # no need to loop and compare to anything
+            Flist = abs(targets - Fvals)
+
+
+        return Flist
+        

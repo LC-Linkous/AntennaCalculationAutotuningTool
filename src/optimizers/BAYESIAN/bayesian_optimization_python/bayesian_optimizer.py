@@ -8,29 +8,70 @@
 #   a parent, which also passes arguments to the surrogate model.
 #      
 #
-#   Author(s): Lauren Linkous, Jonathan Lundquist
-#   Last update: December 5, 2024
+#   Author(s): Lauren Linkous
+#   Last update: May 30, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
+import time
 from numpy.random import Generator, MT19937
 import sys
 
 
 class BayesianOptimization:
-    def __init__(self,lbound, ubound, 
-                output_size, targets, E_TOL, maxit,
-                obj_func, constr_func,
-                init_points=2, 
-                xi = 0.01, n_restarts=25,
-                parent=None, detailedWarnings=False):
+    # arguments should take form: 
+    # optimizer([[float, float, ...]], [[float, float, ...]], [[float, ...]], float, int,
+    # func, func,
+    # dataFrame,
+    # class obj, 
+    # bool, [int, int, ...]) 
+    #  
+    # opt_df contains class-specific tuning parameters
+    # NO_OF_PARTICLES: int
+    # weights: [[float, float, float]]
+    # boundary: int. 1 = random, 2 = reflecting, 3 = absorbing,   4 = invisible
+    # vlimit: float
+    # 
+   
+    def __init__(self, lbound, ubound, targets,E_TOL, maxit,
+                 obj_func, constr_func, 
+                 opt_df,
+                 parent=None, 
+                 evaluate_threshold=False, obj_threshold=None,
+                 useSurrogateModel=False,  # This optimizer cannot use an internal optimizer
+                 surrogateOptimizer=None): # used for format streamlining
+
         
         # Optional parent class func call to write out values that trigger constraint issues
         self.parent = parent 
-        # Additional output for advanced debugging to TERMINAL. 
-        # Some of these messages will be returned via debugTigger
-        self.detailedWarnings = detailedWarnings 
+
+
+        #evaluation method for targets
+        # True: Evaluate as true targets
+        # False: Evaluate as thesholds based on information in obj_threshold
+        if evaluate_threshold==False:
+            self.evaluate_threshold = False
+            self.obj_threshold = None
+
+        else:
+            if not(len(obj_threshold) == len(targets)):
+                self.debug_message_printout("WARNING: THRESHOLD option selected.  +\
+                Dimensions for THRESHOLD do not match TARGET array. Defaulting to TARGET search.")
+                self.evaluate_threshold = False
+                self.obj_threshold = None
+            else:
+                self.evaluate_threshold = evaluate_threshold #bool
+                self.obj_threshold = np.array(obj_threshold).reshape(-1, 1) #np.array
+
+
+
+
+        #unpack the opt_df standardized vals
+        init_points = int(opt_df['INIT_PTS'][0])
+        n_restarts = int(opt_df['NUM_RESTARTS'][0])
+        xi = float(opt_df['XI'][0])
+
 
         # problem height and width
         heightl = np.shape(lbound)[0]
@@ -53,7 +94,7 @@ class BayesianOptimization:
                 pass
             else:
                 self.parent.record_params()
-                self.parent.updateStatusText("ERROR: lbound and ubound must be 1xN-dimensional \
+                self.parent.debug_message_printout("ERROR: lbound and ubound must be 1xN-dimensional \
                                                         arrays  with the same length")
            
         else:
@@ -70,7 +111,7 @@ class BayesianOptimization:
 
 
             '''
-            self.M                      : An array of current X sample locations. All M values are also personal bests (self.Pb)
+            self.M                      : An array of current X sample locations. 
             self.output_size            : An integer value for the output size of obj func
             self.Gb                     : Global best position, initialized with a large value.
             self.F_Gb                   : Fitness value corresponding to the global best position.
@@ -90,11 +131,11 @@ class BayesianOptimization:
             self.new_point              : Newest proposed/passed in point.
             '''
 
-            self.M = []
-            self.output_size = output_size
+            self.M = [] #set below
+            self.output_size = len(targets)
             self.Gb = sys.maxsize*np.ones((1,np.max([heightl, widthl])))   
-            self.F_Gb = sys.maxsize*np.ones((1,output_size))
-            self.F_Pb = []  
+            self.F_Gb = sys.maxsize*np.ones((1,self.output_size))
+            self.F_Pb = []  #set below
             self.targets = np.array(targets).reshape(-1, 1)         
             self.maxit = maxit                       
             self.E_TOL = E_TOL
@@ -106,14 +147,154 @@ class BayesianOptimization:
             self.Fvals = []
             self.init_points = init_points    
             self.xi = xi
-            self.n_restarts = int(n_restarts) 
+            self.n_restarts = n_restarts
             self.new_point = []
     
+
             # state machine control flow
             self.firstOptimizationRun = False
             self.doneInitializationBoolean = False
             self.ctr  = 0
             self.objective_function_case = 0 #initial pts by default
+        
+
+
+
+
+    def call_objective(self, allow_update=False):
+
+       # may have re-run in an upstream optimizer
+        # so this may be triggered when the point should not be sampled
+        if allow_update == False:
+            self.allow_update = 0
+            return
+        else:        
+            self.allow_update = 1
+
+        # these cases are different for the error messages, and some features in development for prediction. This couls be streamlined
+
+        # case 0: first point of initial points (must have minimum 1)
+        if self.objective_function_case == 0:
+            new_M = self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound))
+            newFVals, noError = self.obj_func(new_M[0], self.output_size)  # Cumulative Fvals
+
+            if noError == True:
+                self.Fvals = np.array([newFVals]).reshape(-1, 1) 
+                self.M = new_M
+                self.F_Pb = newFVals
+            else:
+                msg = "ERROR: initial point creation issue"
+                self.debug_message_printout(msg)
+
+            self.is_fitted = False
+
+        # case 1: any other initial points before optimiation begins
+        elif self.objective_function_case == 1:
+            new_M = self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound))
+            newFVals, noError = self.obj_func(new_M[0], self.output_size) 
+            if noError == True:
+                self.Fvals = np.array([newFVals]).reshape(-1, 1) 
+                self.M = np.vstack([self.M, new_M])
+                self.F_Pb = np.vstack((self.F_Pb, newFVals))#.reshape(-1, 1) 
+
+            else:
+                msg = "ERROR: objective function error when initilaizing random points"
+                self.debug_message_printout(msg)
+
+            self.is_fitted = False
+
+        # case 2: normal objective function calls, optimization running live
+        elif self.objective_function_case == 2:
+            if len(self.new_point) < 1: # point not set
+                msg = "WARNING: no point set for objective call. Skipping. Ignore unless this is persistent."
+                self.debug_message_printout(msg)
+                return
+
+            newFVals, noError = self.obj_func(self.new_point[0], self.output_size)
+            if noError==True:
+                self.Fvals = np.array([newFVals]).reshape(-1, 1) 
+                #self.Flist = abs(self.targets - self.Fvals)
+                # EVALUATE OBJECTIVE FUNCTION - TARGET OR THRESHOLD
+                # this evaluation happens here because there's enough points 
+                # to actually build and evaluate the surrogate model approximation
+                self.Flist = self.objective_function_evaluation(self.Fvals, self.targets)# abs(self.targets - self.Fvals)
+                self.M = np.vstack((self.M, self.new_point))
+                self.F_Pb = np.vstack((self.F_Pb, newFVals))#.reshape(-1, 1) 
+                self.fit_model(self.M, self.F_Pb)
+
+        else:
+            msg = "ERROR: in call objective objective function evaluation"
+            self.debug_message_printout(msg)
+
+
+        self.iter = self.iter + 1
+
+
+    def objective_function_evaluation(self, Fvals, targets):
+        #pass in the Fvals & targets so that it's easier to track bugs
+
+        # this uses the fitness values and target (or threshold) to determine the Flist values
+        # Option #1: TARGET
+        # get DISTANCE FROM TARGET
+        # Option #2: THRESHOLD
+        # use THRESHOLD TO DETERMINE INTEREST
+        # if threshold is met, the distance is set to a small value (epsilon).
+        #  Setting the 'distance' to epsilon, the convergence value check can
+        # also remain the same format. 
+
+
+        # testing different values of epsilon
+        epsilon = np.finfo(float).eps #smallest system constant
+        # Ex: 2.220446049250313e-16  
+        # #may be greater than tolerance if tolerance is set very low for testing
+        #epsilon = 10**-18
+        #epsilon = 0  # causes issues with imag. numbers
+
+        Flist = np.zeros_like(Fvals)
+
+        if self.evaluate_threshold == True: #THRESHOLD
+            ctr = 0
+            for i in targets:
+                o_thres = int(self.obj_threshold[ctr]) #force type as err check
+                t = targets[ctr]
+                fv = Fvals[ctr]
+
+                if o_thres == 0: #TARGET. default
+                    # sets Flist[ctr] as abs distance of  Fvals[ctr] from target
+                    Flist[ctr] = abs(t - fv)
+
+                elif o_thres == 1: #LESS THAN OR EQUAL 
+                    # checks if the Fvals[ctr] is LESS THAN OR EQUAL to target
+                    # if yes, then distance is 0 (considered 'on target)
+                    # if no, then Flist is abs distance of  Fvals[ctr] from target
+                    if fv <= t:
+                        Flist[ctr] = epsilon
+                    else:
+                        Flist[ctr] = abs(t - fv)
+
+                elif o_thres == 2: #GREATER THAN OR EQUAL
+                    # checks if the Fvals[ctr] is GREATER THAN OR EQUAL to target
+                    # if yes, then distance is 0 (considered 'on target)
+                    # if no, then Flist is abs distance of  Fvals[ctr] from target
+                    if fv >= t:
+                        Flist[ctr] = epsilon
+                    else:
+                        Flist[ctr] = abs(t - fv)
+
+                else: #o_thres == 0. #TARGET. default
+                    self.parent.debug_message_printout("ERROR: unrecognized threshold value. Evaluating as TARGET")
+                    Flist[ctr] = abs(t - fv)
+
+
+
+                ctr = ctr + 1
+
+        else: #TARGET as default
+            # arrays are already the same dimensions. 
+            # no need to loop and compare to anything
+            Flist = abs(targets - Fvals)
+
+        return Flist
         
 
     # SURROGATE MODEL CALLS
@@ -140,7 +321,7 @@ class BayesianOptimization:
 
     def maxed(self):
         # check if search max iterations hit
-        max_iter = self.iter > self.maxit
+        max_iter = self.iter >= self.maxit
         return max_iter
 
     def complete(self):
@@ -202,22 +383,6 @@ class BayesianOptimization:
         min_val = 1
         min_x = None # may stay none if it doesn't minimize
 
-
-        print("propose_location()")
-        print("self.lbound.reshape(1,-1)")
-        print(self.lbound.reshape(1,-1))
-        print("self.lbound.reshape(1,-1)[0]")
-        print(self.lbound.reshape(1,-1)[0])
-        print("self.ubound.reshape(1,-1)")
-        print(self.ubound.reshape(1,-1))
-        print("self.ubound.reshape(1,-1)[0]")
-        print(self.ubound.reshape(1,-1)[0])
-        print("self.n_restarts")
-        print(self.n_restarts)
-        print("dim")
-        print(dim)
-
-
         for x0 in self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], size=(self.n_restarts, dim)):
             x, f_x = self.minimize(x0)
             #using the l2norm to handle single and multi objective
@@ -257,74 +422,7 @@ class BayesianOptimization:
 
         return grad
 
-    def error_message_generator(self, msg):
-        # for error messages, but also repurposed for general updates
-        if self.parent == None:
-            print(msg)
-        else:
-            self.parent.updateStatusText(msg)
 
-    def call_objective(self, allow_update=False):
-
-       # may have re-run in an upstream optimizer
-        # so this may be triggered when the point should not be sampled
-        if allow_update == False:
-            self.allow_update = 0
-            return
-        else:        
-            self.allow_update = 1
-        
-        # case 0: first point of initial points (must have minimum 1)
-        if self.objective_function_case == 0:
-            new_M = self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound))
-            newFVals, noError = self.obj_func(new_M[0], self.output_size)  # Cumulative Fvals
-
-            if noError == True:
-                newFVals = np.array([newFVals])#.reshape(-1, 1)  # kept for comparison between other optimzers
-                self.M = new_M
-                self.F_Pb = newFVals
-            else:
-                msg = "ERROR: initial point creation issue"
-                self.error_message_generator(msg)
-
-            self.is_fitted = False
-
-        # case 1: any other initial points before optimiation begins
-        elif self.objective_function_case == 1:
-            new_M = self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound))
-            newFVals, noError = self.obj_func(new_M[0], self.output_size) 
-            if noError == True:
-                newFVals = np.array([newFVals])#.reshape(-1, 1) 
-                self.M = np.vstack([self.M, new_M])
-                self.F_Pb = np.vstack((self.F_Pb, newFVals))#.reshape(-1, 1) 
-
-            else:
-                msg = "ERROR: objective function error when initilaizing random points"
-                self.error_message_generator(msg)
-
-            self.is_fitted = False
-
-        # case 2: normal objective function calls, optimization running live
-        elif self.objective_function_case == 2:
-            if len(self.new_point) < 1: # point not set
-                msg = "WARNING: no point set for objective call. Skipping. Ignore unless this is persistent."
-                self.error_message_generator(msg)
-                return
-
-            newFVals, noError = self.obj_func(self.new_point[0], self.output_size)
-            if noError==True:
-                self.Fvals = np.array([newFVals])#.reshape(-1, 1) 
-                self.Flist = abs(self.targets - self.Fvals)
-                self.M = np.vstack((self.M, self.new_point))
-                self.F_Pb = np.vstack((self.F_Pb, newFVals))#.reshape(-1, 1) 
-                self.fit_model(self.M, self.F_Pb)
-
-        else:
-            msg = "ERROR: in call objective objective function evaluation"
-            self.error_message_generator(msg)
-
-
-        self.iter = self.iter + 1
 
     def step(self, suppress_output=False):
 
@@ -340,7 +438,7 @@ class BayesianOptimization:
                 "Best Particle Position: \n" +\
                 str(np.hstack(self.Gb)) + "\n" +\
                 "-----------------------------"
-            self.error_message_generator(msg)
+            self.debug_message_printout(msg)
 
         if self.allow_update:      
 
@@ -365,7 +463,7 @@ class BayesianOptimization:
                 else: #if self.ctr >= self.init_points: 
                     msg = "Model initialized with " + str(self.ctr) + " points. \n \
                     The iteration counter will start from " + str(self.iter) + "\n\n"
-                    self.error_message_generator(msg)
+                    self.debug_message_printout(msg)
                     # get the sample points out (to ensure standard formatting)
                     x_sample, y_sample = self.get_sample_points()
                     # fit GP model.
@@ -400,4 +498,13 @@ class BayesianOptimization:
                     "Iterations: \n" + str(self.iter) + "\n" + \
                     "Flist: \n" + str(self.F_Gb) + "\n" + \
                     "Norm Flist: \n" + str(np.linalg.norm(self.F_Gb)) + "\n"
-                self.error_message_generator(msg)
+                self.debug_message_printout(msg)
+
+
+
+    def debug_message_printout(self, msg):
+        # for error messages, but also repurposed for general updates
+        if self.parent == None:
+            print(msg)
+        else:
+            self.parent.debug_message_printout(msg)

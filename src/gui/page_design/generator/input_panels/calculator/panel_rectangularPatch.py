@@ -97,16 +97,31 @@ class RectangularPatchOptionsPage(wx.Panel):
 
     def getFeatures(self):
 
-        features = [["feed_type", self.feedDropDown.GetValue()],
-                    ["dielectric", self.fieldDielectric.GetValue()],
-                    ["substrate_material", self.substrateDropDown.GetValue()],
-                    ["conductor_material", self.conductorDropDown.GetValue()],
-                    #["conductor_height", None],
-                    ["substrate_height", self.fieldSubstrateHeight.GetValue()],
-                    ["simulation_frequency", self.fieldFrequency.GetValue()],
-                    ["gap", self.fieldGap.GetValue()],
-                    ["strip_width", self.fieldStripWidth.GetValue()]]
+        ft = self.feedDropDown.GetValue()
+        
+        if ft == 'microstrip': #strip fed 
+            features = [["feed_type", self.feedDropDown.GetValue()],
+                        ["dielectric", self.fieldDielectric.GetValue()],
+                        ["substrate_material", self.substrateDropDown.GetValue()],
+                        ["conductor_material", self.conductorDropDown.GetValue()],
+                        #["conductor_height", None],
+                        ["substrate_height", self.fieldSubstrateHeight.GetValue()],
+                        ["simulation_frequency", self.fieldFrequency.GetValue()],
+                        ["gap", self.fieldGap.GetValue()],
+                        ["strip_width", self.fieldStripWidth.GetValue()]]
 
+        else: # probe fed
+
+            features = [["feed_type", self.feedDropDown.GetValue()],
+                        ["dielectric", self.fieldDielectric.GetValue()],
+                        ["substrate_material", self.substrateDropDown.GetValue()],
+                        ["conductor_material", self.conductorDropDown.GetValue()],
+                        #["conductor_height", None],
+                        ["substrate_height", self.fieldSubstrateHeight.GetValue()],
+                        ["simulation_frequency", self.fieldFrequency.GetValue()],
+                        #["gap", self.fieldGap.GetValue()]
+                        ]
+               # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY
         return features
     
     def getUseLengthForX0(self):

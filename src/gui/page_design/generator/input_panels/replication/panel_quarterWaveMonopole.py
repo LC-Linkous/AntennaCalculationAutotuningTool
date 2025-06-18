@@ -94,13 +94,16 @@ class QuarterWaveMonopoleOptionsPage(wx.Panel):
                     ["ground_plane_radius", gpRad],
                     ["feed_gap", feedGap],
                     ["length", l ],
-                    ["substrate_width", None],
-                    ["substrate_length", None],
-                    ["ground_plane_width", None],
-                    ["ground_plane_length", None],
+                    # ["substrate_width", None],
+                    # ["substrate_length", None],
+                    # ["ground_plane_width", None],
+                    # ["ground_plane_length", None],
                     #["conductor_height", None],
-                    ["substrate_height", None]]   
-        return paramArr 
+                    # ["substrate_height", None]
+                    ]
+             # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY
+        return paramArr
+
 
 
         

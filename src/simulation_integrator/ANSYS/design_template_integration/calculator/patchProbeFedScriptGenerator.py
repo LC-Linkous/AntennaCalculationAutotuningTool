@@ -11,7 +11,9 @@ import os
 import re
 
 #def patchProbeFedScriptGenerator(parent, w, l, d, x0, y0, gp, cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy", units="mm", networkType="modal"):
-def patchProbeFedScriptGenerator(parent,  w, l, x0, y0, groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth, cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy", units="mm", networkType="modal"):
+def patchProbeFedScriptGenerator(parent,  w, l, x0, y0, 
+                                #  groundLength, groundWidth, 
+                                 substrateHeight, substrateLength, substrateWidth, cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy", units="mm", networkType="modal"):
     #src\simulation_integrator\ANSYS\code_templates\patch_probe-fed.txt
     filepath = os.path.join(parent.calculatorTemplatesDir, 'patch_probe-fed.txt')
     if os.path.isfile(filepath) == True:
@@ -24,12 +26,12 @@ def patchProbeFedScriptGenerator(parent,  w, l, x0, y0, groundLength, groundWidt
     projectPath = repr(parent.saveProjectAs)  #full save location
     wVal =  str(w) + " " + str(units)
     lVal = str(l) + " " + str(units)
-    dVal = str(substrateHeight) + " " + str(units)
+    #dVal = str(substrateHeight) + " " + str(units)
     x0Val = str(x0) + " " + str(units)
     y0Val = str(y0) + " " + str(units)
-    gpVal = str(groundLength) + " " + str(units)
-    groundLengthVal = str(groundLength) + " " + str(units)
-    groundWidthVal = str(groundWidth) + " " + str(units)
+    #gpVal = str(groundLength) + " " + str(units)
+    # groundLengthVal = str(groundLength) + " " + str(units)
+    # groundWidthVal = str(groundWidth) + " " + str(units)
     substrateHeightVal = str(substrateHeight) + " " + str(units)
     substrateLengthVal = str(substrateLength) + " " + str(units)
     substrateWidthVal = str(substrateWidth) + " " + str(units)
@@ -66,18 +68,37 @@ def patchProbeFedScriptGenerator(parent,  w, l, x0, y0, groundLength, groundWidt
             elif re.search('INSERT_LENGTH_VALUE', line):
                 li = lVal
                 line = re.sub('INSERT_LENGTH_VALUE', li, line)  
-            elif re.search('INSERT_DEPTH_VALUE', line):
-                li = dVal
-                line = re.sub('INSERT_DEPTH_VALUE', li, line)              
+            # elif re.search('INSERT_DEPTH_VALUE', line):
+            #     li = dVal
+            #     line = re.sub('INSERT_DEPTH_VALUE', li, line)              
             elif re.search('INSERT_X0_VALUE', line):
                 li = x0Val
                 line = re.sub('INSERT_X0_VALUE', li, line)              
             elif re.search('INSERT_Y0_VALUE', line):
                 li = y0Val
                 line = re.sub('INSERT_Y0_VALUE', li, line)             
-            elif re.search('INSERT_GROUND_PLANE_VALUE', line):
-                li = gpVal
-                line = re.sub('INSERT_GROUND_PLANE_VALUE', li, line)    
+            # elif re.search('INSERT_GROUND_PLANE_VALUE', line):
+            #     li = gpVal
+            #     line = re.sub('INSERT_GROUND_PLANE_VALUE', li, line)    
+
+            # elif re.search('INSERT_GROUND_LENGTH_VALUE', line):
+            #     li = groundLengthVal
+            #     line = re.sub('INSERT_GROUND_LENGTH_VALUE', li, line)   
+            # elif re.search('INSERT_GROUND_WIDTH_VALUE', line):
+            #     li = groundWidthVal
+            #     line = re.sub('INSERT_GROUND_WIDTH_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_HEIGHT_VALUE', line):
+                li = substrateHeightVal
+                line = re.sub('INSERT_SUBSTRATE_HEIGHT_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_LENGTH_VALUE', line):
+                li = substrateLengthVal
+                line = re.sub('INSERT_SUBSTRATE_LENGTH_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_WIDTH_VALUE', line):
+                li = substrateWidthVal
+                line = re.sub('INSERT_SUBSTRATE_WIDTH_VALUE', li, line)     
+
+
+
             elif re.search('INSERT_GROUND_PLANE_MATERIAL', line):
                 li = groundPlaneMaterial
                 line = re.sub('INSERT_GROUND_PLANE_MATERIAL', li, line)             

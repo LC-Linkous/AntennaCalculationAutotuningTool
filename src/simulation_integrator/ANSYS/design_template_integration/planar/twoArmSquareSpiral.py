@@ -11,7 +11,8 @@ import os
 import re 
 
 def twoArmSquareSpiralScriptGenerator(parent, initLength, initWidth, width, x0, y0, spacing, 
-                                   groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                   #groundLength, groundWidth, 
+                                   substrateHeight, substrateLength, substrateWidth,
                                    cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
 
     filepath = os.path.join(parent.replicatorTemplatesDir, 'two-arm-square-spiral.txt')
@@ -29,8 +30,8 @@ def twoArmSquareSpiralScriptGenerator(parent, initLength, initWidth, width, x0, 
     x0Val = str(x0) + " " + str(units)
     y0Val = str(y0) + " " + str(units)
     spacingVal = str(spacing) + " " + str(units)
-    groundLengthVal = str(groundLength) + " " + str(units)
-    groundWidthVal = str(groundWidth) + " " + str(units)
+    # groundLengthVal = str(groundLength) + " " + str(units) #template uses the sub size, but these vars do exist
+    # groundWidthVal = str(groundWidth) + " " + str(units)
     substrateHeightVal = str(substrateHeight) + " " + str(units)
     substrateLengthVal = str(substrateLength) + " " + str(units)
     substrateWidthVal = str(substrateWidth) + " " + str(units)
@@ -77,21 +78,24 @@ def twoArmSquareSpiralScriptGenerator(parent, initLength, initWidth, width, x0, 
             elif re.search('INSERT_SPACING_VALUE', line):
                 li = spacingVal
                 line = re.sub('INSERT_SPACING_VALUE', li, line)  
-            elif re.search('INSERT_GP_LENGTH_VALUE', line):
-                li = groundLengthVal
-                line = re.sub('INSERT_GP_LENGTH_VALUE', li, line)              
-            elif re.search('INSERT_GP_WIDTH_VALUE', line):
-                li = groundWidthVal
-                line = re.sub('INSERT_GP_WIDTH_VALUE', li, line)  
-            elif re.search('INSERT_SUB_HEIGHT_VALUE', line):
+            # elif re.search('INSERT_GP_LENGTH_VALUE', line):
+            #     li = groundLengthVal
+            #     line = re.sub('INSERT_GP_LENGTH_VALUE', li, line)              
+            # elif re.search('INSERT_GP_WIDTH_VALUE', line):
+            #     li = groundWidthVal
+            #     line = re.sub('INSERT_GP_WIDTH_VALUE', li, line)  
+            elif re.search('INSERT_SUBSTRATE_HEIGHT_VALUE', line):
                 li = substrateHeightVal
-                line = re.sub('INSERT_SUB_HEIGHT_VALUE', li, line)  
-            elif re.search('INSERT_SUB_LENGTH_VALUE', line):
+                line = re.sub('INSERT_SUBSTRATE_HEIGHT_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_LENGTH_VALUE', line):
                 li = substrateLengthVal
-                line = re.sub('INSERT_SUB_LENGTH_VALUE', li, line)              
-            elif re.search('INSERT_SUB_WIDTH_VALUE', line):
+                line = re.sub('INSERT_SUBSTRATE_LENGTH_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_WIDTH_VALUE', line):
                 li = substrateWidthVal
-                line = re.sub('INSERT_SUB_WIDTH_VALUE', li, line)  
+                line = re.sub('INSERT_SUBSTRATE_WIDTH_VALUE', li, line)  
+
+
+
             elif re.search('INSERT_GROUND_PLANE_MATERIAL', line):
                 li = groundPlaneMaterial
                 line = re.sub('INSERT_GROUND_PLANE_MATERIAL', li, line)   

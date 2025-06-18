@@ -294,8 +294,8 @@ class CalculateAndDraw():
         l = float(params["length"][0])    
         x0 = float(params["x0"][0])
         y0 = float(params["y0"][0])
-        subW = float(params["substrate_width"][0])
-        subL = float(params["substrate_length"][0])
+        # subW = float(params["substrate_width"][0])
+        # subL = float(params["substrate_length"][0])
 
         #draw ground plane rectangle
         pts = self.drawRectangularPlane(ax, 2*l, 2*w, z=0, color="goldenrod") # groundplane
@@ -318,7 +318,7 @@ class CalculateAndDraw():
         return l, w
 
     def generateMonopole(self, ax, features, params, color = "b"):
-        aType = features["antenna_type"][0]
+        #aType = features["antenna_type"][0]
         l = float(params["length"][0])    
         rad = float(params["conductor_radius"][0])    
         gp_rad = float(params["ground_plane_radius"][0])
@@ -332,9 +332,9 @@ class CalculateAndDraw():
         return l, gp_rad #return val to size the canvas
 
     def generateDipole(self, ax, features, params, color = "m"):
-        aType = features["antenna_type"][0]
+        #aType = features["antenna_type"][0]
         l = float(params["length"][0]) 
-        hl = float(params["half_length"][0])    
+        hl = l/2 #this would be set to the same thing with the calculator
         rad = float(params["conductor_radius"][0])    
         fg = float(params["feed_gap"][0])    
 
@@ -352,7 +352,7 @@ class CalculateAndDraw():
         ps = float(params["Ps"][0]) 
         ws = float(params["Ws"][0])    
         w = float(params["W"][0])    
-        h = float(params["substrate_height"][0]) 
+        h = float(params["ground_plane_dist"][0]) 
         gpWidth = float(params["ground_plane_width"][0]) #Wg
         gpLength = float(params["ground_plane_length"][0]) #Lg
 
@@ -376,8 +376,8 @@ class CalculateAndDraw():
         subHeight = float(params["substrate_height"][0])   #d
         subW = float(params["substrate_width"][0]) #Wg
         subL = float(params["substrate_length"][0]) #Lg
-        gpWidth = float(params["ground_plane_width"][0]) # Wg
-        gpLength = float(params["ground_plane_length"][0]) #Lg
+        #gpWidth = subW #float(params["ground_plane_width"][0]) # Wg
+        #gpLength = subL #float(params["ground_plane_length"][0]) #Lg
 
 
 
@@ -408,8 +408,8 @@ class CalculateAndDraw():
         subHeight = float(params["substrate_height"][0]) #d
         wsub = float(params["substrate_width"][0])
         lsub = float(params["substrate_length"][0])
-        gpWidth = float(params["ground_plane_width"][0])
-        gpLength = float(params["ground_plane_length"][0])
+        # gpWidth = float(params["ground_plane_width"][0])
+        # gpLength = float(params["ground_plane_length"][0])
 
         self.draw2DDualBandSerpentinePatchConductor(ax, lp, lsub, wp, wsub,
                                                     ps1, ls1, ws1, ps2, ls2, ws2, ps3, ls3, ws3, ps4, ls4, ws4,
@@ -427,8 +427,8 @@ class CalculateAndDraw():
         gapDist = float(params["gap_distance"][0])
         subW = float(params["substrate_width"][0])
         subL = float(params["substrate_length"][0])
-        gpWidth = float(params["ground_plane_width"][0])
-        gpLength = float(params["ground_plane_length"][0])
+        gpWidth = subW #float(params["ground_plane_width"][0])
+        gpLength = subL #float(params["ground_plane_length"][0])
 
 
         self.draw2DCircularLoopConductor(ax, innerRad, outerRad, feedWidth, inset, gapDist, subW, subL, gpWidth, gpLength, h, corner=[0,0], color=color)
@@ -445,8 +445,8 @@ class CalculateAndDraw():
         gap = float(params["gap_distance"][0])
         subW = float(params["substrate_width"][0])
         subL = float(params["substrate_length"][0])
-        gpWidth = float(params["ground_plane_width"][0])
-        gpLength = float(params["ground_plane_length"][0])
+        gpWidth = subW #float(params["ground_plane_width"][0])
+        gpLength = subL #float(params["ground_plane_length"][0])
 
 
         #draw ground plane rectangle
@@ -467,8 +467,8 @@ class CalculateAndDraw():
         spacing = float(params["spacing"][0])
         subW = float(params["substrate_width"][0])
         subL = float(params["substrate_length"][0])
-        gpWidth = float(params["ground_plane_width"][0])
-        gpLength = float(params["ground_plane_length"][0])
+        gpWidth = subW #float(params["ground_plane_width"][0])
+        gpLength = subL #float(params["ground_plane_length"][0])
 
 
 
@@ -487,8 +487,8 @@ class CalculateAndDraw():
         gapDist = float(params["gap_distance"][0])
         subW = float(params["substrate_width"][0])
         subL = float(params["substrate_length"][0])
-        gpWidth = float(params["ground_plane_width"][0])
-        gpLength = float(params["ground_plane_length"][0])
+        gpWidth = subW # float(params["ground_plane_width"][0])
+        gpLength = subL #float(params["ground_plane_length"][0])
 
         
         self.drawCoplanarKeyholeConductor(ax, innerRad, outerRad, feedWidth, feedLength, gapDist, subW, subL, gpWidth, gpLength, h, corner=[0,0], color=color)
@@ -503,8 +503,8 @@ class CalculateAndDraw():
         gapDist = float(params["gap_distance"][0])
         subW = float(params["substrate_width"][0])
         subL = float(params["substrate_length"][0])
-        gpWidth = float(params["ground_plane_width"][0])
-        gpLength = float(params["ground_plane_length"][0])
+        gpWidth = subW #float(params["ground_plane_width"][0])
+        gpLength = subL #float(params["ground_plane_length"][0])
         #draw ground plane rectangle
         
         self.drawSquareLoopConductor(ax, length, width, feedWidth, gapDist, subW, subL, gpWidth, gpLength, h, corner=[0,0], color=color)

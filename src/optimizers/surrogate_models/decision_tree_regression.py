@@ -2,7 +2,7 @@
 
 ##--------------------------------------------------------------------\
 #   bayesian_optimization_python
-#   './surrogate_models/decision_tree_regression.py'
+#   './bayesian_optimization_python/src/surrogate_models/decision_tree_regression.py'
 #   Decision Tree Regression surrogate model for optimization. 
 #
 #   Author(s): Lauren Linkous 

@@ -6,40 +6,66 @@
 #   Parameter sweep class. Iterates through a specified parameter space
 #   to find the optimial solution based on target values.
 #
-#   Author(s): Lauren Linkous, Jonathan Lundquist
-#   Last update: November 29, 2024
+#   Author(s): Lauren Linkous 
+#   Last update: March 13, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
+import pandas as pd
 from numpy.random import Generator, MT19937
 import sys
-import time
 np.seterr(all='raise')
 
 
 class sweep:
-    # arguments should take form: 
-    # sweep(int, [[float, float,...]], [[float, float,...]], 
-    #       [[float, float,...]], [[float, float,...]],
-    #        int, [[float, float,...]],
-    #        float, int, int,
-    #        func, func, obj, bool) 
-    # int search_method:  1 = basic_grid, 2 = random_search
-    
-    def __init__(self, NO_OF_PARTICLES, lbound, ubound, 
-                 output_size, targets,
-                 E_TOL, maxit,  
-                 obj_func, constr_func,
-                 search_method, min_res, max_res, 
-                 parent=None, detailedWarnings=False):  
+    # arguments should take the form: 
+    # swarm([[float, float, ...]], [[float, float, ...]], [[float, ...]], float, int,
+    # func, func,
+    # dataFrame,
+    # class obj, 
+    # bool, [int, int, ...]) 
+    #  
+    # opt_df contains class-specific tuning parameters
+    # NO_OF_PARTICLES: int
+    # SEARCH_METHOD: int
+    # MIN_RES: arr
+    # MAX_RES: arr
         
-                 
+    def __init__(self,  lbound, ubound, targets,E_TOL, maxit,
+                    obj_func, constr_func, 
+                    opt_df,
+                    parent=None, 
+                    evaluate_threshold=False, obj_threshold=None,
+                    useSurrogateModel=False,  # This optimizer cannot use an internal optimizer
+                    surrogateOptimizer=None): # used for format streamlining
+
         # Optional parent class func call to write out values that trigger constraint issues
         self.parent = parent 
-        # Additional output for advanced debugging to TERMINAL. 
-        # Some of these messages will be returned via debugTigger
-        self.detailedWarnings = detailedWarnings 
+
+        #evaluation method for targets
+        # True: Evaluate as true targets
+        # False: Evaluate as thesholds based on information in obj_threshold
+        if evaluate_threshold==False:
+            self.evaluate_threshold = False
+            self.obj_threshold = None
+
+        else:
+            if not(len(obj_threshold) == len(targets)):
+                self.debug_message_printout("WARNING: THRESHOLD option selected.  +\
+                Dimensions for THRESHOLD do not match TARGET array. Defaulting to TARGET search.")
+                self.evaluate_threshold = False
+                self.obj_threshold = None
+            else:
+                self.evaluate_threshold = evaluate_threshold #bool
+                self.obj_threshold = np.array(obj_threshold).reshape(-1, 1) #np.array
+        
+
+        #unpack the opt_df standardized vals
+        NO_OF_PARTICLES = int(opt_df['NO_OF_PARTICLES'][0])
+        search_method = int(opt_df['SEARCH_METHOD'][0])
+        min_res = opt_df['MIN_RES'][0]
+        max_res = opt_df['MAX_RES'][0]
 
         # problem height and width
         heightl = np.shape(lbound)[0]
@@ -111,14 +137,14 @@ class sweep:
             self.Fvals                  : List to store fitness values.
             self.Mlast                  : Last search location
             '''
-            self.output_size = output_size
+            self.output_size = len(targets)
             self.Active = np.ones((NO_OF_PARTICLES))  # not/active if particles finish before others
             self.Gb = sys.maxsize*np.ones((1,np.max([heightl, widthl])))   
-            self.F_Gb = sys.maxsize*np.ones((1,output_size))              
-            self.targets = np.array(targets)
-            self.min_search_res = np.array(min_res)
-            self.max_search_res = np.array(max_res)
-            self.search_resolution = np.array(min_res)
+            self.F_Gb = sys.maxsize*np.ones((1,self.output_size))              
+            self.targets = np.array(targets).reshape(-1, 1)     
+            self.min_search_res = np.array(min_res).reshape(-1, 1)
+            self.max_search_res = np.array(max_res).reshape(-1, 1)
+            self.search_resolution = np.array(min_res).reshape(-1, 1)
             self.maxit = maxit                       
             self.E_TOL = E_TOL                                              
             self.obj_func = obj_func                                             
@@ -150,13 +176,80 @@ class sweep:
             if noError == True:
                 self.Fvals = np.array(newFVals).reshape(1,-1)
                 if allow_update:
-                    self.Flist = np.hstack(abs(self.targets - self.Fvals))
+                    # EVALUATE OBJECTIVE FUNCTION - TARGET OR THRESHOLD
+                    self.Flist = self.objective_function_evaluation(self.Fvals, self.targets)# abs(self.targets - self.Fvals)
                     self.iter = self.iter + 1
                     self.allow_update = 1
                 else:
                     self.allow_update = 0
             return noError# return is for error reporting purposes only
+
+    def objective_function_evaluation(self, Fvals, targets):
+        #pass in the Fvals & targets so that it's easier to track bugs
+
+        # this uses the fitness values and target (or threshold) to determine the Flist values
+        # Option #1: TARGET
+        # get DISTANCE FROM TARGET
+        # Option #2: THRESHOLD
+        # use THRESHOLD TO DETERMINE INTEREST
+        # if threshold is met, the distance is set to a small value (epsilon).
+        #  Setting the 'distance' to epsilon, the convergence value check can
+        # also remain the same format. 
+
+
+        # testing different values of epsilon
+        epsilon = np.finfo(float).eps #smallest system constant
+        # Ex: 2.220446049250313e-16  
+        # #may be greater than tolerance if tolerance is set very low for testing
+        #epsilon = 10**-18
+        #epsilon = 0  # causes issues with imag. numbers
+
+        Flist = np.zeros_like(Fvals)
+
+
+        if self.evaluate_threshold == True: #THRESHOLD
+            ctr = 0
+            for i in targets:
+                o_thres = int(self.obj_threshold[ctr]) #force type as err check
+                t = targets[ctr]
+                fv = Fvals[ctr]
+
+                if o_thres == 0: #TARGET. default
+                    # sets Flist[ctr] as abs distance of  Fvals[ctr] from target
+                    Flist[ctr] = abs(t - fv)
+
+                elif o_thres == 1: #LESS THAN OR EQUAL 
+                    # checks if the Fvals[ctr] is LESS THAN OR EQUAL to target
+                    # if yes, then distance is 0 (considered 'on target)
+                    # if no, then Flist is abs distance of  Fvals[ctr] from target
+                    if fv <= t:
+                        Flist[ctr] = epsilon
+                    else:
+                        Flist[ctr] = abs(t - fv)
+
+                elif o_thres == 2: #GREATER THAN OR EQUAL
+                    # checks if the Fvals[ctr] is GREATER THAN OR EQUAL to target
+                    # if yes, then distance is 0 (considered 'on target)
+                    # if no, then Flist is abs distance of  Fvals[ctr] from target
+                    if fv >= t:
+                        Flist[ctr] = epsilon
+                    else:
+                        Flist[ctr] = abs(t - fv)
+
+                else: #o_thres == 0. #TARGET. default
+                    self.parent.debug_message_printout("ERROR: unrecognized threshold value. Evaluating as TARGET")
+                    Flist[ctr] = abs(t - fv)
+
+                ctr = ctr + 1
+
+        else: #TARGET as default
+            # arrays are already the same dimensions. 
+            # no need to loop and compare to anything
+            Flist = abs(targets - Fvals)
+
+        return Flist
         
+
     
     def check_move_validity(self, particle):
         # make sure that the next move is not outside of the lbounds and ubounds.
@@ -326,4 +419,4 @@ class sweep:
         if self.parent == None:
             print(msg)
         else:
-            self.parent.updateStatusText(msg)
+            self.parent.debug_message_printout(msg)

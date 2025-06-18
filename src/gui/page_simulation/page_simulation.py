@@ -96,6 +96,9 @@ class SimulationPage(wx.Panel):
         self.txtSummary.updateText(str(t))
    
     def btnRunClicked (self, evt=None):
+        # might need to check for lock conditions here since sometimes with re-running simulations
+        # the 'run' button needs to be clicked twice to trigger the simulation
+    
         if self.PC.getSimulationConfigBool() == False:
             msg = "Generate script before running"
             self.updateSummaryText(msg)

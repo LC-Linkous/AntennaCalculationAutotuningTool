@@ -19,6 +19,9 @@ import project.config.antennaCAT_config as c
 INPUT_BOX_WIDTH = 50
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
+SM_RADIAL_BASIS_FUNC = c.SM_RADIAL_BASIS_FUNC
+
+
 class RBFNetwork_Panel(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
@@ -130,18 +133,23 @@ class RBFNetwork_Panel(wx.Panel):
         return noError
 
 
-    def getOptimizerInputs(self):
+    def getOptimizerInputs(self, is_surrogate=False):
+        # this does not currently differentiate between is_surrogate True/False
+        # since this is the kernal, but the format needs to be retained
         noError = self.getInputFields()
         df = pd.DataFrame({})
         if noError == True:   
-            df['surrogate_model'] = pd.Series(self.surrogateModel)  
+            df['surrogate_model'] = pd.Series(self.surrogateModel)   #numerical ID (keeping for now, 
+                                                                    #but doesnt work while library is growing)
             df['init_samples'] = pd.Series(self.initialNumPts)
+            df['sm_init_samples'] = pd.Series(self.initialNumPts) #currently the same value as init_samples, command might change
             df['xi'] = pd.Series([self.xi])
             df['num_restarts'] = pd.Series(self.numRestarts)
             df['tolerance'] = pd.Series(self.toleranceVal)
             df['max_iterations'] = pd.Series(self.maxIter)
             df['rbf_kernel'] = pd.Series(self.RBF_kernel)
             df['rbf_epsilon'] = pd.Series(self.RBF_epsilon)    
+            df['sm_model_name'] = pd.Series([SM_RADIAL_BASIS_FUNC])
         return df, noError
     
     

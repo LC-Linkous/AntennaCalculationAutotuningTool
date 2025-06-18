@@ -27,6 +27,9 @@ from gui.page_optimizer.notebook_optimizer.optimizer_panels.glods_settings_panel
 INPUT_BOX_WIDTH = 100
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
+OPT_MULTI_GLODS = c.OPT_MULTI_GLODS
+
+
 class GLODSPage(wx.Panel):
     def __init__(self, parent, DC, PC, SO):
         wx.Panel.__init__(self, parent=parent)
@@ -39,7 +42,9 @@ class GLODSPage(wx.Panel):
         #UI vars
         self.defaultBoxWidth = 115
         #data management
-        self.optimizerName = "MULTI_GLODS"
+        self.optimizerName = OPT_MULTI_GLODS
+        self.surrogateName = None # MULTI_GLODS cannot have an internal optimizer
+        self.modelApproximatorName = None # MULTI_GLODS cannot have an internal optimizer
         #
         self.paramInput = pd.DataFrame({})
 
@@ -88,28 +93,26 @@ class GLODSPage(wx.Panel):
         rightSizeSizer.Add(boxSelect, 0, wx.ALL|wx.EXPAND, border=7)
         rightSizeSizer.Add(self.notebook_settings, 0, wx.ALL, border=10)
         
-
-
         # panel sizer
         panelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=7)
-        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=7)
-        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=10)
+        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=5)
+        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=5)
+        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=5)
 
         # btn sizer
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
-        btnSizer.Add(self.btnOpen, 0, wx.ALL, border=10)
-        btnSizer.Add(self.btnSelect, 0, wx.ALL, border=10)
-        btnSizer.Add(self.btnExport, 0, wx.ALL, border=10)
-        btnSizer.AddSpacer(7)
+        btnSizer.Add(self.btnOpen, 0, wx.ALL, border=3)
+        btnSizer.Add(self.btnSelect, 0, wx.ALL, border=3)
+        btnSizer.Add(self.btnExport, 0, wx.ALL, border=3)
+        btnSizer.AddSpacer(50)
 
         # main sizer
         pageSizer = wx.BoxSizer(wx.VERTICAL)
         # pageSizer.AddStretchSpacer()
-        pageSizer.Add(panelSizer, 1, wx.ALL|wx.EXPAND, border=10)
-        pageSizer.Add(btnSizer, 0, wx.ALL|wx.ALIGN_RIGHT, border=10)
+        pageSizer.Add(panelSizer, 0, wx.ALL|wx.EXPAND, border=10)
+        pageSizer.AddStretchSpacer()
+        pageSizer.Add(btnSizer, 0, wx.ALL|wx.ALIGN_RIGHT, border=3)
         self.SetSizer(pageSizer)
-
 
 #######################################################
 # Button Events
@@ -122,10 +125,10 @@ class GLODSPage(wx.Panel):
         # call the optimizer inputs from the child class
         df1, noError = self.notebook_settings.getOptimizerInputs(self.optimizerName)
         # call the optimizer inputs from the page
-        df2, noERror = self.getPageOptimizerInputs()        
+        df2, noError = self.getPageOptimizerInputs()        
 
         # merge the data frames
-        df = result = pd.concat([df1, df2], axis=1)
+        df = pd.concat([df1, df2], axis=1)
 
 
         #print(df)
@@ -186,10 +189,11 @@ class GLODSPage(wx.Panel):
         noError = True
         
         #from optimizer scroll - returns ref to widgets
-        metricTxt, targetTxt, checkedBxs = self.optimizerMetrics.getInputBoxVals() 
+        metricTxt, tresholdTxt, targetTxt, checkedBxs = self.optimizerMetrics.getInputBoxVals() 
 
         ctr = 0
         metricVals = []
+        thresholdVals = []
         targetVals = []
         for cb in checkedBxs:
             useMetric = cb.GetValue()
@@ -197,11 +201,14 @@ class GLODSPage(wx.Panel):
                 mt = metricTxt[ctr].GetValue()
                 mt = mt.split(" ")
                 metricVals.append(mt[0])
+                th = tresholdTxt[ctr].GetValue()
+                thresholdVals.append(th)
                 t =  targetTxt[ctr].GetValue()
                 targetVals.append(t)
             ctr = ctr + 1
              
         self.metricArr = metricVals
+        self.thresholdArr = thresholdVals
         self.targetArr = targetVals
         self.outputVariables = np.shape(targetVals)
 
@@ -232,7 +239,13 @@ class GLODSPage(wx.Panel):
             df['num_output'] = pd.Series(self.outputVariables)
             df['target_metrics'] = pd.Series([self.metricArr])
             df['target_values'] = pd.Series([self.targetArr])
+            df['target_threshold'] = pd.Series([self.thresholdArr])
+            df['use_surrogate_bool'] = pd.Series([False])
+
+
         return df, noError
+
+
 
 #######################################################
 # Page Events
@@ -287,7 +300,7 @@ class TuningPage(wx.Panel):
     def set_optimizer_tuning_panel(self, txt="MultiGLODS"):
         # add if/else here when adding more options
         if txt == "MultiGLODS":
-            optimizerName = "MULTI_GLODS"
+            optimizerName = OPT_MULTI_GLODS
         else:
             print("ERROR in panel_glods.py unknown optimizer selected")
 
@@ -300,7 +313,7 @@ class TuningPage(wx.Panel):
         # call the optimizer inputs from the child class
         # adding more GLODS-based optimizers
 
-        if optimizerName == "MULTI_GLODS":
+        if optimizerName == OPT_MULTI_GLODS:
             df, noError = self.multiglods_panel.getOptimizerInputs()
         else:
             print("ERROR: optimizer name not recognized in panel_GLODS. Select an option from the dropdown menu to continue!")

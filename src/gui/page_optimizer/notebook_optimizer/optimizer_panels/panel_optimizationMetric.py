@@ -24,10 +24,12 @@ class OptimizationMetricPanel(wx.Panel):
         # changing to S_11 bc of an encoding err exporting log file
         optimizerKeyArr = ["S_11        (dB)", "Gain    (dB)", "BW      (Hz)", "Directivity (dB)", "Efficiency"]
         optimizerTargetArr = ["-10", "3", "0", "0", "0"]
+        optimizerThreshold = ["=", "≤", "≥"]
 
-        self.defaultBoxWidth = 115
+        self.defaultBoxWidth = 105
         self.metricFields = []  #names of metric (gain, s11)
-        self.targetValFields=[] #value of detected parameters
+        self.targetValFields = [] #value of detected parameters
+        self.thresholdValFields = [] # use exact or threshold value for optimization targets
         self.checkedVals = []
 
         boxOptimizer = wx.StaticBox(self, label="Optimizer Targets")
@@ -50,11 +52,12 @@ class OptimizationMetricPanel(wx.Panel):
         panelSizer.Add(boxOptimizer, 1, wx.ALL|wx.EXPAND, border=0)
         self.SetSizer(panelSizer)
 
-        self.addRows( optimizerKeyArr, optimizerTargetArr)
+        self.addRows( optimizerKeyArr, optimizerTargetArr, optimizerThreshold)
     
     def clearRows(self):
         self.metricFields = []  #names of metric (gain, s11)
-        self.targetValFields=[] #value of detected parameters
+        self.targetValFields = [] #value of detected parameters
+        self.thresholdValFields = []
         self.checkedVals = []
         self.vSizer.Clear(True)
         hSizer=self.addLabelsToTop()
@@ -64,15 +67,17 @@ class OptimizationMetricPanel(wx.Panel):
 
     def addLabelsToTop(self):
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
-        lblParamName = wx.StaticText(self.scrolled_panel, label='  Metric ', size=(self.defaultBoxWidth, 20))
+        lblParamName = wx.StaticText(self.scrolled_panel, label='  Metric ', size=(self.defaultBoxWidth-2, 20))
+        lblthreshValue= wx.StaticText(self.scrolled_panel, label= '|    ', size=(45, 20))
         lblParamValue= wx.StaticText(self.scrolled_panel, label= '|     Value', size=(self.defaultBoxWidth-20, 20))
 
         hSizer.Add(lblParamName, 0, wx.ALL, border=1)
+        hSizer.Add(lblthreshValue, 0, wx.ALL, border=1)
         hSizer.Add(lblParamValue, 0, wx.ALL, border=1)
 
         return hSizer
 
-    def addRows(self,keyTxt=None, valTxt=None):
+    def addRows(self,keyTxt=None, valTxt=None, optimizerThreshold=None):
         self.vSizer = wx.BoxSizer(wx.VERTICAL)
         topSizer = self.addLabelsToTop()
         self.vSizer.Add(topSizer, border=3)
@@ -83,16 +88,20 @@ class OptimizationMetricPanel(wx.Panel):
 
             vTxt = valTxt[ctr]
             tcVal= wx.TextCtrl(self.scrolled_panel, value=str(vTxt), size=(self.defaultBoxWidth-20,-1))
+            threshVal = wx.ComboBox(self.scrolled_panel,choices=optimizerThreshold, value=str("="), size=(50,-1), style=wx.CB_READONLY)
+
 
             cbUseVal = wx.CheckBox(self.scrolled_panel, label='select')
             cbUseVal.SetValue(False)
 
             self.metricFields.append(tcParam)
             self.targetValFields.append(tcVal)
+            self.thresholdValFields.append(threshVal)
             self.checkedVals.append(cbUseVal)
 
             hSizer.Add(tcParam, border=3)
-            # hSizer.AddSpacer(3)
+            #hSizer.AddSpacer(3)
+            hSizer.Add(threshVal, border=3)
             hSizer.Add(tcVal, border=3)
             hSizer.AddSpacer(3)
             hSizer.Add(cbUseVal, border=7)
@@ -103,6 +112,6 @@ class OptimizationMetricPanel(wx.Panel):
 
 
     def getInputBoxVals(self):
-        return self.metricFields, self.targetValFields, self.checkedVals
+        return self.metricFields, self.thresholdValFields, self.targetValFields, self.checkedVals
     
 

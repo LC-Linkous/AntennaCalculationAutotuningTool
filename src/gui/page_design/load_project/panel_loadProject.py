@@ -35,7 +35,7 @@ class LoadProjectNotebookPage(wx.Panel):
         self.btnOpenFile.Bind(wx.EVT_BUTTON, self.btnBrowseClicked)
 
         #detected parameters file
-        boxDetected = wx.StaticBox(self, label='Add parameters to modify:', size=(-1, 300))
+        boxDetected = wx.StaticBox(self, label='Add parameters to modify:', size=(-1, 400))
         self.ckbxSimIncluded = wx.CheckBox(boxDetected, label="script includes simulation setup")#select if script includes a simulation setup
         self.detectedScrollPanel = ParamDynamicScrollPanel(boxDetected)
         self.btnSet = wx.Button(boxDetected, label="Set")
@@ -65,6 +65,8 @@ class LoadProjectNotebookPage(wx.Panel):
 
     def btnSetClicked(self, evt=None):
         self.PC.setImportedProjectPath(self.loadFilePath) #get the EM project path
+
+
         self.PC.useImportedProjectDesign() #using a loaded design, takes priority 
         # the design script is just the open file base
         # but set the design parameters based on the inputs
@@ -93,10 +95,12 @@ class LoadProjectNotebookPage(wx.Panel):
                 return
             fpath = str(fileDialog.GetPath())
             self.fieldFile.SetValue(fpath)
-            self.loadFilePath = repr(fpath)
+            tmp = repr(fpath) # this is an interesting bug that only pops up on some systems. We're narrowing in on why this conversion NOT happening 
+                                # causes issues with paths in some systems. Might have been because running 3x versions of Windows with 5x versions of HFSS
+            self.loadFilePath = str(tmp)[1:-1]#strip extra quotes
             msg = "file loaded from " + str(fpath)
             self.updateSummaryText(msg)
-            
+
     
     def updateSummaryText(self, t):
         self.parent.updateSummaryText(t)

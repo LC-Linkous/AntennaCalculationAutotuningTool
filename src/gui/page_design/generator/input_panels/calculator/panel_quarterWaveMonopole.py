@@ -69,6 +69,7 @@ class QuarterWaveMonopoleOptionsPage(wx.Panel):
                     ["ground_plane_radius", self.fieldGroundPlaneRadius.GetValue()],
                     ["feed_gap", self.fieldFeedGap.GetValue()],
                     ["simulation_frequency", self.fieldFrequency.GetValue()]]
+               # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY
         return features
     
 

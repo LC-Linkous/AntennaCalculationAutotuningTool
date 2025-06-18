@@ -20,6 +20,8 @@ import project.config.antennaCAT_config as c
 INPUT_BOX_WIDTH = 50
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
+OPT_CHICKEN_2015 = c.OPT_CHICKEN_2015
+
 class Chicken_Swarm_2015_Panel(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
@@ -138,20 +140,34 @@ class Chicken_Swarm_2015_Panel(wx.Panel):
         return noError
 
 
-    def getOptimizerInputs(self):
+    def getOptimizerInputs(self, is_surrogate=False):
         noError = self.getInputFields()
         df = pd.DataFrame({})
-        if noError == True:   
-            df['tolerance'] = pd.Series(self.toleranceVal)
-            df['max_iterations'] = pd.Series(self.maxIter)
-            df['rooster_number'] = pd.Series(self.RN)
-            df['hen_number'] = pd.Series(self.HN)
-            df['mother_number'] = pd.Series(self.MN)
-            df['chick_number'] = pd.Series(self.CN)
-            df['generation'] = pd.Series(self.G)
-            df['weight_min'] = pd.Series()
-            df['weight_max'] = pd.Series()
-            df['c_factor'] = pd.Series()
+        if noError == True:  
+            if is_surrogate == False: 
+                df['tolerance'] = pd.Series(self.toleranceVal)
+                df['max_iterations'] = pd.Series(self.maxIter)
+                df['rooster_number'] = pd.Series(self.RN)
+                df['hen_number'] = pd.Series(self.HN)
+                df['mother_number'] = pd.Series(self.MN)
+                df['chick_number'] = pd.Series(self.CN)
+                df['generation'] = pd.Series(self.G)
+                df['weight_min'] = pd.Series()
+                df['weight_max'] = pd.Series()
+                df['c_factor'] = pd.Series()
+                df['optimizer_name'] = pd.Series([OPT_CHICKEN_2015])
+            else:
+                df['sm_tolerance'] = pd.Series(self.toleranceVal)
+                df['sm_max_iterations'] = pd.Series(self.maxIter)
+                df['sm_rooster_number'] = pd.Series(self.RN)
+                df['sm_hen_number'] = pd.Series(self.HN)
+                df['sm_mother_number'] = pd.Series(self.MN)
+                df['sm_chick_number'] = pd.Series(self.CN)
+                df['sm_generation'] = pd.Series(self.G)
+                df['sm_weight_min'] = pd.Series()
+                df['sm_weight_max'] = pd.Series()
+                df['sm_c_factor'] = pd.Series()
+                df['sm_optimizer_name'] = pd.Series([OPT_CHICKEN_2015])
 
-        
         return df, noError
+

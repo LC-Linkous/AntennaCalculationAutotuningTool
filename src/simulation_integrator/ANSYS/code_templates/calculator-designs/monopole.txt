@@ -22,7 +22,7 @@ oProject.ChangeProperty(
 					"Value:="		, "INSERT_LENGTH_VALUE"
 				],
 				[
-					"NAME:$wire_radius",
+					"NAME:$conductor_radius",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "INSERT_WIRE_RAD_VALUE"
@@ -53,7 +53,7 @@ oEditor.CreateCylinder(
 		"XCenter:="		, "0mm",
 		"YCenter:="		, "0mm",
 		"ZCenter:="		, "$feed_gap",
-		"Radius:="		, "$wire_radius",
+		"Radius:="		, "$conductor_radius",
 		"Height:="		, "$length",
 		"WhichAxis:="		, "Z",
 		"NumSides:="		, "300"
@@ -118,9 +118,9 @@ oEditor.CreateRectangle(
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
 		"XStart:="		, "-0mm",
-		"YStart:="		, "-$wire_radius",
+		"YStart:="		, "-$conductor_radius",
 		"ZStart:="		, "0mm",
-		"Width:="		, "2*$wire_radius",
+		"Width:="		, "2*$conductor_radius",
 		"Height:="		, "$feed_gap",
 		"WhichAxis:="		, "X"
 	], 

@@ -168,21 +168,34 @@ class RectangularPatchOptionsPage(wx.Panel):
 
         if self.feedDropDown.GetValue() == 'microstrip':
             stripWidth = float(self.fieldStripWidth.GetValue())
+            paramArr = [["width", width],
+                ["length", length],
+                ["x0", x0],
+                ["y0", y0],
+                ["gap", gap],
+                ["strip_width", stripWidth],
+                ["substrate_width", subWidth],
+                ["substrate_length", subLength],
+                # ["ground_plane_width", subWidth], #GP follows substrate size in template, but is 2 vars
+                # ["ground_plane_length", subLength],
+                #["conductor_height", None],
+                ["substrate_height", subHeight]]
+
         else:
             stripWidth = None
-            
-        paramArr = [["width", width],
-            ["length", length],
-            ["x0", x0],
-            ["y0", y0],
-            ["gap", gap],
-            ["strip_width", stripWidth],
-            ["substrate_width", subWidth],
-            ["substrate_length", subLength],
-            ["ground_plane_width", subWidth],
-            ["ground_plane_length", subLength],
-            #["conductor_height", None],
-            ["substrate_height", subHeight]]
+            paramArr = [["width", width],
+                ["length", length],
+                ["x0", x0],
+                ["y0", y0],
+                #["gap", gap],
+                #["strip_width", stripWidth],
+                ["substrate_width", subWidth],
+                ["substrate_length", subLength],
+                # ["ground_plane_width", subWidth], #GP follows substrate size in template, but is 2 vars
+                # ["ground_plane_length", subLength],
+                #["conductor_height", None],
+                ["substrate_height", subHeight]]
+            # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY
         
        
         return paramArr

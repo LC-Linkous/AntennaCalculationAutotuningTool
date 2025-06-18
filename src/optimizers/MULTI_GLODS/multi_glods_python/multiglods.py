@@ -8,14 +8,14 @@
 #
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: June 28, 2024
+#   Last update: March 13, 2025
 ##--------------------------------------------------------------------\
 
 import numpy as np
 import sys
 
-#unit testing vs. program call
-try:
+try: # for outside func calls, program calls
+    sys.path.insert(0, './multi_glods_python/src/')
     from multiglods_ctl import pre_objective_init_loop
     from multiglods_helpers import feasible
     from multiglods_ctl import post_objective_init_loop
@@ -32,7 +32,7 @@ try:
     from multiglods_helpers import f_eval_return
     from multiglods_helpers import print_debug
 
-except:
+except:# for local, unit testing
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_ctl import pre_objective_init_loop
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_helpers import feasible
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_ctl import post_objective_init_loop
@@ -51,11 +51,11 @@ except:
 
 
 
-
 def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
     
-    # Main application loop (This is the only loop,
-    # allows for easy conversion to external control)
+    # Main application loop 
+    ## This is the only loop, which allows for easy conversion to external control
+
 
     if state['init'] or state['post_init'] or state['main_loop']['run']:
         
@@ -72,9 +72,11 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
            (ctl['i'] <= np.shape(prob['Pini'])[1]) and \
            feasible(init['x_ini'], alg['ubound'], alg['lbound'], prob['n'], ctl):
             
-            if not state['evaluate'] and not state['eval_return']:               
+            if not state['evaluate'] and not state['eval_return']:
+                # marks objective function for evaluation               
                 state, prob = f_eval(state, init['x_ini'], prob, 1)
             else:
+                # call the objective function
                 state, prob = f_eval_return(state, prob, alg, 1)
         
         # initalizations post objective function call
@@ -145,5 +147,3 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
 
         if state['init'] or state['post_init'] or state['main_loop']['run']:
             return 0, init, run_ctl, alg, prob, ctl, state
-
-        

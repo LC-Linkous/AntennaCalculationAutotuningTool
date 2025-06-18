@@ -34,44 +34,45 @@ oProject.ChangeProperty(
 					"Value:="		, "INSERT_FEED_WIDTH_VALUE"
 				],
 				[
-					"NAME:$gap_dist",
+					"NAME:$gap_distance",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "INSERT_GAP_DIST_VALUE"
 				],				
 				[
-					"NAME:$gp_length",
+					"NAME:$substrate_width",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
-					"Value:="		, "INSERT_GP_LENGTH_VALUE"
+					"Value:="		, "INSERT_SUBSTRATE_WIDTH_VALUE"
 				],
 				[
-					"NAME:$gp_width",
+					"NAME:$substrate_length",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
-					"Value:="		, "INSERT_GP_WIDTH_VALUE"
+					"Value:="		, "INSERT_SUBSTRATE_LENGTH_VALUE"
 				],
 				[
-					"NAME:$depth",
+					"NAME:$substrate_height",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
-					"Value:="		, "INSERT_SUB_HEIGHT_VALUE"
+					"Value:="		, "INSERT_SUBSTRATE_HEIGHT_VALUE"
 				],
 				[
-					"NAME:$sub_width",
+					"NAME:$ground_plane_length",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
-					"Value:="		, "INSERT_SUB_WIDTH_VALUE"
+					"Value:="		, "$substrate_length"
 				],
 				[
-					"NAME:$sub_length",
+					"NAME:$ground_plane_width",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
-					"Value:="		, "INSERT_SUB_LENGTH_VALUE"
-				]				
+					"Value:="		, "$substrate_width"
+				]			
 			]
 		]
 	])
+
 oDesign = oProject.SetActiveDesign("HFSSDesign1")
 oEditor = oDesign.SetActiveEditor("3D Modeler")
 
@@ -80,11 +81,11 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "-$gp_width/2",
-		"YStart:="		, "-$gp_length/2",
-		"ZStart:="		, "-$depth",
-		"Width:="		, "$gp_width",
-		"Height:="		, "$gp_length",
+		"XStart:="		, "-$ground_plane_width/2",
+		"YStart:="		, "-$ground_plane_length/2",
+		"ZStart:="		, "-$substrate_height",
+		"Width:="		, "$ground_plane_width",
+		"Height:="		, "$ground_plane_length",
 		"WhichAxis:="		, "Z"
 	],
 	[
@@ -109,12 +110,12 @@ oEditor.CreateRectangle(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$sub_width/2",
-		"YPosition:="		, "-$sub_length/2",
-		"ZPosition:="		, "-$depth",
-		"XSize:="		, "$sub_width",
-		"YSize:="		, "$sub_length",
-		"ZSize:="		, "$depth"
+		"XPosition:="		, "-$substrate_width/2",
+		"YPosition:="		, "-$substrate_length/2",
+		"ZPosition:="		, "-$substrate_height",
+		"XSize:="		, "$substrate_width",
+		"YSize:="		, "$substrate_length",
+		"ZSize:="		, "$substrate_height"
 	],
 	[
 		"NAME:Attributes",
@@ -199,10 +200,10 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "-$gap_dist/2",
+		"XStart:="		, "-$gap_distance/2",
 		"YStart:="		, "0mm",
 		"ZStart:="		, "0mm",
-		"Width:="		, "$gap_dist",
+		"Width:="		, "$gap_distance",
 		"Height:="		, "-$length/2",
 		"WhichAxis:="		, "Z"
 	], 
@@ -253,10 +254,10 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "$gap_dist/2",
+		"XStart:="		, "$gap_distance/2",
 		"YStart:="		, "-$length/2",
 		"ZStart:="		, "0mm",
-		"Width:="		, "-$gap_dist",
+		"Width:="		, "-$gap_distance",
 		"Height:="		, "$feed_width",
 		"WhichAxis:="		, "Z"
 	],
@@ -284,12 +285,12 @@ oEditor.CreateRectangle(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$sub_length",
-		"YPosition:="		, "-$sub_width",
-		"ZPosition:="		, "-$sub_width",
-		"XSize:="		, "$sub_length*2",
-		"YSize:="		, "$sub_width*2",
-		"ZSize:="		, "$sub_width*2"
+		"XPosition:="		, "-$substrate_length",
+		"YPosition:="		, "-$substrate_width",
+		"ZPosition:="		, "-$substrate_width",
+		"XSize:="		, "$substrate_length*2",
+		"YSize:="		, "$substrate_width*2",
+		"ZSize:="		, "$substrate_width*2"
 	], 
 	[
 		"NAME:Attributes",

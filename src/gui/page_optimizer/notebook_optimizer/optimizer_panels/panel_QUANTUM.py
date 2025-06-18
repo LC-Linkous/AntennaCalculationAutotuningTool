@@ -28,6 +28,12 @@ from gui.page_optimizer.notebook_optimizer.optimizer_panels.quantum_settings_pan
 INPUT_BOX_WIDTH = 100
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
+
+OPT_PSO_QUANTUM = c.OPT_PSO_QUANTUM
+OPT_CAT_QUANTUM = c.OPT_CAT_QUANTUM
+OPT_CHICKEN_QUANTUM = c.OPT_CHICKEN_QUANTUM
+
+
 class QUANTUMPage(wx.Panel):
     def __init__(self, parent, DC, PC, SO):
         wx.Panel.__init__(self, parent=parent)
@@ -41,7 +47,10 @@ class QUANTUMPage(wx.Panel):
         self.defaultBoxWidth = 115
 
         #data management
-        self.optimizerName = "PSO_QUANTUM" #set optimizer name with the dropdown
+        self.optimizerName = OPT_PSO_QUANTUM #set base optimizer name with the dropdown
+        self.surrogateName = None # Default internal optimizer is None
+        self.modelApproximatorName = None # Default surrogate model approx. is None
+        #
         # 
         self.paramInput = pd.DataFrame({})
 
@@ -105,21 +114,22 @@ class QUANTUMPage(wx.Panel):
 
         # panel sizer
         panelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=10)
-        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=10)
-        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=10)
+        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=5)
+        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=5)
+        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=5)
 
         # btn sizer
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
-        btnSizer.Add(self.btnOpen, 0, wx.ALL, border=10)
-        btnSizer.Add(self.btnSelect, 0, wx.ALL, border=10)
-        btnSizer.Add(self.btnExport, 0, wx.ALL, border=10)
-        btnSizer.AddSpacer(7)
+        btnSizer.Add(self.btnOpen, 0, wx.ALL, border=3)
+        btnSizer.Add(self.btnSelect, 0, wx.ALL, border=3)
+        btnSizer.Add(self.btnExport, 0, wx.ALL, border=3)
+        btnSizer.AddSpacer(50)
 
         # main sizer
         pageSizer = wx.BoxSizer(wx.VERTICAL)
         # pageSizer.AddStretchSpacer()
         pageSizer.Add(panelSizer, 0, wx.ALL|wx.EXPAND, border=10)
+        pageSizer.AddStretchSpacer()
         pageSizer.Add(btnSizer, 0, wx.ALL|wx.ALIGN_RIGHT, border=3)
         self.SetSizer(pageSizer)
 
@@ -135,7 +145,7 @@ class QUANTUMPage(wx.Panel):
         # call the optimizer inputs from the child class
         df1, noError = self.notebook_settings.getOptimizerInputs(self.optimizerName)
         # call the optimizer inputs from the page
-        df2, noERror = self.getPageOptimizerInputs()        
+        df2, noError = self.getPageOptimizerInputs()        
 
         # merge the data frames
         df = result = pd.concat([df1, df2], axis=1)
@@ -197,10 +207,11 @@ class QUANTUMPage(wx.Panel):
         noError = True
         
         #from optimizer scroll - returns ref to widgets
-        metricTxt, targetTxt, checkedBxs = self.optimizerMetrics.getInputBoxVals() 
+        metricTxt, tresholdTxt, targetTxt, checkedBxs = self.optimizerMetrics.getInputBoxVals() 
 
         ctr = 0
         metricVals = []
+        thresholdVals = []
         targetVals = []
         for cb in checkedBxs:
             useMetric = cb.GetValue()
@@ -208,11 +219,14 @@ class QUANTUMPage(wx.Panel):
                 mt = metricTxt[ctr].GetValue()
                 mt = mt.split(" ")
                 metricVals.append(mt[0])
+                th = tresholdTxt[ctr].GetValue()
+                thresholdVals.append(th)
                 t =  targetTxt[ctr].GetValue()
                 targetVals.append(t)
             ctr = ctr + 1
              
         self.metricArr = metricVals
+        self.thresholdArr = thresholdVals
         self.targetArr = targetVals
         self.outputVariables = np.shape(targetVals)
 
@@ -255,7 +269,10 @@ class QUANTUMPage(wx.Panel):
             df['num_output'] = pd.Series(self.outputVariables)
             df['target_metrics'] = pd.Series([self.metricArr])
             df['target_values'] = pd.Series([self.targetArr])
+            df['target_threshold'] = pd.Series([self.thresholdArr])
             df['boundary'] = pd.Series(self.boundary)
+            df['use_surrogate_bool'] = pd.Series([False])
+
         return df, noError
     
 #######################################################
@@ -323,13 +340,13 @@ class TuningPage(wx.Panel):
     def set_optimizer_tuning_panel(self, txt):
         if txt == "quantum_PSO":
             self.hideEverythingAndShowSinglePanel(self.pso_quantum_panel)
-            optimizerName = "PSO_QUANTUM"
-        if txt == 'quantum_cat_swarm':
+            optimizerName = OPT_PSO_QUANTUM
+        elif txt == 'quantum_cat_swarm':
             self.hideEverythingAndShowSinglePanel(self.cat_quantum_panel)
-            optimizerName = "CAT_QUANTUM"
+            optimizerName = OPT_CAT_QUANTUM
         elif txt == 'quantum_chicken_swarm':
             self.hideEverythingAndShowSinglePanel(self.chicken_quantum_panel)
-            optimizerName = "CHICKEN_QUANTUM"       
+            optimizerName = OPT_CHICKEN_QUANTUM     
         else:
             print("ERROR in panel_QUANTUM.py unknown optimizer selected")
 
@@ -341,11 +358,11 @@ class TuningPage(wx.Panel):
 
 
         # call the optimizer inputs from the child class
-        if optimizerName == "PSO_QUANTUM":
+        if optimizerName == OPT_PSO_QUANTUM:
             df, noError = self.pso_quantum_panel.getOptimizerInputs()
-        elif optimizerName == "CAT_QUANTUM":
+        elif optimizerName == OPT_CAT_QUANTUM:
             df, noError = self.cat_quantum_panel.getOptimizerInputs()
-        elif optimizerName == "CHICKEN_QUANTUM" :
+        elif optimizerName == OPT_CHICKEN_QUANTUM:
             df, noError = self.chicken_quantum_panel.getOptimizerInputs()
         else:
             print("ERROR: optimizer name not recognized in panel_QUANTUM. Select an option from the dropdown menu to continue!")
@@ -367,16 +384,6 @@ class TuningPage(wx.Panel):
         showPanel.Show()
 
         self.Layout()
-
-
-
-class  SurrogatePage(wx.Panel):
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent=parent)
-        pass
-
-    def set_surrogate_params_panel(self, boxText):
-        pass
 
 
 class SettingsNotebook(wx.Notebook):

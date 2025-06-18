@@ -17,7 +17,7 @@ ANTENNACAT_EXE = False  #update to TRUE to use the exe path configs
 # GUI visuals
 ## default frame/panel sizes
 WIDTH = 1300
-HEIGHT =810
+HEIGHT = 810
 PANEL_HEIGHT = 450
 PANEL_WIDTH = 400
 SIDEBAR_COLOR ='Thistle'
@@ -155,4 +155,54 @@ FEED_TYPE_DICT = {'microstrip': 'microstrip', 'probe': 'probe'}
 CALCULATOR_EXPORT_LIST = ['rectangular_patch', 'rep_rectangular_patch']
 
 
+# optimizer lists and combinations
+# (some of these can be turned into dictionaties on their respective pages for modularity)
+BASE_OPTIMIZERS_LIST =  ['PSO_basic', 'PSO_time_modulation', 'cat_swarm', 
+                    'sand_cat_swarm', 'chicken_swarm', 'improved_chicken_2015',
+                    'quantum_PSO','quantum_cat_swarm','quantum_chicken_swarm']
+
+
+INTERNAL_OPTIMIZERS_LIST =   ['PSO_basic', 'PSO_time_modulation', 'cat_swarm', 
+                    'sand_cat_swarm', 'chicken_swarm', 'improved_chicken_2015',
+                    'quantum_PSO','quantum_cat_swarm','quantum_chicken_swarm']
+
+SURROGATE_LIST =['Gaussian_Process', 'Kriging', 'Polynomial_Regression',
+                            'Polynomial_Chaos_Expansion', 
+                            'K_Nearest_Neighbors',  'Decision_Tree_Regression']
+# RBF is unstable with small matrix value sin stress testing. it needs some extra error correction. 
+# Works fine for Bayesian prediction
+
+# ['Radial_Basis_Function', 'Gaussian_Process', 
+#                           'Kriging', 'Polynomial_Regression',
+#                             'Polynomial_Chaos_Expansion', 
+#                             'K_Nearest_Neighbors',  'Decision_Tree_Regression']
+
+
+BOUNDARY_LIST = ['Random', 'Reflection', 'Absorption', 'Invisible'] # getting dictionary keys throws an err
+
+# names of optimizers used in integration/settings
+OPT_SELECTION = "SELECTION"
+OPT_RULES = "RULES"
+OPT_PSO_BASIC = "PSO_BASIC"
+OPT_PSO_PYTHON = "PSO_PYTHON"
+OPT_PSO_QUANTUM = "PSO_QUANTUM"
+OPT_CAT_SWARM = "CAT_SWARM"
+OPT_SAND_CAT_SWARM = "SAND_CAT_SWARM"
+OPT_CAT_QUANTUM = "CAT_QUANTUM"
+OPT_CHICKEN_SWARM = "CHICKEN_SWARM"
+OPT_CHICKEN_2015 = "CHICKEN_2015"
+OPT_CHICKEN_QUANTUM = "CHICKEN_QUANTUM"
+OPT_MULTI_GLODS = "MULTI_GLODS"
+OPT_BAYESIAN = "BAYESIAN"
+OPT_GRID_SWEEP = "GRID_SWEEP"
+OPT_RANDOM_SWEEP = "RANDOM_SWEEP"
+
+# # surrogate model approximator options
+SM_RADIAL_BASIS_FUNC = "RADIAL_BASIS_FUNC"
+SM_GAUSSIAN_PROCESS = "GAUSSIAN_PROCESS"
+SM_KRIGING = "KRIGING"
+SM_POLY_REGRESSION = "POLY_REGRESSION"
+SM_POLY_CHAOS_REGRESSION = "POLY_CHAOS_REGRESSION"
+SM_KNN = "KNN"
+SM_DECISION_TREE_REGRESSION = "DECISION_TREE_REGRESSION"
 

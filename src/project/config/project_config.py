@@ -310,7 +310,7 @@ class ProjectConfiguration:
 
     #imported
     def setImportedProjectPath(self, n):
-        self.importedProjectPath = n
+        self.importedProjectPath = str(n)
     
     def getImportedProjectPath(self):
         return self.importedProjectPath

@@ -166,12 +166,14 @@ class EOptionsPage(wx.Panel):
                     ["Ps", Ps],
                     ["Ws", Ws],
                     ["W", w],
-                    ["substrate_width", None],
-                    ["substrate_length", None],
+                    # ["substrate_width", None],
+                    # ["substrate_length", None],
                     ["ground_plane_width", Wg],
                     ["ground_plane_length", Lg],
                     #["conductor_height", None],
-                    ["substrate_height", h]]
+                    ["ground_plane_dist", h]]
+               # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY so they can be called by name
         return paramArr
+
 
     

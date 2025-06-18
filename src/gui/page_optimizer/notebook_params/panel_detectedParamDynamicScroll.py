@@ -20,7 +20,7 @@ class DetectedBoundaryParameterDynamicScrollPanel(wx.Panel):
 
         self.numRows = 0
 
-        self.defaultBoxWidth = 100
+        self.defaultBoxWidth = 110
         self.defaultDelta = 1
         self.defaultVariation = 0.05
         self.originalVal = []
@@ -89,7 +89,7 @@ class DetectedBoundaryParameterDynamicScrollPanel(wx.Panel):
             tcParam = wx.TextCtrl(self.scrolled_panel, value=str(t), style=wx.TE_READONLY, size=(self.defaultBoxWidth, -1))
             minN, maxN, ignoreVal = self.setRangeValues(vt, self.defaultVariation)
             oVal = self.formatDisplay(vt)
-            origVal = wx.TextCtrl(self.scrolled_panel, value=str(oVal), style=wx.TE_READONLY, size=(self.defaultBoxWidth, -1)) 
+            origVal = wx.TextCtrl(self.scrolled_panel, value=str(oVal), style=wx.TE_READONLY, size=(self.defaultBoxWidth-15, -1)) 
             unitsDropDown = wx.ComboBox(self.scrolled_panel, choices=dataUnits)
             unitsDropDown.SetValue(dataUnits[2]) #mm is default
             lbVal = wx.TextCtrl(self.scrolled_panel, value=str(minN), size=(self.defaultBoxWidth, -1)) 
@@ -121,7 +121,7 @@ class DetectedBoundaryParameterDynamicScrollPanel(wx.Panel):
     def addLabelsToTop(self):
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
         lblParamName = wx.StaticText(self.scrolled_panel, label='Parameter', size=(self.defaultBoxWidth, 20))
-        lblOriginalVal = wx.StaticText(self.scrolled_panel, label='|   Original', size=(self.defaultBoxWidth, 20))
+        lblOriginalVal = wx.StaticText(self.scrolled_panel, label='|   Original', size=(self.defaultBoxWidth-15, 20))
         lblUnits = wx.StaticText(self.scrolled_panel, label='|  Units   ', size=(50, 20))
         lblLower = wx.StaticText(self.scrolled_panel, label=' |  Lower Bounds', size=(self.defaultBoxWidth , 20))
         lblUpper = wx.StaticText(self.scrolled_panel, label=' |  Upper Bounds ', size=(self.defaultBoxWidth , 20))

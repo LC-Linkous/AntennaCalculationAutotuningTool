@@ -1,25 +1,19 @@
+
+
 ##--------------------------------------------------------------------\
 #   Antenna Calculation and Autotuning Tool
 #   '.src/optimizers/BAYESIAN/controller_BAYESIAN.py'
-#   Class interfacing with the bayesian optimizer
+#   Class interfacing with the bayesian  optimizer
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu), Jonathan Lundquist
-#   Last update: December 2, 2024
+#   Last update: May 20, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
+import pandas as pd
 from optimizers.BAYESIAN.bayesian_optimization_python.bayesian_optimizer import BayesianOptimization
 from optimizers.BAYESIAN.bayesian_optimization_python.constr_default import constr_default
-
-#SURROGATE MODELS (customization to be added)
-from optimizers.surrogate_models.RBF_network import RBFNetwork
-from optimizers.surrogate_models.gaussian_process import GaussianProcess
-from optimizers.surrogate_models.kriging_regression import Kriging
-from optimizers.surrogate_models.polynomial_regression import PolynomialRegression
-from optimizers.surrogate_models.polynomial_chaos_expansion import PolynomialChaosExpansion
-from optimizers.surrogate_models.KNN_regression import KNNRegression
-from optimizers.surrogate_models.decision_tree_regression import DecisionTreeRegression
 
 
 class CONTROLLER_BAYESIAN():
@@ -27,11 +21,25 @@ class CONTROLLER_BAYESIAN():
         self.parent = parent
 
         # class vars
-        self.optimizer = None           # init as a none obj 
-        self.sm = None                  # init surrogate model as none obj
-        self.suppress_output = False    # Suppress the console output of multiglods
+        self.optimizer = None           # init as a none obj. THIS optimizer 
 
+        self.suppress_output = False    # Suppress the console output
         self.allow_update = True        # Allow objective call to update state 
+        self.evaluate_threshold = False # use target or threshold. True = THRESHOLD, False = EXACT TARGET
+                                        # default is False
+
+        # NOTE: The Bayesian Optimizer cannot use another optimizer from the set as a surrogate model solver
+        # This optimizer can solve the surrogate models,
+        # but it CANNOT use a 2nd optimzier. This is related
+        # to how the state machine for this optimizer works.
+
+        self.useSurrogateModel = False
+        self.sm_approx = None     # the surrogate approximator. The kernel
+        self.sm_opt = None        # the internal optimizer used to solve the surrogate model.
+        self.sm_tol = 10*-6       # default internal optimizer tolerance
+        self.sm_maxit = 1000      # default internal optimizer maximum iterations
+        self.sm_opt_df = None     # default data frame of params for internal optimizer
+        self.out_vars = None      # used to shape surrogate model approx.
 
 
 
@@ -39,7 +47,7 @@ class CONTROLLER_BAYESIAN():
 # GUI interfacing
 ####################################################
 
-    def updateStatusText(self, t):
+    def debug_message_printout(self, t):
         self.parent.updateStatusText(t)
 
 
@@ -50,7 +58,7 @@ class CONTROLLER_BAYESIAN():
     def setAllowUpdate(self, b):
         self.allow_update = b
 
-    def getAllowUpdate(self, b):
+    def getAllowUpdate(self):
         return self.allow_update
 
 
@@ -68,171 +76,63 @@ class CONTROLLER_BAYESIAN():
 
     def unpackOptimizerParameters(self, optimizerParams, func_F):
         # Bayesian optimizer tuning params
+        # print("optimizer params in controller_Bayesian")
+        # print(optimizerParams)
 
-        # values that apply to all surrogate models
-        LB = [list(optimizerParams['lower_bounds'][0])]                    # Lower boundaries
-        UB = [list(optimizerParams['upper_bounds'][0])]                    # Upper Boundaries
-        OUT_VARS = int(optimizerParams['num_output'][0])                   # Number of output variables
-        TARGETS = list(optimizerParams['target_values'][0])                # Target values for output
-        E_TOL = float(optimizerParams['tolerance'][0])                     # Convergence Tolerance (This is a radius)       
-        MAXIT = int(optimizerParams['max_iterations'][0])                # Maximum allowed iterations 
-        BOUNDARY = int(optimizerParams['boundary'][0])                     # int boundary 1 = random,      2 = reflecting
+        # values that apply to all surrogate models (the kernel for the bayesian model)
+        self.LB = [list(optimizerParams['lower_bounds'][0])]              # Lower boundaries
+        self.UB = [list(optimizerParams['upper_bounds'][0])]              # Upper Boundaries
+        self.TARGETS = list(optimizerParams['target_values'][0])          # Target values for output
+        TOL = float(optimizerParams['tolerance'][0])                      # Convergence Tolerance   
+        MAXIT = int(optimizerParams['max_iterations'][0])                 # Maximum allowed iterations 
+
+
         INIT_SAMPLES = int(optimizerParams['init_samples'][0])
-        SURROGATE_MODEL = int(optimizerParams['surrogate_model'][0]) # integer representation of surrogate model (for later variations)
-                                                                        #0 = RBF network, 1 = Gaussian process, 2 = Kriging
-                                                                        #3 = Polynomial regression, 4 = polynomial chaos expansion,
-                                                                        #5 = KNN regression, 6 = Decision Tree Regression
+        # SURROGATE_MODEL = int(optimizerParams['surrogate_model'][0]) # integer representation of surrogate model (for later variations)
+        #                                                                 #0 = RBF network, 1 = Gaussian process, 2 = Kriging
+        #                                                                 #3 = Polynomial regression, 4 = polynomial chaos expansion,
+        #                                                                 #5 = KNN regression, 6 = Decision Tree Regression
+        
+        SURROGATE_MODEL = optimizerParams['sm_model_name'][0] # STRING. Moving off of the numerical ID to make it easier to expand
         XI = float(optimizerParams['xi'][0])   
         NUM_RESTARTS = int(optimizerParams['num_restarts'][0])    # number of restarts to minimize for randoms
 
 
-        targetMetrics = optimizerParams['target_metrics']
-        F = np.zeros((np.prod(np.shape(TARGETS)), 1))
+        THRESHOLD = list(optimizerParams['target_threshold'][0])          # Threshold symbols ["=", "≤", "≥"]
 
-        self.out_vars = len(TARGETS)
+        self.useSurrogateModel = optimizerParams['use_surrogate_bool'][0]   # UPDATE THIS IN THE UI. The model is set up from an external call, (where the swarm obj is created)
+        self.out_vars = len(self.TARGETS)
+        #convert threshold from symbolics to ints:
+        threshold_dict = {"=": 0, "≤": 1, "<": 1, "≥": 2, ">":2}
+        self.THRESHOLD = np.array([threshold_dict.get(x, x) for x in THRESHOLD])
+
+        # ERROR CHECK THRESHOLD
+        # threshold is same dims as TARGETS
+        # 0 = use target value as actual target. value should EQUAL target
+        # 1 = use as threshold. value should be LESS THAN OR EQUAL to target
+        # 2 = use as threshold. value should be GREATER THAN OR EQUAL to target
+
+        if not np.any(self.THRESHOLD): # ALL TARGET values are to be evaluated at EXACTLY the target val
+            self.evaluate_threshold = False
+        else: #Evaulate at least one value in the TARGET list as a THRESHOLD
+            self.evaluate_threshold = True 
+
+        # ERROR CHECK SURROGATE MODEL
+        ## BAYESIAN is the base optimizer. It can have an internal optimizer solving a surrogate model approximation.
+        if self.useSurrogateModel == True: # user has set this on menu to use surrogate model
+            #if (self.sm_approx == None) or (self.sm_opt == None):    # surrogate model and internal optimizer not setup properly
+            msg = "WARNING: BAYESIAN optimizer cannot currently be used with an internal optimizer."
+            self.debug_message_printout(msg)
+            self.useSurrogateModel = False
 
 
-        # SURROGATE MODEL VARS
-        # inbuilt error correction here. This will be cleaned up in later versions after some testing.
-        if SURROGATE_MODEL == 0:
-            # Radial Basis Function Kernel
-            # set kernel specific vars
-            RBF_KERNEL = optimizerParams['rbf_kernel'][0]#options: 'gaussian', 'multiquadric'
-            RBF_EPSILON = float(optimizerParams['rbf_epsilon'][0]) 
-
-            # error correction (hardcoded for kernel)
-            if INIT_SAMPLES < 1:
-                INIT_SAMPLES = 1
-                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
-                self.updateStatusText(msg)
-            if RBF_KERNEL in ['gaussian', 'multiquadric']:
-                pass
-            else:
-                RBF_KERNEL = 'gaussian'
-                msg = "ERROR: unknown RBF kernel. Defaulting to gaussian RBF kernel"
-                self.updateStatusText(msg)
-           
-            # setup
-            self.sm = RBFNetwork(kernel=RBF_KERNEL, epsilon=RBF_EPSILON)  
-            noError, errMsg = self.sm._check_configuration(INIT_SAMPLES, RBF_KERNEL)
-
-        elif SURROGATE_MODEL == 1:
-            # Gaussian Process vars
-            # set kernel specific vars
-            GP_NOISE = float(optimizerParams['gp_noise'][0])#1e-10
-            GP_LENGTH_SCALE = float(optimizerParams['gp_length_scale'][0]) 
-
-            # error correction (hardcoded for kernel)
-            if INIT_SAMPLES < 1:
-                INIT_SAMPLES = 1
-                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
-                self.updateStatusText(msg)
-
-            self.sm = GaussianProcess(length_scale=GP_LENGTH_SCALE,noise=GP_NOISE) 
-            noError, errMsg = self.sm._check_configuration(INIT_SAMPLES)
-
-        elif SURROGATE_MODEL == 2:
-            # Kriging vars
-            # set kernel specific vars
-            K_LENGTH_SCALE = float(optimizerParams['k_length_scale'][0])# 1.0
-            K_NOISE = float(optimizerParams['k_noise'][0]) # 1e-10
-
-            # error correction (hardcoded for kernel)
-            if INIT_SAMPLES < 2:
-                INIT_SAMPLES = 2
-                msg = "WARNING: a minimum number of 2 initial sample(s) must be used for this kernel. Setting minimum to 2."
-                self.updateStatusText(msg)
-   
-            self.sm = Kriging(length_scale=K_LENGTH_SCALE, noise=K_NOISE)
-            noError, errMsg = self.sm._check_configuration(INIT_SAMPLES)
-
-        elif SURROGATE_MODEL == 3:
-            # Polynomial Regression vars
-            # set kernel specific vars
-            PR_DEGREE = int(optimizerParams['pr_degree'][0])
-
-            # error correction (hardcoded for kernel)
-            if INIT_SAMPLES < 1:
-                INIT_SAMPLES = 1
-                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
-                self.updateStatusText(msg)
-            if PR_DEGREE < 1:
-                PR_DEGREE = 1
-                msg = "WARNING: a polynomial degree must be at least 1. Setting to 1."
-                self.updateStatusText(msg)
-           
-            self.sm = PolynomialRegression(degree=PR_DEGREE)
-            noError, errMsg = self.sm._check_configuration(INIT_SAMPLES)
-
-        elif SURROGATE_MODEL == 4:
-            # Polynomial Chaos Expansion vars
-            # set kernel specific vars
-            PC_DEGREE = int(optimizerParams['pc_degree'][0])
-            # error correction (hardcoded for kernel)
-            if INIT_SAMPLES < 1:
-                INIT_SAMPLES = 1
-                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
-                self.updateStatusText(msg)
-            if PR_DEGREE < 1:
-                PR_DEGREE = 1
-                msg = "WARNING: a polynomial degree must be at least 1. Setting to 1."
-                self.updateStatusText(msg)
-
-            self.sm = PolynomialChaosExpansion(degree=PC_DEGREE)
-            noError, errMsg = self.sm._check_configuration(INIT_SAMPLES)
-
-        elif SURROGATE_MODEL == 5:
-            # KNN regression vars
-            # set kernel specific vars
-            KNN_WEIGHTS = optimizerParams['knn_weights'][0]#options: 'uniform', 'distance'
-            KNN_N_NEIGHBORS = int(optimizerParams['knn_n_neighbors'][0]) 
-
-            # error correction (hardcoded for kernel)
-            if INIT_SAMPLES < 1:
-                INIT_SAMPLES = 1
-                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
-                self.updateStatusText(msg)
-            if KNN_N_NEIGHBORS < 1:
-                KNN_N_NEIGHBORS = 1
-                msg = "WARNING: a minimum number of 1 neighbors must be used for this kernel. Setting minimum to 1."
-                self.updateStatusText(msg)
-            if KNN_N_NEIGHBORS < INIT_SAMPLES:
-                msg = "WARNING: it is suggested that the number of initial samples be equal to the number of neighbors. \n " +\
-                    "This is not a fatal error, but the initial predictions may be incorrect or fail to \n " +\
-                    "converge until after meeting the number of neighbors + 1"
-            if KNN_WEIGHTS in ['uniform', 'distance']:
-                pass
-            else:
-                KNN_WEIGHTS = 'uniform'
-                msg = "ERROR: unknown KNN kernel. Defaulting to uniform KNN kernel"
-                self.updateStatusText(msg)
-           
-            self.sm = KNNRegression(n_neighbors=KNN_N_NEIGHBORS, weights=KNN_WEIGHTS)
-            noError, errMsg = self.sm._check_configuration(INIT_SAMPLES)
-
-        elif SURROGATE_MODEL == 6:
-            # Decision Tree Regression vars
-            # set kernel specific vars
-            DTR_MAX_DEPTH = int(optimizerParams['dtr_max_depth'][0]) 
-
-            # error correction (hardcoded for kernel)
-            if INIT_SAMPLES < 1:
-                INIT_SAMPLES = 1
-                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
-                self.updateStatusText(msg)
-            if DTR_MAX_DEPTH < 2:
-                DTR_MAX_DEPTH = 2
-                msg = "WARNING: the lowest max depth is 2. Setting max depth to 2."
-                self.updateStatusText(msg)
-          
-            self.sm = DecisionTreeRegression(max_depth=DTR_MAX_DEPTH)
-            noError, errMsg = self.sm._check_configuration(INIT_SAMPLES)
-
-    
+        
+        # inbuilt error checking and surrogate model approximation selection/config
+        self.sm_approx, noError, errMsg = self.parent.check_model_approximator(SURROGATE_MODEL, INIT_SAMPLES, optimizerParams, is_internal_optimizer=False)
         if noError == False:
             msg = "ERROR in BAYESIAN OPTIMIZATION CONTROLLER. Incorrect surrogate model configuration not recoverable by automated defaults."
-            self.updateStatusText(msg)
-            self.updateStatusText(errMsg)
+            self.debug_message_printout(msg)
+            self.debug_message_printout(errMsg)
             return
         
 
@@ -240,38 +140,39 @@ class CONTROLLER_BAYESIAN():
         if XI < 0.0:
             XI = 0.01
             msg = "ERROR: xi must be a positive float value (for now). Setting xi to 0.01 as a default"
-            self.updateStatusText(msg)
+            self.debug_message_printout(msg)
         if NUM_RESTARTS < 2:
             msg = "ERROR: the number of restarts for the surrogate model calculation must be at least 2. \n" + \
                 "These restarts do not call the simulation, only a surrogate model calculation. Setting to 2 as a default."
-            self.updateStatusText(msg)
+            self.debug_message_printout(msg)
 
 
-        self.best_eval = 9999    # set higher than normal because of the potential for missing the target
 
-        parent = self            # Optional parent class for swarm 
-                                            # (Used for passing debug messages or
-                                            # other information that will appear 
-                                            # in GUI panels)
-
-        self.suppress_output = False    # Suppress the console output of optimizer
-
-        detailedWarnings = False        # Optional boolean for detailed feedback
-                                        # (Independent of suppress output. 
-                                        #  Includes error messages and warnings)
-
-        self.allow_update = True        # Allow objective call to update state 
+        # Constant variables
+        opt_params = {'XI': [XI],                     # exploration float
+                    'NUM_RESTARTS': [NUM_RESTARTS],   # number of predition restarts
+                    'INIT_PTS': [INIT_SAMPLES]}       # initial number of samples
 
 
-        # instantiation of multiglods optimizer 
-        self.optimizer = BayesianOptimization(LB, UB, OUT_VARS, TARGETS, E_TOL, MAXIT,
-                                                    obj_func=func_F, constr_func=constr_default, 
-                                                    init_points=INIT_SAMPLES, 
-                                                    xi=XI, n_restarts=NUM_RESTARTS, 
-                                                    parent=parent, detailedWarnings=detailedWarnings)
-
+        opt_df = pd.DataFrame(opt_params)
+        self.optimizer = BayesianOptimization(self.LB, self.UB, self.TARGETS, TOL, MAXIT,
+                                obj_func=func_F, constr_func=constr_default,  
+                                opt_df=opt_df,
+                                parent=self,
+                                evaluate_threshold=self.evaluate_threshold, 
+                                obj_threshold=self.THRESHOLD, 
+                                useSurrogateModel=self.useSurrogateModel, 
+                                surrogateOptimizer=self.sm_opt)    
+    
         msg = "optimizer configured"
-        self.updateStatusText(msg)
+        self.debug_message_printout(msg)
+
+        # returns for the controller integrator and initial setup for the optimization process
+        targetMetrics = optimizerParams['target_metrics'] #this is the NAME of the TARGET value for pattern matching a few levels up
+        F = np.zeros((np.prod(np.shape(self.TARGETS)), 1)) # set the initial F evaluation to an array of ZEROs. 
+
+        msg = "initial values set"
+        self.debug_message_printout(msg)
 
         return F, targetMetrics
 
@@ -303,22 +204,127 @@ class CONTROLLER_BAYESIAN():
         return self.optimizer.get_optimized_outs()
     
 ######################################################
-# SURROGATE MODEL FUNCS
+# SURROGATE MODEL APPROXIMATOR FUNCS
 ######################################################
 
     def fit_model(self, x, y):
         # call out to parent class to use surrogate model
-        self.sm.fit(x,y)
+        self.sm_approx.fit(x,y)
         
 
-    def model_predict(self, x):
+    def model_predict(self, x, output_size=None):
         # call out to parent class to use surrogate model
         #'mean' is regressive definition. not statistical
         #'variance' only applies for some surrogate models
-        mean, noErrors = self.sm.predict(x, self.out_vars)
+
+        if output_size == None:
+            output_size = self.out_vars
+
+        mean, noErrors = self.sm_approx.predict(x, output_size)
         return mean, noErrors
 
+
     def model_get_variance(self):
-        variance = self.sm.calculate_variance()
+        variance = self.sm_approx.calculate_variance()
         return variance
+
  
+
+######################################################
+# SURROGATE MODEL SOLVED WITH INTERNAL OPTIMIZER 
+#
+#
+#   NOTE: the PARENT OPTIMIZER (the BASE OPTIMIZER) will always be the one that is called
+#       for the surrogate model creation. If PSO_BASIC is used with a CAT_SWARM model,
+#       then the functions below for PSO_BASIC will be used for the surrogate model 
+#       driver and solver 
+#
+#
+#
+#
+######################################################
+
+    
+    def fit_and_create_surogate(self, opt_M, opt_F_Pb,surrogateOptimizer):
+        # opt_M : 'base' optimizer particle locs
+        # opt_F_Pb: 'base' optimizer personal best fitness
+        # surrogateOptimizer : the surrogate optimizer class obj. 
+    
+        #called at the controller level so that the params don't 
+        # get passed down and then used at this level anyways
+
+        # fit surrogate model using current particle positions
+        # this model needs to be fit to create something that can then be modeled
+        self.fit_model(opt_M, opt_F_Pb)
+
+        # define objective function pass through via parent 
+        func_f = self.model_predict   
+
+        # use the default constraint function. these can be customized later
+        constr_F = constr_default
+
+        # to make models modular & not deal with 
+        # re-converting values or storing duplicates, the surrogate optimizer
+        # is set up here. 
+
+        setup_sm_opt = surrogateOptimizer(self.LB, self.UB, self.TARGETS, self.sm_tol, self.sm_maxit,  
+                                            obj_func=func_f, constr_func=constr_F, 
+                                            opt_df=self.sm_opt_df, 
+                                            parent=self,
+                                            evaluate_threshold=self.evaluate_threshold, 
+                                            obj_threshold=self.THRESHOLD, 
+                                            useSurrogateModel=False, # IS SURROGATE MODEL
+                                            surrogateOptimizer=None)  # Do NOT put surrogate model INTO this optimizer
+                
+                
+
+        return setup_sm_opt
+
+    
+
+
+    def create_internal_optimizer(self, optimizerParams):
+        # this is SEPERATE from the main optimizer creation to ensure that there's no crossover right now
+        # this can be streamlined in the next release after the surrogate modeling features are more developed
+
+        INIT_SAMPLES = int(optimizerParams['sm_init_samples'][0])
+        SURROGATE_MODEL = optimizerParams['sm_model_name'][0] #swapped to the written out name. int kept until cleanup
+        # SURROGATE_MODEL = int(optimizerParams['sm_surrogate_model'][0]) # integer representation of surrogate model (for later variations)
+        #                                                                 #0 = RBF network, 1 = Gaussian process, 2 = Kriging
+        #                                                                 #3 = Polynomial regression, 4 = polynomial chaos expansion,
+        #                                                                 #5 = KNN regression, 6 = Decision Tree Regression
+        
+        XI = float(optimizerParams['sm_xi'][0])   
+        NUM_RESTARTS = int(optimizerParams['sm_num_restarts'][0])       # number of restarts to minimize for randoms
+
+      
+        # inbuilt error checking and surrogate model approximation selection/config
+        sm_approx, noError, errMsg = self.parent.check_model_approximator(SURROGATE_MODEL, INIT_SAMPLES, optimizerParams, is_internal_optimizer=True)
+        if noError == False:
+            msg = "ERROR in BAYESIAN OPTIMIZATION CONTROLLER. Incorrect surrogate model configuration not recoverable by automated defaults."
+            self.debug_message_printout(msg)
+            self.debug_message_printout(errMsg)
+            return
+        
+
+        # other configuration error correction
+        if XI < 0.0:
+            XI = 0.01
+            msg = "ERROR: xi must be a positive float value (for now). Setting xi to 0.01 as a default"
+            self.debug_message_printout(msg)
+        if NUM_RESTARTS < 2:
+            msg = "ERROR: the number of restarts for the surrogate model calculation must be at least 2. \n" + \
+                "These restarts do not call the simulation, only a surrogate model calculation. Setting to 2 as a default."
+            self.debug_message_printout(msg)
+
+
+        # Constant variables
+        opt_params = {'XI': [XI],                     # exploration float
+                    'NUM_RESTARTS': [NUM_RESTARTS],   # number of predition restarts
+                    'INIT_PTS': [INIT_SAMPLES]}       # initial number of samples
+
+        opt_df = pd.DataFrame(opt_params)
+        sm_optimizer = BayesianOptimization
+
+    
+        return sm_approx, opt_df, sm_optimizer #sm_approx is the kernel approximator model

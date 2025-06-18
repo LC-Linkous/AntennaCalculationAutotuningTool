@@ -13,10 +13,39 @@ import wx
 import pandas as pd
 import numpy as np
 
+import time
+
 
 #debug
 import project.config.antennaCAT_config as c
 DEBUG = False#c.DEBUG
+
+OPT_SELECTION = c.OPT_SELECTION
+OPT_RULES = c.OPT_RULES
+OPT_PSO_BASIC = c.OPT_PSO_BASIC
+OPT_PSO_PYTHON = c.OPT_PSO_PYTHON
+OPT_PSO_QUANTUM = c.OPT_PSO_QUANTUM
+OPT_CAT_SWARM = c.OPT_CAT_SWARM
+OPT_SAND_CAT_SWARM = c.OPT_SAND_CAT_SWARM
+OPT_CAT_QUANTUM = c.OPT_CAT_QUANTUM
+OPT_CHICKEN_SWARM = c.OPT_CHICKEN_SWARM
+OPT_CHICKEN_2015 = c.OPT_CHICKEN_2015
+OPT_CHICKEN_QUANTUM = c.OPT_CHICKEN_QUANTUM
+OPT_MULTI_GLODS = c.OPT_MULTI_GLODS
+OPT_BAYESIAN = c.OPT_BAYESIAN
+OPT_GRID_SWEEP = c.OPT_GRID_SWEEP
+OPT_RANDOM_SWEEP = c.OPT_RANDOM_SWEEP
+
+SM_RADIAL_BASIS_FUNC = c.SM_RADIAL_BASIS_FUNC
+SM_GAUSSIAN_PROCESS = c.SM_GAUSSIAN_PROCESS
+SM_KRIGING = c.SM_KRIGING
+SM_POLY_REGRESSION = c.SM_POLY_REGRESSION
+SM_POLY_CHAOS_REGRESSION = c.SM_POLY_CHAOS_REGRESSION
+SM_KNN = c.SM_KNN
+SM_DECISION_TREE_REGRESSION = c.SM_DECISION_TREE_REGRESSION
+
+
+
 
 
 import helper_func.fileIO_helperFuncs as fIO
@@ -39,6 +68,15 @@ from optimizers.MULTI_GLODS.controller_MULTI_GLODS import CONTROLLER_MULTI_GLODS
 #from optimizers.GLODS_SURROGATE.controller_GLODS_SURROGATE import CONTROLLER_GLODS_SURROGATE
 ## OTHERS
 from optimizers.SWEEP_PYTHON.controller_SWEEP import CONTROLLER_SWEEP
+
+#SURROGATE MODELS (customization to be added)
+from optimizers.surrogate_models.RBF_network import RBFNetwork
+from optimizers.surrogate_models.gaussian_process import GaussianProcess
+from optimizers.surrogate_models.kriging_regression import Kriging
+from optimizers.surrogate_models.polynomial_regression import PolynomialRegression
+from optimizers.surrogate_models.polynomial_chaos_expansion import PolynomialChaosExpansion
+from optimizers.surrogate_models.KNN_regression import KNNRegression
+from optimizers.surrogate_models.decision_tree_regression import DecisionTreeRegression
 
 
 # selection methods
@@ -206,46 +244,233 @@ class OptimizerIntegrator():
     
 
     def setOptimizer(self, optimizerSelection):
-        if optimizerSelection == "SELECTION":
+        # this is called FIRST by the 'select' button on the panels in the 
+        # optimzier notebook to create a CONTROLLER
+        # panel_XYZ -> notebook_optimizer -> page_optimizer-> THIS CLASS
+
+        # if a SURROGATE MODEL is used, this will be called a SECOND time
+        # by the previously created CONTROLLER. A new controller will be created, 
+        # but only to get the optimizer class (via the controller), and have the 
+        # optimizer settings unpacked into the df that will be used
+        # this DOES NOT need to be called repeatedly, because the class and the df
+        # can be REUSED to reset the optimizer when it needs to be created
+
+
+        if optimizerSelection == OPT_SELECTION:
            OO = Selection(self.DC, self.PC, self.SO)
-        elif optimizerSelection == "RULES":
+        elif optimizerSelection == OPT_RULES:
         #    OO = Rules(self.DC, self.PC, self.SO)
             OO = None
-        elif optimizerSelection == "PSO_BASIC":
+        elif optimizerSelection == OPT_PSO_BASIC:
             OO = CONTROLLER_PSO_BASIC(self)
-        elif optimizerSelection == "PSO_PYTHON":
+        elif optimizerSelection == OPT_PSO_PYTHON:
             OO = CONTROLLER_PSO_PYTHON(self)
-        elif optimizerSelection == "PSO_QUANTUM":
+        elif optimizerSelection == OPT_PSO_QUANTUM:
            OO = CONTROLLER_PSO_QUANTUM(self)
-        elif optimizerSelection == "CAT_SWARM":
+        elif optimizerSelection == OPT_CAT_SWARM:
             OO = CONTROLLER_CAT_SWARM(self)
-        elif optimizerSelection == "SAND_CAT_SWARM":
+        elif optimizerSelection == OPT_SAND_CAT_SWARM:
             OO = CONTROLLER_SAND_CAT(self)
-        elif optimizerSelection == "CAT_QUANTUM":
+        elif optimizerSelection == OPT_CAT_QUANTUM:
             OO = CONTROLLER_CAT_SWARM_QUANTUM(self)
-        elif optimizerSelection == "CHICKEN_SWARM":
+        elif optimizerSelection == OPT_CHICKEN_SWARM:
             OO = CONTROLLER_CHICKEN_SWARM(self)
-        elif optimizerSelection == "CHICKEN_2015":
+        elif optimizerSelection == OPT_CHICKEN_2015:
             OO = CONTROLLER_CHICKEN_SWARM_2015(self)
-        elif optimizerSelection == "CHICKEN_QUANTUM":
+        elif optimizerSelection == OPT_CHICKEN_QUANTUM:
             OO = CONTROLLER_CHICKEN_QUANTUM(self)
-        elif optimizerSelection == "MULTI_GLODS":
+        elif optimizerSelection == OPT_MULTI_GLODS:
            OO = CONTROLLER_MULTI_GLODS(self)
-        elif optimizerSelection == "BAYESIAN":
+        elif optimizerSelection == OPT_BAYESIAN:
             OO = CONTROLLER_BAYESIAN(self)
         # these two are the same controller. 
         # same optimizer, different panel options.
-        elif optimizerSelection == "GRID_SWEEP":
+        elif optimizerSelection == OPT_GRID_SWEEP:
            OO = CONTROLLER_SWEEP(self)
-        elif optimizerSelection == "RANDOM_SWEEP":
+        elif optimizerSelection == OPT_RANDOM_SWEEP:
            OO = CONTROLLER_SWEEP(self)
         else:
-            print("ERROR: non recognized optimizer object: " + str(optimizerSelection))
+            print("ERROR: unrecognized optimizer object: " + str(optimizerSelection))
             print("check selection in optimizer_integrator.py")
           
+        # NOTE: SURROGATE panel doesn't have it's own selection because it's using other optimizers
+        # 
 
         return OO
 
+
+    def check_model_approximator(self, SURROGATE_MODEL, INIT_SAMPLES, optimizerParams, is_internal_optimizer=False):
+        # SURROGATE MODEL VARS
+        # inbuilt error correction here. This will be cleaned up in later versions after some testing.
+
+        sm_approx = None
+        noError =  False  # must be changed to True
+        errMsg = "no surrogate model approximator selected" #will be overwritten
+
+
+        if SURROGATE_MODEL == SM_RADIAL_BASIS_FUNC:
+            # Radial Basis Function Kernel
+            # set kernel specific vars
+            # if is_internal_optimizer == False:
+            RBF_KERNEL = optimizerParams['rbf_kernel'][0]#options: 'gaussian', 'multiquadric'
+            RBF_EPSILON = float(optimizerParams['rbf_epsilon'][0]) 
+            # else:
+            #     RBF_KERNEL = optimizerParams['sm_rbf_kernel'][0]#options: 'gaussian', 'multiquadric'
+            #     RBF_EPSILON = float(optimizerParams['sm_rbf_epsilon'][0]) 
+
+            # error correction (hardcoded for kernel)
+            if INIT_SAMPLES < 1:
+                INIT_SAMPLES = 1
+                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
+                self.updateStatusText(msg)
+            if RBF_KERNEL in ['gaussian', 'multiquadric']:
+                pass
+            else:
+                RBF_KERNEL = 'gaussian'
+                msg = "ERROR: unknown RBF kernel. Defaulting to gaussian RBF kernel"
+                self.updateStatusText(msg)
+           
+            # setup
+            sm_approx = RBFNetwork(kernel=RBF_KERNEL, epsilon=RBF_EPSILON)  
+            noError, errMsg = sm_approx._check_configuration(INIT_SAMPLES, RBF_KERNEL)
+
+        elif SURROGATE_MODEL == SM_GAUSSIAN_PROCESS:
+            # Gaussian Process vars
+            # set kernel specific vars
+            # if is_internal_optimizer == False:
+            GP_NOISE = float(optimizerParams['gp_noise'][0])#1e-10
+            GP_LENGTH_SCALE = float(optimizerParams['gp_length_scale'][0]) 
+            # else:
+            #     GP_NOISE = float(optimizerParams['sm_gp_noise'][0])#1e-10
+            #     GP_LENGTH_SCALE = float(optimizerParams['sm_gp_length_scale'][0]) 
+
+            # error correction (hardcoded for kernel)
+            if INIT_SAMPLES < 1:
+                INIT_SAMPLES = 1
+                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
+                self.updateStatusText(msg)
+
+            sm_approx = GaussianProcess(length_scale=GP_LENGTH_SCALE,noise=GP_NOISE) 
+            noError, errMsg = sm_approx._check_configuration(INIT_SAMPLES)
+
+        elif SURROGATE_MODEL == SM_KRIGING:
+            # Kriging vars
+            # set kernel specific vars
+            #if is_internal_optimizer == False:
+            K_LENGTH_SCALE = float(optimizerParams['k_length_scale'][0])# 1.0
+            K_NOISE = float(optimizerParams['k_noise'][0]) # 1e-10
+            # else:
+            #     K_LENGTH_SCALE = float(optimizerParams['sm_k_length_scale'][0])# 1.0
+            #     K_NOISE = float(optimizerParams['sm_k_noise'][0]) # 1e-10               
+
+            # error correction (hardcoded for kernel)
+            if INIT_SAMPLES < 2:
+                INIT_SAMPLES = 2
+                msg = "WARNING: a minimum number of 2 initial sample(s) must be used for this kernel. Setting minimum to 2."
+                self.updateStatusText(msg)
+   
+            sm_approx = Kriging(length_scale=K_LENGTH_SCALE, noise=K_NOISE)
+            noError, errMsg = sm_approx._check_configuration(INIT_SAMPLES)
+
+        elif SURROGATE_MODEL == SM_POLY_REGRESSION:
+            # Polynomial Regression vars
+            # set kernel specific vars
+            # if is_internal_optimizer == False:
+            PR_DEGREE = int(optimizerParams['pr_degree'][0])
+            # else:
+            #     PR_DEGREE = int(optimizerParams['sm_pr_degree'][0])
+
+            # error correction (hardcoded for kernel)
+            if INIT_SAMPLES < 1:
+                INIT_SAMPLES = 1
+                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
+                self.updateStatusText(msg)
+            if PR_DEGREE < 1:
+                PR_DEGREE = 1
+                msg = "WARNING: a polynomial degree must be at least 1. Setting to 1."
+                self.updateStatusText(msg)
+           
+            sm_approx = PolynomialRegression(degree=PR_DEGREE)
+            noError, errMsg = sm_approx._check_configuration(INIT_SAMPLES)
+
+        elif SURROGATE_MODEL == SM_POLY_CHAOS_REGRESSION:
+            # Polynomial Chaos Expansion vars
+            # set kernel specific vars
+            # if is_internal_optimizer == False:
+            PC_DEGREE = int(optimizerParams['pc_degree'][0])
+            # else:
+            #     PC_DEGREE = int(optimizerParams['sm_pc_degree'][0])
+
+            # error correction (hardcoded for kernel)
+            if INIT_SAMPLES < 1:
+                INIT_SAMPLES = 1
+                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
+                self.updateStatusText(msg)
+            if PR_DEGREE < 1:
+                PR_DEGREE = 1
+                msg = "WARNING: a polynomial degree must be at least 1. Setting to 1."
+                self.updateStatusText(msg)
+
+            sm_approx = PolynomialChaosExpansion(degree=PC_DEGREE)
+            noError, errMsg = sm_approx._check_configuration(INIT_SAMPLES)
+
+        elif SURROGATE_MODEL == SM_KNN:
+            # KNN regression vars
+            # set kernel specific vars
+            # if is_internal_optimizer == False:
+            KNN_WEIGHTS = optimizerParams['knn_weights'][0]#options: 'uniform', 'distance'
+            KNN_N_NEIGHBORS = int(optimizerParams['knn_n_neighbors'][0]) 
+            # else:
+            #     KNN_WEIGHTS = optimizerParams['sm_knn_weights'][0]#options: 'uniform', 'distance'
+            #     KNN_N_NEIGHBORS = int(optimizerParams['sm_knn_n_neighbors'][0]) 
+
+
+            # error correction (hardcoded for kernel)
+            if INIT_SAMPLES < 1:
+                INIT_SAMPLES = 1
+                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
+                self.updateStatusText(msg)
+            if KNN_N_NEIGHBORS < 1:
+                KNN_N_NEIGHBORS = 1
+                msg = "WARNING: a minimum number of 1 neighbors must be used for this kernel. Setting minimum to 1."
+                self.updateStatusText(msg)
+            if KNN_N_NEIGHBORS < INIT_SAMPLES:
+                msg = "WARNING: it is suggested that the number of initial samples be equal to the number of neighbors. \n " +\
+                    "This is not a fatal error, but the initial predictions may be incorrect or fail to \n " +\
+                    "converge until after meeting the number of neighbors + 1"
+            if KNN_WEIGHTS in ['uniform', 'distance']:
+                pass
+            else:
+                KNN_WEIGHTS = 'uniform'
+                msg = "ERROR: unknown KNN kernel. Defaulting to uniform KNN kernel"
+                self.updateStatusText(msg)
+           
+            sm_approx = KNNRegression(n_neighbors=KNN_N_NEIGHBORS, weights=KNN_WEIGHTS)
+            noError, errMsg = sm_approx._check_configuration(INIT_SAMPLES)
+
+        elif SURROGATE_MODEL == SM_DECISION_TREE_REGRESSION:
+            # Decision Tree Regression vars
+            # set kernel specific vars
+            # if is_internal_optimizer == False:
+            DTR_MAX_DEPTH = int(optimizerParams['dtr_max_depth'][0]) 
+            # else:
+            #     DTR_MAX_DEPTH = int(optimizerParams['sm_dtr_max_depth'][0]) 
+
+            # error correction (hardcoded for kernel)
+            if INIT_SAMPLES < 1:
+                INIT_SAMPLES = 1
+                msg = "WARNING: a minimum number of 1 initial sample(s) must be used for this kernel. Setting minimum to 1."
+                self.updateStatusText(msg)
+            if DTR_MAX_DEPTH < 2:
+                DTR_MAX_DEPTH = 2
+                msg = "WARNING: the lowest max depth is 2. Setting max depth to 2."
+                self.updateStatusText(msg)
+          
+            sm_approx = DecisionTreeRegression(max_depth=DTR_MAX_DEPTH)
+            noError, errMsg = sm_approx._check_configuration(INIT_SAMPLES)
+
+        return sm_approx, noError, errMsg
+ 
 
 
     def openSaved(self, pth):
@@ -345,9 +570,14 @@ class OptimizerIntegrator():
         msg = "initiating first run setup"
         self.updateStatusText(msg)
 
-        #unpack params into something that can be used by multiGLODS
+        #unpack params into something that can be used by the optimizer
+        #try:
         self.F, self.targetMetrics = self.OO.unpackOptimizerParameters(self.optimizerParams, self.processDataAndRunSimulation)
+        #except:
+            #msg = "ERROR in optimizer_integrater. unable to unpack parameters for the controller"
 
+
+        
         self.stepCounter = 0
         self.simulationCounter = 0
         self.firstRunBool = False
@@ -565,6 +795,9 @@ class OptimizerIntegrator():
         #       x vals are in the format [[x1], [x2], [x3]...]
         #outputs: none. saves script to template. uses default paths, etc
 
+        # print("x in optimizer_integrator.updateOptimizerTemplate ")
+        # print(x)
+
         ctr = 0
         lst = [] #array of format [[param, val, unit],[param, val, unit],[param, val, unit]....]
         for p in self.controllableParams:
@@ -576,6 +809,7 @@ class OptimizerIntegrator():
                 ctr = ctr + 1
 
         # update parameters by passing in list of vals to change
+        #print("update script template")
         self.updateScriptTemplate(lst, self.simulationCounter)
         self.x = x # for the log file
 
@@ -616,14 +850,19 @@ class OptimizerIntegrator():
             #   or to open a project.
             # the simulation script could be simulation setup or no setup
             designScript = self.DC.getDesignScript()
+            # COMMENTED OUT JUST FOR THE RFID RUN
             simulationScript = self.DC.getSimulationScript() #simulation setup
+            # print("STEP CTR 0")
+            # print(simulationScript)
+
+
         else:
-            #change the design script to be an 'open project' script.
+            #change the design script to be an 'open project' script. (this works for all options, new and imported)
             projectPath = self.SO.getEMSoftwareProjectName()
             self.SO.useOpenProjectDesignScript(projectPath) #resets design template object
             designScript = self.DC.getDesignScript()
             # no sim setup
-            simulationScript = []
+            simulationScript = ['\n'] #must be a list
 
             if self.saveReportData == True:
                 msg = "report data will be saved in the next code update. toggle in updateScriptTemplate in optimizer_integrator call"
@@ -644,9 +883,32 @@ class OptimizerIntegrator():
         # get report export script
         reportExportScript = self.SO.getReportEditTemplateScript()
 
+
+        #write all of them out to file to read the damn things
+
+        # with open("designScript.txt", "w") as file:
+        #     file.writelines(designScript)
+
+        # with open("simulationScript.txt", "w") as file:
+        #     file.writelines(simulationScript)
+
+        # with open("paramEditScript.txt", "w") as file:
+        #     file.writelines(paramEditScript)
+
+        # with open("reportScript.txt", "w") as file:
+        #     file.writelines(reportScript)
+
+        # with open("reportExportScript.txt", "w") as file:
+        #     file.writelines(reportExportScript)
+
+        # time.sleep(25)
+
         # combine scripts
         #use the spacer to see where each script ends - debug only. 
         script = designScript + simulationScript + paramEditScript + reportScript + reportExportScript
+
+        # print("SCRIPT")
+        # print(script)
 
         # export script to file
         self.saveScriptFile(script, self.optimizerScriptPath)
@@ -764,19 +1026,19 @@ class OptimizerIntegrator():
 # optimizer data collection
 ######################################################
 
-    def updateConvergenceData(self):
-        iter, eval = self.OO.get_convergence_data()
-        if (eval < self.best_eval) and (eval != 0):
-            self.best_eval = eval
-        self.iteration = iter
+    # def updateConvergenceData(self):
+    #     iter, eval = self.OO.get_convergence_data()
+    #     if (eval < self.best_eval) and (eval != 0):
+    #         self.best_eval = eval
+    #     self.iteration = iter
 
-    def saveConvergenceData(self):
-        filename = "convergence-log.csv"
-        pathname = os.path.join(self.dataDir, filename)
-        line = str(self.iteration) + "," + str(self.best_eval) + "\n"
-        with open(pathname, "a") as f:
-            f.write(line)
+    # def saveConvergenceData(self):
+    #     filename = "convergence-log.csv"
+    #     pathname = os.path.join(self.dataDir, filename)
+    #     line = str(self.iteration) + "," + str(self.best_eval) + "\n"
+    #     with open(pathname, "a") as f:
+    #         f.write(line)
 
-    def updateSolutionValues(self):
-        self.soln_x_vals = self.OO.get_optimized_soln()
-        self.soln_y_vals = self.OO.get_optimized_outs()
+    # def updateSolutionValues(self):
+    #     self.soln_x_vals = self.OO.get_optimized_soln()
+    #     self.soln_y_vals = self.OO.get_optimized_outs()

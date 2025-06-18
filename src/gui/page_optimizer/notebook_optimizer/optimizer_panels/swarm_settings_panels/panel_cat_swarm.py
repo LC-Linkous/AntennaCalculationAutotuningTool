@@ -19,6 +19,10 @@ import project.config.antennaCAT_config as c
 INPUT_BOX_WIDTH = 50
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
+
+OPT_CAT_SWARM = c.OPT_CAT_SWARM
+
+
 class Cat_Swarm_Panel(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
@@ -141,20 +145,33 @@ class Cat_Swarm_Panel(wx.Panel):
         return noError
 
 
-    def getOptimizerInputs(self):
+    def getOptimizerInputs(self, is_surrogate=False):
         noError = self.getInputFields()
         df = pd.DataFrame({})
         if noError == True:   
-            df['num_particles'] = pd.Series(self.numParticles)
-            df['weights'] = pd.Series(self.weights) #singular value
-            df['velocity_limit'] = pd.Series(self.vlim)
-            df['tolerance'] = pd.Series(self.toleranceVal)
-            df['max_iterations'] = pd.Series(self.maxIter)
-            df['mixture_ratio'] = pd.Series(self.MR) #was []
-            df['seeking_pool'] = pd.Series(self.SMP)
-            df['seeking_range'] = pd.Series(self.SRD)
-            df['mutation_dim'] = pd.Series(self.CDC)
-            df['self_position'] = pd.Series(self.SPC)            
-
+            if is_surrogate == False:
+                df['num_particles'] = pd.Series(self.numParticles)
+                df['weights'] = pd.Series(self.weights) #singular value
+                df['velocity_limit'] = pd.Series(self.vlim)
+                df['tolerance'] = pd.Series(self.toleranceVal)
+                df['max_iterations'] = pd.Series(self.maxIter)
+                df['mixture_ratio'] = pd.Series(self.MR) #was []
+                df['seeking_pool'] = pd.Series(self.SMP)
+                df['seeking_range'] = pd.Series(self.SRD)
+                df['mutation_dim'] = pd.Series(self.CDC)
+                df['self_position'] = pd.Series(self.SPC) 
+                df['optimizer_name'] = pd.Series([OPT_CAT_SWARM])
+            else:
+                df['sm_num_particles'] = pd.Series(self.numParticles)
+                df['sm_weights'] = pd.Series(self.weights) #singular value
+                df['sm_velocity_limit'] = pd.Series(self.vlim)
+                df['sm_tolerance'] = pd.Series(self.toleranceVal)
+                df['sm_max_iterations'] = pd.Series(self.maxIter)
+                df['sm_mixture_ratio'] = pd.Series(self.MR) #was []
+                df['sm_seeking_pool'] = pd.Series(self.SMP)
+                df['sm_seeking_range'] = pd.Series(self.SRD)
+                df['sm_mutation_dim'] = pd.Series(self.CDC)
+                df['sm_self_position'] = pd.Series(self.SPC)     
+                df['sm_optimizer_name'] = pd.Series([OPT_CAT_SWARM])
         return df, noError
     

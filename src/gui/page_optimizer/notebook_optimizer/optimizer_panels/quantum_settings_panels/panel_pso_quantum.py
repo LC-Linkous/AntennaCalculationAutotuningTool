@@ -19,6 +19,8 @@ import project.config.antennaCAT_config as c
 INPUT_BOX_WIDTH = 50
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
+OPT_PSO_QUANTUM = c.OPT_PSO_QUANTUM
+
 class PSO_Quantum_Panel(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
@@ -120,14 +122,23 @@ class PSO_Quantum_Panel(wx.Panel):
         return noError
 
 
-    def getOptimizerInputs(self):
+    def getOptimizerInputs(self, is_surrogate=False):
         noError = self.getInputFields()
         df = pd.DataFrame({})
         if noError == True:   
-            df['num_particles'] = pd.Series(self.numParticles)
-            df['weights'] = pd.Series([self.weights])
-            df['tolerance'] = pd.Series(self.toleranceVal)
-            df['max_iterations'] = pd.Series(self.maxIter)
-            df['beta'] = pd.Series(self.betaVal)
+            if is_surrogate == False:
+                df['num_particles'] = pd.Series(self.numParticles)
+                df['weights'] = pd.Series([self.weights])
+                df['tolerance'] = pd.Series(self.toleranceVal)
+                df['max_iterations'] = pd.Series(self.maxIter)
+                df['beta'] = pd.Series(self.betaVal)
+                df['optimizer_name'] = pd.Series([OPT_PSO_QUANTUM])
+            else:
+                df['sm_num_particles'] = pd.Series(self.numParticles)
+                df['sm_weights'] = pd.Series([self.weights])
+                df['sm_tolerance'] = pd.Series(self.toleranceVal)
+                df['sm_max_iterations'] = pd.Series(self.maxIter)
+                df['sm_beta'] = pd.Series(self.betaVal)
+                df['sm_optimizer_name'] = pd.Series([OPT_PSO_QUANTUM])
         return df, noError
     

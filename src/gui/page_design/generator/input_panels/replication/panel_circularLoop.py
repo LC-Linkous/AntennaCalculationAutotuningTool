@@ -154,9 +154,9 @@ class CircularLoopOptionsPage(wx.Panel):
                     ["gap_distance", gapDist],
                     ["substrate_width", subWidth],
                     ["substrate_length", subLength],
-                    ["ground_plane_width", subWidth],
-                    ["ground_plane_length", subLength],
+                    # ["ground_plane_width", subWidth],
+                    # ["ground_plane_length", subLength],
                     #["conductor_height", None],
                     ["substrate_height", subHeight]]
-
+               # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY
         return paramArr

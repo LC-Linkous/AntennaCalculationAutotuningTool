@@ -1,17 +1,32 @@
 #! /usr/bin/python3
+
+##--------------------------------------------------------------------\
+#   surrogate_model_optimization
+#   './surrogate_model_optimization/src/optimizers/multi_glods/multiglods_ctl.py'
+#   Constant values for objective function. Formatted for
+#       automating objective function integration
+#
+#
+#   Author(s): Jonathan Lundquist, Lauren Linkous 
+#   Last update: May 18, 2025
+##--------------------------------------------------------------------\
+
+
 import numpy as np
 from numpy.random import default_rng
 import time
 
-#unit testing vs. program call
-try:
+import sys
+try: # for outside func calls, program calls
+    sys.path.insert(0, './surrogate_model_optimization/src/optimizers/multi_glods/')
     from multiglods_helpers import feasible
     from multiglods_helpers import logical_index_1d
     from multiglods_helpers import logical_index_h2d
     from multiglods_helpers import logical_set_val
     from multiglods_alg import merge
     from multiglods_alg import select_pollcenter
-except:
+
+except:# for local, unit testing
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_helpers import feasible
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_helpers import logical_index_1d
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_helpers import logical_index_h2d
@@ -20,18 +35,8 @@ except:
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_alg import select_pollcenter
 
 
-
-def one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
-                              BP, GP, SF, obj_func, constr_func):    
-
-    print("multiglods_ctl one time init")
-    # print("LB")
-    # print(LB)
-    # print("UB")
-    # print(UB)
-    # print("targets")
-    # print(TARGETS)
-
+def one_time_init(NO_OF_VARS, LB, UB, TARGETS, E_TOL, R_TOL, MAXIT,
+                              BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD):    
 
     LB = np.vstack(np.array(LB))
     UB = np.vstack(np.array(UB))
@@ -41,8 +46,8 @@ def one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
              'post_init': 0, 'main_loop': {'run': 0, 'init': 1},
              'evaluate': 0, 'eval_return': 0, 'location': 1}
     alg = {'lbound': LB,
-           'ubound': UB, 'targets': TARGETS, 'tol_stop': TOL,
-           'beta_par': BP, 'gamma_par': GP, 'poll_complete': 0,
+           'ubound': UB, 'targets': TARGETS, 'threshold': THRESHOLD, 'evaluate_threshold': evaluate_threshold, 
+            'err_tol_stop': E_TOL, 'tol_stop': R_TOL, 'beta_par': BP, 'gamma_par': GP, 'poll_complete': 0,
            'search_freq': SF}
     
     nn = np.shape(alg['lbound'])[0]
@@ -63,7 +68,8 @@ def one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
 
     ctl = {'func_eval': 0, 'match': 0, 'func_iter': 0, 'objective_iter': 0, 'eval': 0, 'finite': 0,
            'search_loop': 0, 'poll_loop': 0, 'i': 0, 'sel_level': 0,
-           'Flist': [], 'D': [], 'count_d': [], 'nd': [], 'maxit': MAXIT, 'obj_func': obj_func, 'constr_func': constr_func}
+           'Flist': [], 'D': [], 'count_d': [], 'nd': [], 'maxit': MAXIT, 
+           'obj_func': obj_func, 'constr_func': constr_func}
     init = []
     run_ctl = {'search_size': prob['n'], 'iter': 0,
                'iter_suc': 0, 'unsuc_consec': 0,
@@ -365,8 +371,8 @@ def run_update(run_ctl, ctl, prob, alg, state):
 
         state['main_loop']['run'] = 0
 
-    # NOTE: this is a change from the original version of
-    # MultiGLODS. Originally the counter was set to check
+    # NOTE: this is a change from the original translation. 
+    #  Originally the counter was set to check
     # if ctl['func_iter'] >= ctl['maxit']
     # ['func_iter'] is a function iteration, but not how 
     # how many times the objective function has been called. 
@@ -384,11 +390,11 @@ def end_processing(prob, ctl, run_ctl):
     prob['time'] = time.process_time()-prob['time']
 
     # variables needed for results: iter, iter_suc, sum(active),ctl.func_eval
-    # print("Points:")
-    # print(prob['Plist'])
-    # print("Iterations:")
-    # print(run_ctl['iter'])
-    # print("Flist:")
-    # print(ctl['Flist'])
-    # print("Norm Flist:")
-    # print(np.linalg.norm(ctl['Flist']))
+    print("Points:")
+    print(prob['Plist'])
+    print("Iterations:")
+    print(run_ctl['iter'])
+    print("Flist:")
+    print(ctl['Flist'])
+    print("Norm Flist:")
+    print(np.linalg.norm(ctl['Flist']))

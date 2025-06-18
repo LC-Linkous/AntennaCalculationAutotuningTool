@@ -92,40 +92,43 @@ oProject.ChangeProperty(
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "INSERT_L7_VALUE"
+				],				
+				[
+					"NAME:$substrate_width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUBSTRATE_WIDTH_VALUE"
 				],
 				[
-					"NAME:$gp_length",
+					"NAME:$substrate_length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUBSTRATE_LENGTH_VALUE"
+				],
+				[
+					"NAME:$substrate_height",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUBSTRATE_HEIGHT_VALUE"
+				],
+				[
+					"NAME:$ground_plane_length",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "INSERT_GP_LENGTH_VALUE"
 				],
 				[
-					"NAME:$gp_width",
+					"NAME:$ground_plane_width",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "INSERT_GP_WIDTH_VALUE"
-				],
-				[
-					"NAME:$depth",
-					"PropType:="		, "VariableProp",
-					"UserDef:="		, True,
-					"Value:="		, "INSERT_SUB_HEIGHT_VALUE"
-				],
-				[
-					"NAME:$sub_width",
-					"PropType:="		, "VariableProp",
-					"UserDef:="		, True,
-					"Value:="		, "INSERT_SUB_WIDTH_VALUE"
-				],
-				[
-					"NAME:$sub_length",
-					"PropType:="		, "VariableProp",
-					"UserDef:="		, True,
-					"Value:="		, "INSERT_SUB_LENGTH_VALUE"
-				]				
+				]			
 			]
 		]
 	])
+	
+	
+	
 oDesign = oProject.SetActiveDesign("HFSSDesign1")
 oEditor = oDesign.SetActiveEditor("3D Modeler")
 
@@ -134,11 +137,11 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "$gp_width/2 ",
-		"YStart:="		, "-$gp_length/2",
-		"ZStart:="		, "-$depth",
+		"XStart:="		, "$ground_plane_width/2 ",
+		"YStart:="		, "-$ground_plane_length/2",
+		"ZStart:="		, "-$substrate_height",
 		"Width:="		, "-$l2",
-		"Height:="		, "$gp_width",
+		"Height:="		, "$ground_plane_width",
 		"WhichAxis:="		, "Z"
 	],
 	[
@@ -163,12 +166,12 @@ oEditor.CreateRectangle(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$sub_width/2",
-		"YPosition:="		, "-$sub_length/2",
-		"ZPosition:="		, "-$depth",
-		"XSize:="		, "$sub_width",
-		"YSize:="		, "$sub_length",
-		"ZSize:="		, "$depth"
+		"XPosition:="		, "-$substrate_width/2",
+		"YPosition:="		, "-$substrate_length/2",
+		"ZPosition:="		, "-$substrate_height",
+		"XSize:="		, "$substrate_width",
+		"YSize:="		, "$substrate_length",
+		"ZSize:="		, "$substrate_height"
 	],
 	[
 		"NAME:Attributes",
@@ -197,7 +200,7 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "$sub_length/2",
+		"XStart:="		, "$substrate_length/2",
 		"YStart:="		, "-$w2/2",
 		"ZStart:="		, "0mm",
 		"Width:="		, "-$l2",
@@ -226,7 +229,7 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "$sub_length/2-$l2",
+		"XStart:="		, "$substrate_length/2-$l2",
 		"YStart:="		, "-$w3/2",
 		"ZStart:="		, "0mm",
 		"Width:="		, "-$l3",
@@ -255,7 +258,7 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "$sub_length/2-$l2-$l3",
+		"XStart:="		, "$substrate_length/2-$l2-$l3",
 		"YStart:="		, "-$w4/2",
 		"ZStart:="		, "0mm",
 		"Width:="		, "-$l4",
@@ -284,7 +287,7 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "$sub_length/2-$l2-$l3-$l4",
+		"XStart:="		, "$substrate_length/2-$l2-$l3-$l4",
 		"YStart:="		, "-$w5/2",
 		"ZStart:="		, "0mm",
 		"Width:="		, "-$l5",
@@ -318,31 +321,31 @@ oEditor.CreatePolyline(
 			"NAME:PolylinePoints",
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5)",
 				"Y:="			, "$w5/2",
 				"Z:="			, "0mm"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7)",
 				"Y:="			, "$w5/2",
 				"Z:="			, "0mm"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2) ",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2) ",
 				"Y:="			, "$w5/2+$w6",
 				"Z:="			, "0mm"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
 				"Y:="			, "$w5/2+$w6",
 				"Z:="			, "0mm"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5)",
 				"Y:="			, "$w5/2",
 				"Z:="			, "0mm"
 			]
@@ -411,7 +414,7 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2) ",
+		"XStart:="		, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2) ",
 		"YStart:="		, "$w5/2+$w6",
 		"ZStart:="		, "0mm",
 		"Width:="		, "$l6",
@@ -447,25 +450,25 @@ oEditor.CreatePolyline(
 			"NAME:PolylinePoints",
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
 				"Y:="			, "$w5/2+$w6+$w7",
 				"Z:="			, "0mm"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2)",
 				"Y:="			, "$w5/2+$w6+$w7+$w8",
 				"Z:="			, "0mm"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2)",
 				"Y:="			, "$w5/2+$w6+$w7",
 				"Z:="			, "0mm"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
 				"Y:="			, "$w5/2+$w6+$w7",
 				"Z:="			, "0mm"
 			]
@@ -540,9 +543,9 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "$sub_length/2-$l2",
+		"XStart:="		, "$substrate_length/2-$l2",
 		"YStart:="		, "-$w3/2",
-		"ZStart:="		, "-$depth",
+		"ZStart:="		, "-$substrate_height",
 		"Width:="		, "-$l3",
 		"Height:="		, "$w3",
 		"WhichAxis:="		, "Z"
@@ -569,9 +572,9 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "$sub_length/2-$l2-$l3",
+		"XStart:="		, "$substrate_length/2-$l2-$l3",
 		"YStart:="		, "-$w4/2",
-		"ZStart:="		, "-$depth",
+		"ZStart:="		, "-$substrate_height",
 		"Width:="		, "-$l4",
 		"Height:="		, "$w4",
 		"WhichAxis:="		, "Z"
@@ -598,9 +601,9 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "$sub_length/2-$l2-$l3-$l4",
+		"XStart:="		, "$substrate_length/2-$l2-$l3-$l4",
 		"YStart:="		, "-$w5/2",
-		"ZStart:="		, "-$depth",
+		"ZStart:="		, "-$substrate_height",
 		"Width:="		, "-$l5",
 		"Height:="		, "$w5",
 		"WhichAxis:="		, "Z"
@@ -632,33 +635,33 @@ oEditor.CreatePolyline(
 			"NAME:PolylinePoints",
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5)",
 				"Y:="			, "-$w5/2",
-				"Z:="			, "-$depth"
+				"Z:="			, "-$substrate_height"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7)",
 				"Y:="			, "-$w5/2",
-				"Z:="			, "-$depth"
+				"Z:="			, "-$substrate_height"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2) ",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2) ",
 				"Y:="			, "-$w5/2-$w6",
-				"Z:="			, "-$depth"
+				"Z:="			, "-$substrate_height"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
 				"Y:="			, "-$w5/2-$w6",
-				"Z:="			, "-$depth"
+				"Z:="			, "-$substrate_height"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5)",
 				"Y:="			, "-$w5/2",
-				"Z:="			, "-$depth"
+				"Z:="			, "-$substrate_height"
 			]
 		],
 		[
@@ -725,9 +728,9 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+		"XStart:="		, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
 		"YStart:="		, "-$w5/2-$w6",
-		"ZStart:="		, "-$depth",
+		"ZStart:="		, "-$substrate_height",
 		"Width:="		, "$l6",
 		"Height:="		, "-$w7",
 		"WhichAxis:="		, "Z"
@@ -760,27 +763,27 @@ oEditor.CreatePolyline(
 			"NAME:PolylinePoints",
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
 				"Y:="			, "-($w5/2+$w6+$w7)",
-				"Z:="			, "-$depth"
+				"Z:="			, "-$substrate_height"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2)",
 				"Y:="			, "-($w5/2+$w6+$w7+$w8)",
-				"Z:="			, "-$depth"
+				"Z:="			, "-$substrate_height"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2+$l6/2)",
 				"Y:="			, "-($w5/2+$w6+$w7)",
-				"Z:="			, "-$depth"
+				"Z:="			, "-$substrate_height"
 			],
 			[
 				"NAME:PLPoint",
-				"X:="			, "($sub_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
+				"X:="			, "($substrate_length/2-$l2-$l3-$l4-$l5+$l7/2-$l6/2)",
 				"Y:="			, "-($w5/2+$w6+$w7)",
-				"Z:="			, "-$depth"
+				"Z:="			, "-$substrate_height"
 			]
 		],
 		[
@@ -850,11 +853,11 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "$sub_length/2",
+		"XStart:="		, "$substrate_length/2",
 		"YStart:="		, "-$w2/2",
-		"ZStart:="		, "-$depth",
+		"ZStart:="		, "-$substrate_height",
 		"Width:="		, "$w2",
-		"Height:="		, "$depth",
+		"Height:="		, "$substrate_height",
 		"WhichAxis:="		, "X"
 	],
 	[
@@ -882,12 +885,12 @@ oEditor.CreateRectangle(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$sub_length",
-		"YPosition:="		, "-$sub_width",
-		"ZPosition:="		, "-$sub_width",
-		"XSize:="		, "$sub_length*2",
-		"YSize:="		, "$sub_width*2",
-		"ZSize:="		, "$sub_width*2"
+		"XPosition:="		, "-$substrate_length",
+		"YPosition:="		, "-$substrate_width",
+		"ZPosition:="		, "-$substrate_width",
+		"XSize:="		, "$substrate_length*2",
+		"YSize:="		, "$substrate_width*2",
+		"ZSize:="		, "$substrate_width*2"
 	], 
 	[
 		"NAME:Attributes",

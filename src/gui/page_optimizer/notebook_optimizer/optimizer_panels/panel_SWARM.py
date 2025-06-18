@@ -31,6 +31,15 @@ from gui.page_optimizer.notebook_optimizer.optimizer_panels.swarm_settings_panel
 INPUT_BOX_WIDTH = 100
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
+
+OPT_PSO_BASIC = c.OPT_PSO_BASIC
+OPT_PSO_PYTHON = c.OPT_PSO_PYTHON
+OPT_CAT_SWARM = c.OPT_CAT_SWARM
+OPT_SAND_CAT_SWARM = c.OPT_SAND_CAT_SWARM
+OPT_CHICKEN_SWARM = c.OPT_CHICKEN_SWARM
+OPT_CHICKEN_2015 = c.OPT_CHICKEN_2015
+
+
 class SWARMPage(wx.Panel):
     def __init__(self, parent, DC, PC, SO):
         wx.Panel.__init__(self, parent=parent)
@@ -44,7 +53,9 @@ class SWARMPage(wx.Panel):
         self.defaultBoxWidth = 115
 
         #data management
-        self.optimizerName = "PSO_BASIC" #set optimizer name with the dropdown
+        self.optimizerName = OPT_PSO_BASIC #set optimizer name with the dropdown
+        self.surrogateName = None # Default internal optimizer is None
+        self.modelApproximatorName = None # Default surrogate model approx. is None
         # 
         self.paramInput = pd.DataFrame({})
 
@@ -98,31 +109,31 @@ class SWARMPage(wx.Panel):
         boxBoundary.SetSizer(boxBoundarySizer)
      
 
-
         # last column vert sizer
         rightSizeSizer = wx.BoxSizer(wx.VERTICAL)
         rightSizeSizer.Add(boxSelect, 0, wx.ALL|wx.EXPAND, border=7)
         rightSizeSizer.Add(boxBoundary, 0, wx.ALL|wx.EXPAND, border=7)
-        rightSizeSizer.Add(self.notebook_settings, 0, wx.ALL, border=10)
-        
+        rightSizeSizer.Add(self.notebook_settings, 0, wx.ALL, border=7)
+       
 
         # panel sizer
         panelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=10)
-        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=10)
-        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=10)
+        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=5)
+        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=5)
+        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=5)
 
         # btn sizer
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
-        btnSizer.Add(self.btnOpen, 0, wx.ALL, border=10)
-        btnSizer.Add(self.btnSelect, 0, wx.ALL, border=10)
-        btnSizer.Add(self.btnExport, 0, wx.ALL, border=10)
-        btnSizer.AddSpacer(7)
+        btnSizer.Add(self.btnOpen, 0, wx.ALL, border=3)
+        btnSizer.Add(self.btnSelect, 0, wx.ALL, border=3)
+        btnSizer.Add(self.btnExport, 0, wx.ALL, border=3)
+        btnSizer.AddSpacer(50)
 
         # main sizer
         pageSizer = wx.BoxSizer(wx.VERTICAL)
         # pageSizer.AddStretchSpacer()
         pageSizer.Add(panelSizer, 0, wx.ALL|wx.EXPAND, border=10)
+        pageSizer.AddStretchSpacer()
         pageSizer.Add(btnSizer, 0, wx.ALL|wx.ALIGN_RIGHT, border=3)
         self.SetSizer(pageSizer)
 
@@ -138,10 +149,10 @@ class SWARMPage(wx.Panel):
         # call the optimizer inputs from the child class
         df1, noError = self.notebook_settings.getOptimizerInputs(self.optimizerName)
         # call the optimizer inputs from the page
-        df2, noERror = self.getPageOptimizerInputs()        
+        df2, noError = self.getPageOptimizerInputs()        
 
         # merge the data frames
-        df = result = pd.concat([df1, df2], axis=1)
+        df = pd.concat([df1, df2], axis=1)
 
 
         #print(df)
@@ -205,10 +216,11 @@ class SWARMPage(wx.Panel):
         noError = True
         
         #from optimizer scroll - returns ref to widgets
-        metricTxt, targetTxt, checkedBxs = self.optimizerMetrics.getInputBoxVals() 
+        metricTxt, tresholdTxt, targetTxt, checkedBxs = self.optimizerMetrics.getInputBoxVals() 
 
         ctr = 0
         metricVals = []
+        thresholdVals = []
         targetVals = []
         for cb in checkedBxs:
             useMetric = cb.GetValue()
@@ -216,11 +228,14 @@ class SWARMPage(wx.Panel):
                 mt = metricTxt[ctr].GetValue()
                 mt = mt.split(" ")
                 metricVals.append(mt[0])
+                th = tresholdTxt[ctr].GetValue()
+                thresholdVals.append(th)
                 t =  targetTxt[ctr].GetValue()
                 targetVals.append(t)
             ctr = ctr + 1
              
         self.metricArr = metricVals
+        self.thresholdArr = thresholdVals
         self.targetArr = targetVals
         self.outputVariables = np.shape(targetVals)
 
@@ -262,7 +277,12 @@ class SWARMPage(wx.Panel):
             df['num_output'] = pd.Series(self.outputVariables)
             df['target_metrics'] = pd.Series([self.metricArr])
             df['target_values'] = pd.Series([self.targetArr])
+            df['target_threshold'] = pd.Series([self.thresholdArr])
             df['boundary'] = pd.Series(self.boundary)
+            df['use_surrogate_bool'] = pd.Series([False]) # surrogate model usage is false outside of the 'SURROGATE' page. 
+                                                # this should only ever be set as 'True' from the SURROGATE page, 
+                                                # because that will set it for the BASE OPTIMIZER
+            
         return df, noError
     
 #######################################################
@@ -339,22 +359,22 @@ class TuningPage(wx.Panel):
     def set_optimizer_tuning_panel(self, txt):
         if txt == "PSO_basic":
             self.hideEverythingAndShowSinglePanel(self.pso_basic_panel)
-            optimizerName = "PSO_BASIC"
-        if txt == 'PSO_time_modulation':
+            optimizerName = OPT_PSO_BASIC
+        elif txt == 'PSO_time_modulation':
             self.hideEverythingAndShowSinglePanel(self.pso_python_panel)
-            optimizerName = "PSO_PYTHON"
+            optimizerName = OPT_PSO_PYTHON
         elif txt == 'cat_swarm':
             self.hideEverythingAndShowSinglePanel(self.cat_swarm_panel)
-            optimizerName = "CAT_SWARM"       
+            optimizerName = OPT_CAT_SWARM      
         elif txt == 'sand_cat_swarm':
             self.hideEverythingAndShowSinglePanel(self.sand_cat_panel)
-            optimizerName = "SAND_CAT_SWARM"
+            optimizerName = OPT_SAND_CAT_SWARM
         elif txt == 'chicken_swarm':
             self.hideEverythingAndShowSinglePanel(self.chicken_swarm_panel)
-            optimizerName = "CHICKEN_SWARM"        
+            optimizerName = OPT_CHICKEN_SWARM      
         elif txt == 'improved_chicken_2015':
             self.hideEverythingAndShowSinglePanel(self.chicken_swarm_2015_panel)
-            optimizerName = "CHICKEN_2015"
+            optimizerName = OPT_CHICKEN_2015
         else:
             print("ERROR in panel_swarm.py unknown optimizer selected")
 
@@ -367,17 +387,17 @@ class TuningPage(wx.Panel):
         df = None
 
         # call the optimizer inputs from the child class
-        if optimizerName == "PSO_BASIC":
+        if optimizerName == OPT_PSO_BASIC:
             df, noError = self.pso_basic_panel.getOptimizerInputs()
-        elif optimizerName == "PSO_PYTHON":
+        elif optimizerName == OPT_PSO_PYTHON:
             df, noError = self.pso_python_panel.getOptimizerInputs()
-        elif optimizerName == "CAT_SWARM" :
+        elif optimizerName == OPT_CAT_SWARM:
             df, noError = self.cat_swarm_panel.getOptimizerInputs()
-        elif optimizerName == "SAND_CAT_SWARM":
+        elif optimizerName == OPT_SAND_CAT_SWARM:
             df, noError = self.sand_cat_panel.getOptimizerInputs()
-        elif optimizerName == "CHICKEN_SWARM" :
+        elif optimizerName == OPT_CHICKEN_SWARM:
             df, noError = self.chicken_swarm_panel.getOptimizerInputs()
-        elif optimizerName == "CHICKEN_2015":
+        elif optimizerName == OPT_CHICKEN_2015:
             df, noError = self.chicken_swarm_2015_panel.getOptimizerInputs()
         else:
             print("ERROR: optimizer name not recognized in panel_SWARM. Select an option from the dropdown menu to continue!")
@@ -402,15 +422,6 @@ class TuningPage(wx.Panel):
 
         self.Layout()
 
-
-
-class  SurrogatePage(wx.Panel):
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent=parent)
-        pass
-
-    def set_surrogate_params_panel(self, boxText):
-        pass
 
 
 class SettingsNotebook(wx.Notebook):

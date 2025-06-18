@@ -196,14 +196,16 @@ class SlottedPatchOptionsPage(wx.Panel):
         lh = float(self.fieldLh.GetValue())
         Lv = float(self.fieldLv.GetValue())
         l = float(self.fieldLength.GetValue())
-        Lg= float(self.fieldSubstrateLength.GetValue())
         fx = float(self.fieldfx.GetValue())
 
         Pr = float(self.fieldPr.GetValue())
         Wr = float(self.fieldWr.GetValue())
         Wu = float(self.fieldWu.GetValue())
         w = float(self.fieldWidth.GetValue())
-        Wg = float(self.fieldSubstrateWidth.GetValue())
+        
+        Lg= float(self.fieldSubstrateLength.GetValue())
+        Wg = float(self.fieldSubstrateWidth.GetValue()) #ground is always the size of the substrate
+                                            # so this is now in the template to reduce unused dimensionality
         fy = float(self.fieldfy.GetValue())
 
         paramArr = [["Lr", lr],
@@ -218,10 +220,13 @@ class SlottedPatchOptionsPage(wx.Panel):
                     ["fy", fy],
                     ["substrate_width", Wg],
                     ["substrate_length", Lg],
-                    ["ground_plane_width", Wg],
-                    ["ground_plane_length", Lg],
+                    # ["ground_plane_width", Wg],
+                    # ["ground_plane_length", Lg], #ground is always the size of the substrate
+                                            # so this is now in the template to reduce unused dimensionality
                     #["conductor_height", None],
                     ["substrate_height", d]]
+               # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY
         return paramArr
+
 
     

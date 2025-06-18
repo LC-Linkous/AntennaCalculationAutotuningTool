@@ -284,10 +284,11 @@ class DualBandSerpentineOptionsPage(wx.Panel):
                     ["Py", Py],
                     ["substrate_width", subWidth],
                     ["substrate_length", subLength],
-                    ["ground_plane_width", subWidth],
-                    ["ground_plane_length", subLength],
+                    # ["ground_plane_width", subWidth], #template has var. GP is substrate size by default
+                    # ["ground_plane_length", subLength],
                     #["conductor_height", None],
                     ["substrate_height", d]]
+               # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY
         return paramArr
 
     

@@ -18,12 +18,6 @@ oProject.ChangeProperty(
 			[
 				"NAME:NewProps",
 				[
-					"NAME:$depth",
-					"PropType:="		, "VariableProp",
-					"UserDef:="		, True,
-					"Value:="		, "INSERT_DEPTH_VALUE"
-				],
-				[
 					"NAME:$Ps1",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
@@ -132,16 +126,34 @@ oProject.ChangeProperty(
 					"Value:="		, "INSERT_WP_VALUE"
 				],
 				[
-					"NAME:$Lsub",
+					"NAME:$substrate_width",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
-					"Value:="		, "INSERT_LSUB_VALUE"
+					"Value:="		, "INSERT_SUBSTRATE_WIDTH_VALUE"
 				],
 				[
-					"NAME:$Wsub",
+					"NAME:$substrate_length",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
-					"Value:="		, "INSERT_WSUB_VALUE"
+					"Value:="		, "INSERT_SUBSTRATE_LENGTH_VALUE"
+				],
+				[
+					"NAME:$substrate_height",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUBSTRATE_HEIGHT_VALUE"
+				],
+				[
+					"NAME:$ground_plane_length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "$substrate_length"
+				],
+				[
+					"NAME:$ground_plane_width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "$substrate_width"
 				],
                 [
 					"NAME:$Lc",
@@ -393,11 +405,11 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "-$Lsub/2",
-		"YStart:="		, "-$Wsub/2",
-		"ZStart:="		, "-$depth",
-		"Width:="		, "$LSub",
-		"Height:="		, "$Wsub",
+		"XStart:="		, "-$ground_plane_length/2",
+		"YStart:="		, "-$ground_plane_width/2",
+		"ZStart:="		, "-$substrate_height",
+		"Width:="		, "$ground_plane_length",
+		"Height:="		, "$ground_plane_width",
 		"WhichAxis:="		, "Z"
 	], 
 	[
@@ -423,12 +435,12 @@ oEditor.CreateRectangle(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$Lsub/2",
-		"YPosition:="		, "-$Wsub/2",
-		"ZPosition:="		, "-$depth",
-		"XSize:="		, "$Lsub",
-		"YSize:="		, "$Wsub",
-		"ZSize:="		, "$depth"
+		"XPosition:="		, "-$substrate_length/2",
+		"YPosition:="		, "-$substrate_width/2",
+		"ZPosition:="		, "-$substrate_height",
+		"XSize:="		, "$substrate_length",
+		"YSize:="		, "$substrate_width",
+		"ZSize:="		, "$substrate_height"
 	],
 	[
 		"NAME:Attributes",
@@ -455,9 +467,9 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "$Ps3-$Ws3/2-$Px",
 		"YCenter:="		, "$Lp/2-$Py",
-		"ZCenter:="		, "-$depth",
+		"ZCenter:="		, "-$substrate_height",
 		"Radius:="		, "$PinRad/2",
-		"Height:="		, "$depth",
+		"Height:="		, "$substrate_height",
 		"WhichAxis:="		, "Z",
 		"NumSides:="		, "0"
 	], 
@@ -484,9 +496,9 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "$Ps3-$Ws3/2-$Px",
 		"YCenter:="		, "$Lp/2-$Py",
-		"ZCenter:="		, "-$depth",
+		"ZCenter:="		, "-$substrate_height",
 		"Radius:="		, "$PinRad/2",
-		"Height:="		, "$depth",
+		"Height:="		, "$substrate_height",
 		"WhichAxis:="		, "Z",
 		"NumSides:="		, "0"
 	], 
@@ -525,7 +537,7 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "$fx",
 		"YCenter:="		, "$fy",
-		"ZCenter:="		, "-$depth",
+		"ZCenter:="		, "-$substrate_height",
 		"Radius:="		, "$FittingRad",
 		"Height:="		, "-$PinH",
 		"WhichAxis:="		, "Z",
@@ -555,7 +567,7 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "$fx",
 		"YCenter:="		, "$fy",
-		"ZCenter:="		, "-$depth",
+		"ZCenter:="		, "-$substrate_height",
 		"Radius:="		, "$PTFERad",
 		"Height:="		, "-$PinH",
 		"WhichAxis:="		, "Z",
@@ -595,7 +607,7 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "$fx",
 		"YCenter:="		, "$fy",
-		"ZCenter:="		, "-$depth",
+		"ZCenter:="		, "-$substrate_height",
 		"Radius:="		, "$PTFERad",
 		"Height:="		, "-$PinH",
 		"WhichAxis:="		, "Z",
@@ -624,7 +636,7 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "$fx",
 		"YCenter:="		, "$fy",
-		"ZCenter:="		, "-$depth",
+		"ZCenter:="		, "-$substrate_height",
 		"Radius:="		, "$PinRad",
 		"Height:="		, "-$PinH",
 		"WhichAxis:="		, "Z",
@@ -665,9 +677,9 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "$fx",
 		"YCenter:="		, "$fy",
-		"ZCenter:="		, "-$depth-$PinH",
+		"ZCenter:="		, "-$substrate_height-$PinH",
 		"Radius:="		, "$PinRad",
-		"Height:="		, "$depth+$PinH",
+		"Height:="		, "$substrate_height+$PinH",
 		"WhichAxis:="		, "Z",
 		"NumSides:="		, "0"
 	], 
@@ -696,7 +708,7 @@ oEditor.CreateCircle(
 		"IsCovered:="		, True,
 		"XCenter:="		, "$fx",
 		"YCenter:="		, "$fy",
-		"ZCenter:="		, "-$depth-$PinH",
+		"ZCenter:="		, "-$substrate_height-$PinH",
 		"Radius:="		, "$FittingRad",
 		"WhichAxis:="		, "Z",
 		"NumSegments:="		, "0"
@@ -728,9 +740,9 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "$fx",
 		"YCenter:="		, "$fy",
-		"ZCenter:="		, "-$depth-$PinH",
+		"ZCenter:="		, "-$substrate_height-$PinH",
 		"Radius:="		, "$PinRad",
-		"Height:="		, "$depth+$PinH",
+		"Height:="		, "$substrate_height+$PinH",
 		"WhichAxis:="		, "Z",
 		"NumSides:="		, "0"
 	], 
@@ -770,12 +782,12 @@ oEditor.Subtract(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$Lsub",
-		"YPosition:="		, "-$Wsub",
-		"ZPosition:="		, "-$Wsub",
-		"XSize:="		, "$Lsub*2",
-		"YSize:="		, "$Wsub*2",
-		"ZSize:="		, "$Wsub*2"
+		"XPosition:="		, "-$substrate_length",
+		"YPosition:="		, "-$substrate_width",
+		"ZPosition:="		, "-$substrate_width",
+		"XSize:="		, "$substrate_length*2",
+		"YSize:="		, "$substrate_width*2",
+		"ZSize:="		, "$substrate_width*2"
 	], 
 	[
 		"NAME:Attributes",

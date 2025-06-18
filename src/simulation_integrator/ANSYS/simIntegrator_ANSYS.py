@@ -150,18 +150,22 @@ class SimIntegrator_ANSYS():
     ########################################################
 
     def patchStripFedScriptGenerator(self, w, l, sw, x0, y0, g,  
-                                     groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                     #groundLength, groundWidth, 
+                                     substrateHeight, substrateLength, substrateWidth,
                                      conductorMaterial, groundMaterial,substrateMaterial, units):
         self.DT.patchStripFedScriptGenerator(w, l, sw, x0, y0, g,  
-                                     groundLength, groundWidth, substrateHeight ,substrateLength, substrateWidth,
+                                     #groundLength, groundWidth, 
+                                     substrateHeight ,substrateLength, substrateWidth,
                                      conductorMaterial, groundMaterial,substrateMaterial, units)
     
 
     def patchProbeFedScriptGenerator(self, w, l, x0, y0, 
-                                     groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                     #groundLength, groundWidth, 
+                                     substrateHeight, substrateLength, substrateWidth,
                                      cMaterial, gpMaterial, sMaterial, units):
         self.DT.patchProbeFedScriptGenerator(w, l, x0, y0, 
-                                     groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                     #groundLength, groundWidth, 
+                                     substrateHeight, substrateLength, substrateWidth,
                                      cMaterial, gpMaterial, sMaterial, units)
 
 
@@ -178,53 +182,61 @@ class SimIntegrator_ANSYS():
                                                     cMaterial, units)
                
 
-    def EMicrostripFedScriptGenerator(self,x, l, ls, lg, ps, ws, w, wg, 
+    def EMicrostripFedScriptGenerator(self,x, l, ls, lg, ps, ws, w, wg, h, 
                                       cMaterial, gpMaterial, units):
-        self.DT.EMicrostripFedScriptGenerator(x, l, ls, lg, ps, ws, w, wg,
+        self.DT.EMicrostripFedScriptGenerator(x, l, ls, lg, ps, ws, w, wg, h,
                                                cMaterial, gpMaterial, units)
 
 
-    def slottedRectangularPatchScriptGenerator(self,Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg,fy,
-                                               groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+    def slottedRectangularPatchScriptGenerator(self,Lr,Lh,Lv,l,fx,Pr,Wr,Wu,w,fy,
+                                               substrateHeight, substrateLength, substrateWidth,
                                                cMaterial, gpMaterial, sMaterial, units):
-        self.DT.slottedRectangularPatchScriptGenerator(Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg,fy,
-                                               groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+        self.DT.slottedRectangularPatchScriptGenerator(Lr,Lh,Lv,l,fx,Pr,Wr,Wu,w,fy,
+                                               substrateHeight, substrateLength, substrateWidth,
                                                cMaterial, gpMaterial, sMaterial, units)
 
 
     def dualBandSerpentineScriptGenerator(self,fy, px, py, lp, wp,
                                           ps1, ls1, ws1, ps2, ls2, ws2,
                                           ps3, ls3, ws3, ps4, ls4, ws4, lc,
-                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                          #groundLength, groundWidth, 
+                                          substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units):
         self.DT.dualBandSerpentineScriptGenerator(fy, px, py, lp, wp,
                                           ps1, ls1, ws1, ps2, ls2, ws2,
                                           ps3, ls3, ws3, ps4, ls4, ws4, lc,
-                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                          #groundLength, groundWidth, 
+                                          substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units)
 
 
-    def coplanarKeyholeScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist,
-                                       groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+    def coplanarKeyholeScriptGenerator(self, outerRad, innerRad, feedWidth, feedLength, gapDist,
+                                       #groundLength, groundWidth, 
+                                       substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units):
-        self.DT.coplanarKeyholeScriptGenerator(outerRad, innerRad, feedWidth, inset, gapDist,
-                                       groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+        self.DT.coplanarKeyholeScriptGenerator(outerRad, innerRad, feedWidth, feedLength, gapDist,
+                                       #groundLength, groundWidth, 
+                                       substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units)
 
 
     def circularLoopScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist,
-                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                    #groundLength, groundWidth, 
+                                    substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units):
         self.DT.circularLoopScriptGenerator(outerRad, innerRad, feedWidth, inset, gapDist,
-                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                    #groundLength, groundWidth, 
+                                    substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units)
 
 
     def squareLoopScriptGenerator(self, l, w, feedWidth, gapDist,
-                                  groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                  #groundLength, groundWidth, 
+                                  substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units):
         self.DT.squareLoopScriptGenerator(l, w, feedWidth, gapDist,
-                                  groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                  #groundLength, groundWidth, 
+                                  substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units)
 
 
@@ -237,18 +249,22 @@ class SimIntegrator_ANSYS():
 
 
     def planarBowtieScriptGenerator(self, l, w, feedWidth, gapDist,
-                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                    #groundLength, groundWidth, 
+                                    substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units):
         self.DT.planarBowtieScriptGenerator(l, w, feedWidth, gapDist,
-                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                    #groundLength, groundWidth, 
+                                    substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units)
 
 
     def twoArmSquareSpiralScriptGenerator(self, initLength, initWidth, width, x0, y0, spacing, 
-                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                          #groundLength, groundWidth, 
+                                          substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units):
         self.DT.twoArmSquareSpiralScriptGenerator(initLength, initWidth, width, x0, y0, spacing, 
-                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                          #groundLength, groundWidth, 
+                                          substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units)
 
 

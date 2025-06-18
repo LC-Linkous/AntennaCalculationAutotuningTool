@@ -1,7 +1,7 @@
 import ScriptEnv
 ScriptEnv.Initialize("Ansoft.ElectronicsDesktop")
 oDesktop.RestoreWindow()
-oDesktop.OpenProject(PROJECT_NAME)
+oDesktop.OpenProject(r"PROJECT_NAME")
 oProject = oDesktop.SetActiveProject("GeneratedHFSSProject")
 oDesign = oProject.SetActiveDesign("HFSSDesign1")
 oModule = oDesign.GetModule("ReportSetup")

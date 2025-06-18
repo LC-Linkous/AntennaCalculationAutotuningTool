@@ -20,6 +20,8 @@ import project.config.antennaCAT_config as c
 INPUT_BOX_WIDTH = 50
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
+OPT_GRID_SWEEP = c.OPT_GRID_SWEEP
+
 class Grid_Sweep_Panel(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent=parent)
@@ -107,15 +109,27 @@ class Grid_Sweep_Panel(wx.Panel):
         return noError
 
 
-    def getOptimizerInputs(self):
+    def getOptimizerInputs(self, is_surrogate=False):
         noError = self.getInputFields()
         df = pd.DataFrame({})
         if noError == True:   
-            df['num_particles'] = pd.Series(self.numParticles)
-            df['min_res'] = pd.Series([self.minRes])
-            df['max_res'] = pd.Series(self.maxRes)
-            df['search_selection'] = pd.Series(self.searchType)
-            df['tolerance'] = pd.Series(self.toleranceVal)
-            df['max_iterations'] = pd.Series(self.maxIter)
+            if is_surrogate == False:
+                df['num_particles'] = pd.Series(self.numParticles)
+                df['min_res'] = pd.Series([self.minRes])
+                df['max_res'] = pd.Series(self.maxRes)
+                df['search_selection'] = pd.Series(self.searchType)
+                df['tolerance'] = pd.Series(self.toleranceVal)
+                df['max_iterations'] = pd.Series(self.maxIter)
+                df['optimizer_name'] = pd.Series([OPT_GRID_SWEEP])
+            else:
+                df['sm_num_particles'] = pd.Series(self.numParticles)
+                df['sm_min_res'] = pd.Series([self.minRes])
+                df['sm_max_res'] = pd.Series(self.maxRes)
+                df['sm_search_selection'] = pd.Series(self.searchType)
+                df['sm_tolerance'] = pd.Series(self.toleranceVal)
+                df['sm_max_iterations'] = pd.Series(self.maxIter)
+                df['sm_optimizer_name'] = pd.Series([OPT_GRID_SWEEP])
+
         return df, noError
     
+

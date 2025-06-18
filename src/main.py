@@ -13,7 +13,7 @@ from gui.antennacat_gui import AntennaCATGUI
 
 def main():
 
-       anCATgui = AntennaCATGUI(None, title='AntennaCAT v2025.0')
+       anCATgui = AntennaCATGUI(None, title='AntennaCAT v2025.1')
  
 if __name__ == '__main__':
     main()

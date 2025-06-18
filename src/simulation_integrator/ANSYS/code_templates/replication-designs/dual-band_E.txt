@@ -41,19 +41,19 @@ oProject.ChangeProperty(
 					"Value:="		, "(5.19/2) mm"
 				],
 				[
-					"NAME:$h",
+					"NAME:$ground_plane_dist",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
-					"Value:="		, "15mm"
+					"Value:="		, "INSERT_GP_DIST_VALUE"
 				],
 				[
-					"NAME:$Wg",
+					"NAME:$ground_plane_width",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "INSERT_WG_VALUE"
 				],
 				[
-					"NAME:$Lg",
+					"NAME:$ground_plane_length",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "INSERT_LG_VALUE"
@@ -104,11 +104,11 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "-$Wg/2",
-		"YStart:="		, "-$Lg/2",
+		"XStart:="		, "-$ground_plane_width/2",
+		"YStart:="		, "-$ground_plane_length/2",
 		"ZStart:="		, "0mm",
-		"Width:="		, "$Wg",
-		"Height:="		, "$Lg",
+		"Width:="		, "$ground_plane_width",
+		"Height:="		, "$ground_plane_length",
 		"WhichAxis:="		, "Z"
 	], 
 	[
@@ -136,7 +136,7 @@ oEditor.CreateRectangle(
 		"IsCovered:="		, True,
 		"XStart:="		, "-$W/2",
 		"YStart:="		, "-$L/2",
-		"ZStart:="		, "$h",
+		"ZStart:="		, "$ground_plane_dist",
 		"Width:="		, "$W",
 		"Height:="		, "$L",
 		"WhichAxis:="		, "Z"
@@ -167,7 +167,7 @@ oEditor.CreateRectangle(
 		"IsCovered:="		, True,
 		"XStart:="		, "$Ps-$Ws/2",
 		"YStart:="		, "$L/2",
-		"ZStart:="		, "$h",
+		"ZStart:="		, "$ground_plane_dist",
 		"Width:="		, "$Ws",
 		"Height:="		, "-$Ls",
 		"WhichAxis:="		, "Z"
@@ -197,7 +197,7 @@ oEditor.CreateRectangle(
 		"IsCovered:="		, True,
 		"XStart:="		, "-$Ps-$Ws/2",
 		"YStart:="		, "$L/2",
-		"ZStart:="		, "$h",
+		"ZStart:="		, "$ground_plane_dist",
 		"Width:="		, "$Ws",
 		"Height:="		, "-$Ls",
 		"WhichAxis:="		, "Z"
@@ -411,7 +411,7 @@ oEditor.CreateCylinder(
 		"YCenter:="		, "$X",
 		"ZCenter:="		, "0mm",
 		"Radius:="		, "$PinRad",
-		"Height:="		, "$h",
+		"Height:="		, "$ground_plane_dist",
 		"WhichAxis:="		, "Z",
 		"NumSides:="		, "0"
 	], 
@@ -470,12 +470,12 @@ oEditor.CreateCircle(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$Wg",
-		"YPosition:="		, "-$Wg",
-		"ZPosition:="		, "-$Wg",
-		"XSize:="		, "$Wg*2",
-		"YSize:="		, "$Wg*2",
-		"ZSize:="		, "$Wg*2"
+		"XPosition:="		, "-$ground_plane_width",
+		"YPosition:="		, "-$ground_plane_width",
+		"ZPosition:="		, "-$ground_plane_width",
+		"XSize:="		, "$ground_plane_width*2",
+		"YSize:="		, "$ground_plane_width*2",
+		"ZSize:="		, "$ground_plane_width*2"
 	], 
 	[
 		"NAME:Attributes",

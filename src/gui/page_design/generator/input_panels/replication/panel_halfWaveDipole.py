@@ -84,14 +84,16 @@ class HalfWaveDipoleOptionsPage(wx.Panel):
         feedGap = float(self.fieldFeedGap.GetValue())
 
         paramArr = [["length", l],
-                    ["half_length", l/2],
+                    #["half_length", l/2],
                     ["conductor_radius", conductorRad],
                     ["feed_gap", feedGap],
-                    ["substrate_width", None],
-                    ["substrate_length", None],
-                    ["ground_plane_width", None],
-                    ["ground_plane_length", None],
+                    # ["substrate_width", None],
+                    # ["substrate_length", None],
+                    # ["ground_plane_width", None],
+                    # ["ground_plane_length", None],
                     #["conductor_height", None],
-                    ["substrate_height", None]]
+                    # ["substrate_height", None]
+                    ]
                 
+               # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY
         return paramArr

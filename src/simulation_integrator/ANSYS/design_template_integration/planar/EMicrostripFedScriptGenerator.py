@@ -10,7 +10,7 @@
 import os
 import re
 
-def EMicrostripFedScriptGenerator(parent, x, l, ls, lg, ps, ws, w, wg, cMaterial="copper", gpMaterial="copper", units="mm", networkType="modal"):
+def EMicrostripFedScriptGenerator(parent, x, l, ls, lg, ps, ws, w, wg, h, cMaterial="copper", gpMaterial="copper", units="mm", networkType="modal"):
     filepath = os.path.join(parent.replicatorTemplatesDir, 'dual-band_E.txt')
     if os.path.isfile(filepath) == True:
         pass
@@ -28,10 +28,12 @@ def EMicrostripFedScriptGenerator(parent, x, l, ls, lg, ps, ws, w, wg, cMaterial
     wsVal = str(ws) + " " + str(units)
     wVal = str(w) + " " + str(units)
     wgVal = str(wg) + " " + str(units) #ground plane width 
+    hVal = str(h) + " " + str(units) #ground plane from E distance 
 
     groundPlaneMaterial = str(gpMaterial)
     counductorMaterial = str(cMaterial) 
     conductorMaterialBoundary = str(cMaterial) 
+
 
     #ints
     startX = -float(x) - (4.19/2) # -$PTFERad = -2.095mm #CHECK SIGNS IN TEST
@@ -70,6 +72,12 @@ def EMicrostripFedScriptGenerator(parent, x, l, ls, lg, ps, ws, w, wg, cMaterial
             elif re.search('INSERT_X_VALUE', line):
                 li = xVal
                 line = re.sub('INSERT_X_VALUE', li, line)    
+
+            elif re.search('INSERT_GP_DIST_VALUE', line):
+                li = hVal
+                line = re.sub('INSERT_GP_DIST_VALUE', li, line)    
+
+
             elif re.search('INSERT_GROUND_PLANE_MATERIAL', line):
                 li = groundPlaneMaterial
                 line = re.sub('INSERT_GROUND_PLANE_MATERIAL', li, line)             

@@ -158,10 +158,10 @@ class CoplanarKeyholeOptionsPage(wx.Panel):
                     ["gap_distance", .5*feedWidth], #not in original paper, but should be parameterized in sim. dist between the feeds
                     ["substrate_width", subWidth],
                     ["substrate_length", subLength],
-                    ["ground_plane_width", subWidth],
-                    ["ground_plane_length", subLength],
+                    # ["ground_plane_width", subWidth],
+                    # ["ground_plane_length", subLength], #vars in template
                     #["conductor_height", None],
                     ["substrate_height", subHeight]]
-
+               # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY
         return paramArr
 

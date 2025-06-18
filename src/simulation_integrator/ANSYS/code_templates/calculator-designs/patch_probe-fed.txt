@@ -29,12 +29,6 @@ oProject.ChangeProperty(
 					"Value:="		, "INSERT_LENGTH_VALUE"
 				],
 				[
-					"NAME:$depth",
-					"PropType:="		, "VariableProp",
-					"UserDef:="		, True,
-					"Value:="		, "INSERT_DEPTH_VALUE"
-				],
-				[
 					"NAME:$x0",
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
@@ -45,12 +39,6 @@ oProject.ChangeProperty(
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "INSERT_Y0_VALUE"
-				],
-				[
-					"NAME:$ground_plane",
-					"PropType:="		, "VariableProp",
-					"UserDef:="		, True,
-					"Value:="		, "INSERT_GROUND_PLANE_VALUE"
 				],
 				[
 					"NAME:$pin",
@@ -81,7 +69,37 @@ oProject.ChangeProperty(
 					"PropType:="		, "VariableProp",
 					"UserDef:="		, True,
 					"Value:="		, "2.87 mm"
-				]
+				],				
+				[
+					"NAME:$substrate_width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUBSTRATE_WIDTH_VALUE"
+				],
+				[
+					"NAME:$substrate_length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUBSTRATE_LENGTH_VALUE"
+				],
+				[
+					"NAME:$substrate_height",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "INSERT_SUBSTRATE_HEIGHT_VALUE"
+				],
+				[
+					"NAME:$ground_plane_length",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "$substrate_length"
+				],
+				[
+					"NAME:$ground_plane_width",
+					"PropType:="		, "VariableProp",
+					"UserDef:="		, True,
+					"Value:="		, "$substrate_width"
+				]			
 			]
 		]
 	])
@@ -94,11 +112,11 @@ oEditor.CreateRectangle(
 	[
 		"NAME:RectangleParameters",
 		"IsCovered:="		, True,
-		"XStart:="		, "-$ground_plane/2",
-		"YStart:="		, "-$ground_plane/2",
-		"ZStart:="		, "-$depth",
-		"Width:="		, "$ground_plane",
-		"Height:="		, "$ground_plane",
+		"XStart:="		, "-$ground_plane_width/2",
+		"YStart:="		, "-$ground_plane_length/2",
+		"ZStart:="		, "-$substrate_height",
+		"Width:="		, "$ground_plane_width",
+		"Height:="		, "$ground_plane_length",
 		"WhichAxis:="		, "Z"
 	],
 	[
@@ -123,12 +141,12 @@ oEditor.CreateRectangle(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$ground_plane/2",
-		"YPosition:="		, "-$ground_plane/2",
-		"ZPosition:="		, "-$depth",
-		"XSize:="		, "$ground_plane",
-		"YSize:="		, "$ground_plane",
-		"ZSize:="		, "$depth"
+		"XPosition:="		, "-$substrate_width/2",
+		"YPosition:="		, "-$substrate_length/2",
+		"ZPosition:="		, "-$substrate_height",
+		"XSize:="		, "$substrate_width",
+		"YSize:="		, "$substrate_length",
+		"ZSize:="		, "$substrate_height"
 	],
 	[
 		"NAME:Attributes",
@@ -184,7 +202,7 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "0mm",
 		"YCenter:="		, "$pinY",
-		"ZCenter:="		, "-$depth",
+		"ZCenter:="		, "-$substrate_height",
 		"Radius:="		, "$coax_outer",
 		"Height:="		, "-$coax_height",
 		"WhichAxis:="		, "Z",
@@ -213,7 +231,7 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "0mm",
 		"YCenter:="		, "$pinY",
-		"ZCenter:="		, "-$depth",
+		"ZCenter:="		, "-$substrate_height",
 		"Radius:="		, "$PTFE",
 		"Height:="		, "-$coax_height",
 		"WhichAxis:="		, "Z",
@@ -255,7 +273,7 @@ oEditor.CreateCylinder(
 		"NAME:CylinderParameters",
 		"XCenter:="		, "0mm",
 		"YCenter:="		, "$pinY",
-		"ZCenter:="		, "-$depth",
+		"ZCenter:="		, "-$substrate_height",
 		"Radius:="		, "$PTFE",
 		"Height:="		, "-$coax_height",
 		"WhichAxis:="		, "Z",
@@ -287,7 +305,7 @@ oEditor.CreateCylinder(
 		"YCenter:="		, "$pinY",
 		"ZCenter:="		, "0",
 		"Radius:="		, "$pin",
-		"Height:="		, "-$coax_height-$depth",
+		"Height:="		, "-$coax_height-$substrate_height",
 		"WhichAxis:="		, "Z",
 		"NumSides:="		, "0"
 	], 
@@ -317,13 +335,13 @@ oEditor.CreateCylinder(
 		"YCenter:="		, "$pinY",
 		"ZCenter:="		, "0",
 		"Radius:="		, "$pin",
-		"Height:="		, "-$coax_height-$depth",
+		"Height:="		, "-$coax_height-$substrate_height",
 		"WhichAxis:="		, "Z",
 		"NumSides:="		, "0"
 	], 
 	[
 		"NAME:Attributes",
-		"Name:="		, "port", 
+		"Name:="		, "center_pin", 
 		"Flags:="		, "",
 		"Color:="		, "(255 255 0)",
 		"Transparency:="	, 0,
@@ -356,14 +374,14 @@ oEditor.CreateCircle(
 		"IsCovered:="		, True,
 		"XCenter:="		, "0mm",
 		"YCenter:="		, "$pinY",
-		"ZCenter:="		, "-$depth-$coax_height",
+		"ZCenter:="		, "-$substrate_height-$coax_height",
 		"Radius:="		, "$coax_outer",
 		"WhichAxis:="		, "Z",
 		"NumSegments:="		, "0"
 	], 
 	[
 		"NAME:Attributes",
-		"Name:="		, "excitation",
+		"Name:="		, "port",
 		"Flags:="		, "",
 		"Color:="		, "(255 0 255)",
 		"Transparency:="	, 0,
@@ -382,12 +400,12 @@ oEditor.CreateCircle(
 oEditor.CreateBox(
 	[
 		"NAME:BoxParameters",
-		"XPosition:="		, "-$ground_plane",
-		"YPosition:="		, "-$ground_plane",
-		"ZPosition:="		, "-$ground_plane",
-		"XSize:="		, "$ground_plane*2",
-		"YSize:="		, "$ground_plane*2",
-		"ZSize:="		, "$ground_plane*2"
+		"XPosition:="		, "-$substrate_length",
+		"YPosition:="		, "-$substrate_width",
+		"ZPosition:="		, "-$substrate_width",
+		"XSize:="		, "$substrate_length*2",
+		"YSize:="		, "$substrate_width*2",
+		"ZSize:="		, "$substrate_width*2"
 	],
 	[
 		"NAME:Attributes",

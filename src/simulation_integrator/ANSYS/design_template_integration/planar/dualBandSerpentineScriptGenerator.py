@@ -16,7 +16,8 @@ import re
 def dualBandSerpentineScriptGenerator(parent, fy, px, py, lp, wp,
                                         ps1, ls1, ws1, ps2, ls2, ws2,
                                         ps3, ls3, ws3, ps4, ls4, ws4, lc,
-                                        groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                        #groundLength, groundWidth, 
+                                        substrateHeight, substrateLength, substrateWidth,
                                         cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
 
            
@@ -32,11 +33,11 @@ def dualBandSerpentineScriptGenerator(parent, fy, px, py, lp, wp,
     fyVal = str(fy) + " " + str(units)
     pxVal = str(px) + " " + str(units)
     pyVal = str(py) + " " + str(units)
-    dVal = str(substrateHeight) + " " + str(units)
+    #dVal = str(substrateHeight) + " " + str(units)
     LpVal = str(lp) + " " + str(units)
-    LsubVal = str(substrateLength) + " " + str(units)
+    #LsubVal = str(substrateLength) + " " + str(units)
     WpVal = str(wp) + " " + str(units)
-    WsubVal = str(substrateWidth) + " " + str(units)
+    #WsubVal = str(substrateWidth) + " " + str(units)
     Ps1Val = str(ps1) + " " + str(units)
     Ls1Val = str(ls1) + " " + str(units)
     Ws1Val = str(ws1) + " " + str(units)
@@ -50,8 +51,9 @@ def dualBandSerpentineScriptGenerator(parent, fy, px, py, lp, wp,
     Ls4Val = str(ls4) + " " + str(units)
     Ws4Val = str(ws4) + " " + str(units)
     LcVal = str(lc) + " " + str(units)
-    groundLengthVal = str(groundLength) + " " + str(units)
-    groundWidthVal = str(groundWidth) + " " + str(units)
+
+    # groundLengthVal = str(groundLength) + " " + str(units)
+    # groundWidthVal = str(groundWidth) + " " + str(units)
     substrateHeightVal = str(substrateHeight) + " " + str(units)
     substrateLengthVal = str(substrateLength) + " " + str(units)
     substrateWidthVal = str(substrateWidth) + " " + str(units)
@@ -80,9 +82,9 @@ def dualBandSerpentineScriptGenerator(parent, fy, px, py, lp, wp,
             if re.search('INSERT_PROJECT_NAME', line):
                 li = projectPath[1:-1]#strip extra quotes
                 line = re.sub('INSERT_PROJECT_NAME', li, line)
-            elif re.search('INSERT_DEPTH_VALUE', line):
-                li = dVal
-                line = re.sub('INSERT_DEPTH_VALUE', li, line)  
+            # elif re.search('INSERT_DEPTH_VALUE', line):
+            #     li = dVal
+            #     line = re.sub('INSERT_DEPTH_VALUE', li, line)  
             elif re.search('INSERT_PS1_VALUE', line):
                 li = Ps1Val
                 line = re.sub('INSERT_PS1_VALUE', li, line)  
@@ -134,15 +136,36 @@ def dualBandSerpentineScriptGenerator(parent, fy, px, py, lp, wp,
             elif re.search('INSERT_WP_VALUE', line):
                 li = WpVal
                 line = re.sub('INSERT_WP_VALUE', li, line)     
-            elif re.search('INSERT_LSUB_VALUE', line):
-                li = LsubVal
-                line = re.sub('INSERT_LSUB_VALUE', li, line)              
-            elif re.search('INSERT_WSUB_VALUE', line):
-                li = WsubVal
-                line = re.sub('INSERT_WSUB_VALUE', li, line)   
+            # elif re.search('INSERT_LSUB_VALUE', line):
+            #     li = LsubVal
+            #     line = re.sub('INSERT_LSUB_VALUE', li, line)              
+            # elif re.search('INSERT_WSUB_VALUE', line):
+            #     li = WsubVal
+            #     line = re.sub('INSERT_WSUB_VALUE', li, line)   
+            
             elif re.search('INSERT_LC_VALUE', line):
                 li = LcVal
-                line = re.sub('INSERT_LC_VALUE', li, line)                   
+                line = re.sub('INSERT_LC_VALUE', li, line)
+
+
+            # elif re.search('INSERT_GROUND_LENGTH_VALUE', line):
+            #     li = groundLengthVal
+            #     line = re.sub('INSERT_GROUND_LENGTH_VALUE', li, line)   
+            # elif re.search('INSERT_GROUND_WIDTH_VALUE', line):
+            #     li = groundWidthVal
+            #     line = re.sub('INSERT_GROUND_WIDTH_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_HEIGHT_VALUE', line):
+                li = substrateHeightVal
+                line = re.sub('INSERT_SUBSTRATE_HEIGHT_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_LENGTH_VALUE', line):
+                li = substrateLengthVal
+                line = re.sub('INSERT_SUBSTRATE_LENGTH_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_WIDTH_VALUE', line):
+                li = substrateWidthVal
+                line = re.sub('INSERT_SUBSTRATE_WIDTH_VALUE', li, line)  
+                  
+
+
             elif re.search('INSERT_GROUND_PLANE_MATERIAL', line):
                 li = groundPlaneMaterial
                 line = re.sub('INSERT_GROUND_PLANE_MATERIAL', li, line)   

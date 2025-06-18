@@ -5,7 +5,7 @@
 #       Contains widgets for optimizer settings and exports
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 17, 2024
+#   Last update: June 10, 2025
 ##--------------------------------------------------------------------\
 
 import wx
@@ -31,6 +31,17 @@ from gui.page_optimizer.notebook_optimizer.optimizer_panels.bayesian_settings_pa
 INPUT_BOX_WIDTH = 100
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
+SURROGATE_LIST = c.SURROGATE_LIST
+BOUNDARY_LIST = c.BOUNDARY_LIST
+OPT_BAYESIAN = c.OPT_BAYESIAN
+SM_RADIAL_BASIS_FUNC = c.SM_RADIAL_BASIS_FUNC # this is unstable, so it's been temp removed from menu
+SM_GAUSSIAN_PROCESS = c.SM_GAUSSIAN_PROCESS
+SM_KRIGING = c.SM_KRIGING
+SM_POLY_REGRESSION = c.SM_POLY_REGRESSION
+SM_POLY_CHAOS_REGRESSION = c.SM_POLY_CHAOS_REGRESSION
+SM_KNN = c.SM_KNN
+SM_DECISION_TREE_REGRESSION = c.SM_DECISION_TREE_REGRESSION
+
 class BAYESIANPage(wx.Panel):
     def __init__(self, parent, DC, PC, SO):
         wx.Panel.__init__(self, parent=parent)
@@ -44,8 +55,10 @@ class BAYESIANPage(wx.Panel):
         self.defaultBoxWidth = 115
 
         #data management
-        self.optimizerName = "BAYESIAN" #set optimizer name with the dropdown
-        self.surrogateName = "Radial_Basis_Function"
+        self.optimizerName = OPT_BAYESIAN #set optimizer name with the dropdown
+        self.surrogateName = None # does not have surrogate model by default. ALSO, BAYESIAN does not use a surrogate model optimizer
+        self.modelApproximatorName = SM_GAUSSIAN_PROCESS
+        
         # 
         self.paramInput = pd.DataFrame({})
 
@@ -65,17 +78,13 @@ class BAYESIANPage(wx.Panel):
         self.notebook_settings = SettingsNotebook(self)
 
         boxSelect = wx.StaticBox(self, label='Select a Surrogate Model Kernel:', size=(300, -1))
-        surrogateTypes = ['Radial_Basis_Function', 'Gaussian_Process', 
-                          'Kriging', 'Polynomial_Regression',
-                            'Polynomial_Chaos_Expansion', 
-                            'K_Nearest_Neighbors',  'Decision_Tree_Regression']
+        surrogateTypes = SURROGATE_LIST
         self.surrogateDropDown = wx.ComboBox(boxSelect, choices=surrogateTypes, id=1,style=wx.CB_READONLY, size=(280, -1))
         self.surrogateDropDown.SetValue(surrogateTypes[0])
         self.surrogateDropDown.Bind(wx.EVT_COMBOBOX, self.optimizerDesignSelectionChange)
 
         boxBoundary = wx.StaticBox(self, label="Select a Boundary Type:")
-        bndTypes = ['Random', 'Reflection',
-                    'Absorption', 'Invisible'] # getting dictionary keys throws an err
+        bndTypes = BOUNDARY_LIST# getting dictionary keys throws an err
         self.boundaryDropDown = wx.ComboBox(boxBoundary, choices=bndTypes, id=2, style=wx.CB_READONLY, size=(280, -1))
         self.boundaryDropDown.SetValue(bndTypes[0])
         self.boundaryDropDown.Bind(wx.EVT_COMBOBOX, self.boundarySelection) 
@@ -109,24 +118,24 @@ class BAYESIANPage(wx.Panel):
         rightSizeSizer.Add(boxBoundary, 0, wx.ALL|wx.EXPAND, border=7)
         rightSizeSizer.Add(self.notebook_settings, 0, wx.ALL, border=10)
         
-
         # panel sizer
         panelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=10)
-        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=10)
-        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=10)
+        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=5)
+        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=5)
+        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=5)
 
         # btn sizer
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
-        btnSizer.Add(self.btnOpen, 0, wx.ALL, border=10)
-        btnSizer.Add(self.btnSelect, 0, wx.ALL, border=10)
-        btnSizer.Add(self.btnExport, 0, wx.ALL, border=10)
-        btnSizer.AddSpacer(7)
+        btnSizer.Add(self.btnOpen, 0, wx.ALL, border=3)
+        btnSizer.Add(self.btnSelect, 0, wx.ALL, border=3)
+        btnSizer.Add(self.btnExport, 0, wx.ALL, border=3)
+        btnSizer.AddSpacer(50)
 
         # main sizer
         pageSizer = wx.BoxSizer(wx.VERTICAL)
         # pageSizer.AddStretchSpacer()
         pageSizer.Add(panelSizer, 0, wx.ALL|wx.EXPAND, border=10)
+        pageSizer.AddStretchSpacer()
         pageSizer.Add(btnSizer, 0, wx.ALL|wx.ALIGN_RIGHT, border=3)
         self.SetSizer(pageSizer)
 
@@ -140,13 +149,13 @@ class BAYESIANPage(wx.Panel):
     
     def btnSelectClicked(self, evt=None):
         # call the optimizer inputs from the child class
-         #ONLY optimizer where self.surrogateName replaces self.optimizerName here. 
-        df1, noError = self.notebook_settings.getOptimizerInputs(self.surrogateName)
+         #ONLY optimizer where self.modelApproximatorName replaces self.optimizerName here. 
+        df1, noError = self.notebook_settings.getOptimizerInputs(self.modelApproximatorName)
         # call the optimizer inputs from the page
-        df2, noERror = self.getPageOptimizerInputs()        
+        df2, noError = self.getPageOptimizerInputs()        
 
         # merge the data frames
-        df = result = pd.concat([df1, df2], axis=1)
+        df = pd.concat([df1, df2], axis=1)
 
 
         #print(df)
@@ -210,10 +219,11 @@ class BAYESIANPage(wx.Panel):
         noError = True
         
         #from optimizer scroll - returns ref to widgets
-        metricTxt, targetTxt, checkedBxs = self.optimizerMetrics.getInputBoxVals() 
+        metricTxt, tresholdTxt, targetTxt, checkedBxs = self.optimizerMetrics.getInputBoxVals() 
 
         ctr = 0
         metricVals = []
+        thresholdVals = []
         targetVals = []
         for cb in checkedBxs:
             useMetric = cb.GetValue()
@@ -221,11 +231,14 @@ class BAYESIANPage(wx.Panel):
                 mt = metricTxt[ctr].GetValue()
                 mt = mt.split(" ")
                 metricVals.append(mt[0])
+                th = tresholdTxt[ctr].GetValue()
+                thresholdVals.append(th)
                 t =  targetTxt[ctr].GetValue()
                 targetVals.append(t)
             ctr = ctr + 1
              
         self.metricArr = metricVals
+        self.thresholdArr = thresholdVals
         self.targetArr = targetVals
         self.outputVariables = np.shape(targetVals)
 
@@ -267,9 +280,16 @@ class BAYESIANPage(wx.Panel):
             df['num_output'] = pd.Series(self.outputVariables)
             df['target_metrics'] = pd.Series([self.metricArr])
             df['target_values'] = pd.Series([self.targetArr])
+            df['target_threshold'] = pd.Series([self.thresholdArr])
             df['boundary'] = pd.Series(self.boundary)
+            df['use_surrogate_bool'] = pd.Series([False])
+
         return df, noError
     
+
+
+
+
 #######################################################
 # Page Events
 #######################################################
@@ -336,73 +356,76 @@ class TuningPage(wx.Panel):
         self.SetSizer(pageSizer)
 
         
-        self.GP_panel.Hide()
         self.kriging_panel.Hide()
         self.PR_panel.Hide()
         self.PChaos_panel.Hide()
         self.KNN_panel.Hide()
         self.DTR_panel.Hide()
-        self.RBF_panel.Show()  #default show
+        self.RBF_panel.Hide()  
+        self.GP_panel.Show()#default show
 
 
     def set_optimizer_tuning_panel(self, txt):
 
-        #uses self.surrogateName to change panels.
+        #uses self.modelApproximatorName to change panels.
         # this distinction is important because versions that use surrogate models
         # in other optimizers will operate more similar to this in the 2025.0 update
 
-        if txt == "Radial_Basis_Function":
+        optimizerName = OPT_BAYESIAN
+        if txt == 'Radial_Basis_Function':
             self.hideEverythingAndShowSinglePanel(self.RBF_panel)
-            optimizerName = "BAYESIAN"
-        if txt == 'Gaussian_Process':
+            modelApproximatorName = SM_RADIAL_BASIS_FUNC
+        elif txt == 'Gaussian_Process':
             self.hideEverythingAndShowSinglePanel(self.GP_panel)
-            optimizerName = "BAYESIAN"
+            modelApproximatorName = SM_GAUSSIAN_PROCESS
         elif txt == 'Kriging':
             self.hideEverythingAndShowSinglePanel(self.kriging_panel)
-            optimizerName = "BAYESIAN"       
+            modelApproximatorName = SM_KRIGING
         elif txt == 'Polynomial_Regression':
             self.hideEverythingAndShowSinglePanel(self.PR_panel)
-            optimizerName = "BAYESIAN"
+            modelApproximatorName = SM_POLY_REGRESSION
         elif txt == 'Polynomial_Chaos_Expansion':
             self.hideEverythingAndShowSinglePanel(self.PChaos_panel)
-            optimizerName = "BAYESIAN"        
+            modelApproximatorName = SM_POLY_CHAOS_REGRESSION
         elif txt == 'K_Nearest_Neighbors':
             self.hideEverythingAndShowSinglePanel(self.KNN_panel)
-            optimizerName = "BAYESIAN"    
+            modelApproximatorName = SM_KNN
         elif txt == 'Decision_Tree_Regression':
             self.hideEverythingAndShowSinglePanel(self.DTR_panel)
-            optimizerName = "BAYESIAN"    
+            modelApproximatorName = SM_DECISION_TREE_REGRESSION
         else:
-            print("ERROR in panel_bayesian.py unknown optimizer selected")
+            print("ERROR in panel_bayesian.py unknown model approximator selected")
+            optimizerName = OPT_BAYESIAN
+            modelApproximatorName = None
 
-        return optimizerName
+        return optimizerName, modelApproximatorName
 
 
-    def getOptimizerInputs(self, surrogateName):
+    def getOptimizerInputs(self, modelApproximatorName):
         noError = False
         df = None
 
         # call the optimizer inputs from the child class
         # this uses the surrogate names to make the formatting easier across optimizers
         
-        if surrogateName == "Radial_Basis_Function":
+        if modelApproximatorName == SM_RADIAL_BASIS_FUNC:
             df, noError = self.RBF_panel.getOptimizerInputs()
-        elif surrogateName == "Gaussian_Process":
+        elif modelApproximatorName == SM_GAUSSIAN_PROCESS:
             df, noError = self.GP_panel.getOptimizerInputs()
-        elif surrogateName == "Kriging" :
+        elif modelApproximatorName == SM_KRIGING:
             df, noError = self.kriging_panel.getOptimizerInputs()
-        elif surrogateName == "Polynomial_Regression":
+        elif modelApproximatorName == SM_POLY_REGRESSION:
             df, noError = self.PR_panel.getOptimizerInputs()
-        elif surrogateName == "Polynomial_Chaos_Expansion" :
+        elif modelApproximatorName == SM_POLY_CHAOS_REGRESSION:
             df, noError = self.PChaos_panel.getOptimizerInputs()
-        elif surrogateName == "K_Nearest_Neighbors" :
+        elif modelApproximatorName == SM_KNN:
             df, noError = self.KNN_panel.getOptimizerInputs()
-        elif surrogateName == "Decision_Tree_Regression":
+        elif modelApproximatorName == SM_DECISION_TREE_REGRESSION:
             df, noError = self.DTR_panel.getOptimizerInputs()
         else:
-            print("SURROGATE NAME")
-            print(surrogateName)
-            print("ERROR: optimizer name not recognized in panel_BAYESIAN. Select an option from the dropdown menu to continue!")
+            print("SURROGATE MODEL APPROXIMATOR NAME")
+            print(modelApproximatorName)
+            print("ERROR: name not recognized in panel_BAYESIAN. Select an option from the dropdown menu to continue!")
 
 
         if noError == False:

@@ -10,8 +10,9 @@
 import os
 import re
 
-def coplanarKeyholeScriptGenerator(parent, outerRad, innerRad, feedWidth, inset, gapDist,
-                                       groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+def coplanarKeyholeScriptGenerator(parent, outerRad, innerRad, feedWidth, feedLength, gapDist,
+                                       #groundLength, groundWidth, 
+                                       substrateHeight, substrateLength, substrateWidth,
                                    cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
     
     filepath = os.path.join(parent.replicatorTemplatesDir, 'coplanar-keyhole.txt')
@@ -26,10 +27,10 @@ def coplanarKeyholeScriptGenerator(parent, outerRad, innerRad, feedWidth, inset,
     outerRadVal = str(outerRad) + " " + str(units)
     innerRadVal = str(innerRad) + " " + str(units)
     feedWidthVal = str(feedWidth) + " " + str(units)
-    insetVal = str(inset) + " " + str(units)
+    feedLengthVal = str(feedLength) + " " + str(units)
     gapDistVal = str(gapDist) + " " + str(units)
-    groundLengthVal = str(groundLength) + " " + str(units)
-    groundWidthVal = str(groundWidth) + " " + str(units)
+    # groundLengthVal = str(groundLength) + " " + str(units)
+    # groundWidthVal = str(groundWidth) + " " + str(units)
     substrateHeightVal = str(substrateHeight) + " " + str(units)
     substrateLengthVal = str(substrateLength) + " " + str(units)
     substrateWidthVal = str(substrateWidth) + " " + str(units)
@@ -65,27 +66,29 @@ def coplanarKeyholeScriptGenerator(parent, outerRad, innerRad, feedWidth, inset,
             elif re.search('INSERT_FEED_WIDTH_VALUE', line):
                 li = feedWidthVal
                 line = re.sub('INSERT_FEED_WIDTH_VALUE', li, line)              
-            elif re.search('INSERT_INSET_VALUE', line):
-                li = insetVal
-                line = re.sub('INSERT_INSET_VALUE', li, line)  
+            elif re.search('INSERT_FEED_LENGTH_VALUE', line):
+                li = feedLengthVal
+                line = re.sub('INSERT_FEED_LENGTH_VALUE', li, line)  
             elif re.search('INSERT_GAP_DIST_VALUE', line):
                 li = gapDistVal
                 line = re.sub('INSERT_GAP_DIST_VALUE', li, line)  
-            elif re.search('INSERT_GP_LENGTH_VALUE', line):
-                li = groundLengthVal
-                line = re.sub('INSERT_GP_LENGTH_VALUE', li, line)              
-            elif re.search('INSERT_GP_WIDTH_VALUE', line):
-                li = groundWidthVal
-                line = re.sub('INSERT_GP_WIDTH_VALUE', li, line)  
-            elif re.search('INSERT_SUB_HEIGHT_VALUE', line):
+            # elif re.search('INSERT_GP_LENGTH_VALUE', line):
+            #     li = groundLengthVal
+            #     line = re.sub('INSERT_GP_LENGTH_VALUE', li, line)              
+            # elif re.search('INSERT_GP_WIDTH_VALUE', line):
+            #     li = groundWidthVal
+            #     line = re.sub('INSERT_GP_WIDTH_VALUE', li, line)  
+            elif re.search('INSERT_SUBSTRATE_HEIGHT_VALUE', line):
                 li = substrateHeightVal
-                line = re.sub('INSERT_SUB_HEIGHT_VALUE', li, line)  
-            elif re.search('INSERT_SUB_LENGTH_VALUE', line):
+                line = re.sub('INSERT_SUBSTRATE_HEIGHT_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_LENGTH_VALUE', line):
                 li = substrateLengthVal
-                line = re.sub('INSERT_SUB_LENGTH_VALUE', li, line)              
-            elif re.search('INSERT_SUB_WIDTH_VALUE', line):
+                line = re.sub('INSERT_SUBSTRATE_LENGTH_VALUE', li, line)   
+            elif re.search('INSERT_SUBSTRATE_WIDTH_VALUE', line):
                 li = substrateWidthVal
-                line = re.sub('INSERT_SUB_WIDTH_VALUE', li, line)  
+                line = re.sub('INSERT_SUBSTRATE_WIDTH_VALUE', li, line)  
+
+
             elif re.search('INSERT_GROUND_PLANE_MATERIAL', line):
                 li = groundPlaneMaterial
                 line = re.sub('INSERT_GROUND_PLANE_MATERIAL', li, line)   

@@ -49,21 +49,32 @@ class Calculator():
                 x0 = calcedParams[2]
             if (fType == 'microstrip') or (fType == 'probe'):
                 if fType == 'probe':
-                    sw = None
-                else:
-                    sw = calcedParams[4]
-                paramArr = [["width", calcedParams[0]],
+                    #sw = None
+                    paramArr = [["width", calcedParams[0]],
                     ["length", calcedParams[1]],
                     ["x0", x0],
                     ["y0", calcedParams[3]],
-                    ["gap", float(1)],
-                    ["strip_width", sw],
+                   # ["gap", float(1)],
                     ["substrate_length", 2*calcedParams[1]],
                     ["substrate_width", 2*calcedParams[0]],
-                    ["ground_plane_width", 2*calcedParams[0]],
-                    ["ground_plane_length", 2*calcedParams[1]],
-                    ["conductor_height", None],
+                    # ["ground_plane_width", 2*calcedParams[0]],
+                    # ["ground_plane_length", 2*calcedParams[1]],
+                    #["conductor_height", None],
                     ["substrate_height", self.DC.getFeaturesByName('substrate_height')]]
+                else:
+                    sw = calcedParams[4]
+                    paramArr = [["width", calcedParams[0]],
+                        ["length", calcedParams[1]],
+                        ["x0", x0],
+                        ["y0", calcedParams[3]],
+                        ["gap", float(1)],
+                        ["strip_width", sw],
+                        ["substrate_length", 2*calcedParams[1]],
+                        ["substrate_width", 2*calcedParams[0]],
+                        # ["ground_plane_width", 2*calcedParams[0]],
+                        # ["ground_plane_length", 2*calcedParams[1]],
+                        #["conductor_height", None],
+                        ["substrate_height", self.DC.getFeaturesByName('substrate_height')]]
 
 
             else:
@@ -72,8 +83,7 @@ class Calculator():
  
         
         elif self.aType == 'half_wave_dipole':
-            paramArr = [["length", calcedParams[0]],
-                        ["half_length",float(calcedParams[0])/2],
+            paramArr = [["length", calcedParams[0]],# total length of dipole
                         ["conductor_radius", self.DC.getFeaturesByName('conductor_radius')],
                         ["feed_gap", self.DC.getFeaturesByName('feed_gap')]]
 
@@ -100,7 +110,7 @@ class Calculator():
         convertedParams = []
         if type(params) == tuple: #rectangular patch
             for p in params:
-                pmm = float(p)*1000
+                pmm = round(float(p)*1000, 3) # convert and round to 3 decimal pts.
                 convertedParams.append(pmm)
         elif type(params)== float:  #monopole, dipole
             pmm = float(params)*1000

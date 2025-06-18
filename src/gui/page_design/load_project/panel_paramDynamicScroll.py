@@ -22,7 +22,8 @@ class ParamDynamicScrollPanel(wx.Panel):
         # default vals
         self.defaultColors = c.DEFAULT_COLORS
         self.colorMod = len(self.defaultColors)
-        self.defaultBoxWidth = 85
+        self.defaultNameBoxWidth = 200
+        self.defaultValueBoxWidth = 100
         #ctr for indexing
         self.ctr = 0
         #dynamic naming
@@ -33,6 +34,7 @@ class ParamDynamicScrollPanel(wx.Panel):
         self.paramRemove=[]
 
         self.scrolled_panel = scrolled.ScrolledPanel(self, 0, style=wx.TAB_TRAVERSAL | wx.SUNKEN_BORDER, size=(500,110))
+        # self.scrolled_panel.SetMinSize(size=(500, 210))
         self.scrolled_panel.SetAutoLayout(1)
         self.scrolled_panel.SetupScrolling()   
 
@@ -56,7 +58,7 @@ class ParamDynamicScrollPanel(wx.Panel):
         btnSizer.Add(self.btnClear, 0, wx.ALL|wx.RIGHT, border=5)
         btnSizer.Add(self.btnAdd, 0, wx.ALL|wx.RIGHT, border=5)
                 
-        panelSizer.Add(self.scrolled_panel, 1, wx.ALL) #| wx.EXPAND, border=0)
+        panelSizer.Add(self.scrolled_panel, 1, wx.ALL)#| wx.EXPAND, border=0)
         panelSizer.Add(btnSizer, 0, wx.ALL|wx.EXPAND)
         self.SetSizer(panelSizer)
         self.Layout()#force update for layout
@@ -72,9 +74,9 @@ class ParamDynamicScrollPanel(wx.Panel):
 
     def addLabelsToTop(self):
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
-        lblParamNum = wx.StaticText(self.scrolled_panel, label='#', size=(15, 20))
-        lblParamName = wx.StaticText(self.scrolled_panel, label='| Param Name', size=(self.defaultBoxWidth, 20))
-        lblParamValue= wx.StaticText(self.scrolled_panel, label= '| Value', size=(self.defaultBoxWidth+25, 20))
+        lblParamNum = wx.StaticText(self.scrolled_panel, label='#', size=(15, 25))
+        lblParamName = wx.StaticText(self.scrolled_panel, label='| Param Name', size=(self.defaultNameBoxWidth, 25))
+        lblParamValue= wx.StaticText(self.scrolled_panel, label= '| Numeric Value', size=(self.defaultValueBoxWidth,  25))
 
         hSizer.Add(lblParamNum, 0, wx.ALL, border=1)
         hSizer.Add(lblParamName, 0, wx.ALL, border=1)
@@ -128,10 +130,10 @@ class ParamDynamicScrollPanel(wx.Panel):
         self.ctr = self.ctr + 1
 
         self.vSizer.AddSpacer(2)
-        paramNum= wx.StaticText(self.scrolled_panel, label=str(self.ctr), size=(15, 20)) 
-        paramName= wx.TextCtrl(self.scrolled_panel, value="", size=(self.defaultBoxWidth, 20))
+        paramNum= wx.StaticText(self.scrolled_panel, label=str(self.ctr), size=(15, 25)) 
+        paramName= wx.TextCtrl(self.scrolled_panel, value="", size=(self.defaultNameBoxWidth, 25))
         paramName.SetValue(pn)
-        paramMaterial= wx.TextCtrl(self.scrolled_panel, value="", size=(self.defaultBoxWidth, 20))
+        paramMaterial= wx.TextCtrl(self.scrolled_panel, value="", size=(self.defaultValueBoxWidth, 25))
         paramMaterial.SetValue(pm)
         removeParam = wx.CheckBox(self.scrolled_panel, label="remove")
 
@@ -157,11 +159,11 @@ class ParamDynamicScrollPanel(wx.Panel):
 
         self.vSizer.AddSpacer(2)
 
-        paramNum= wx.StaticText(self.scrolled_panel, label=str(self.ctr), size=(15, 20)) 
-        paramName= wx.TextCtrl(self.scrolled_panel, value="", size=(self.defaultBoxWidth, 20))
+        paramNum= wx.StaticText(self.scrolled_panel, label=str(self.ctr), size=(15, 25)) 
+        paramName= wx.TextCtrl(self.scrolled_panel, value="", size=(self.defaultNameBoxWidth, 25))
         pname = self.baseName + str(self.ctr)
         paramName.SetValue(pname)
-        paramMaterial= wx.TextCtrl(self.scrolled_panel, value="", size=(self.defaultBoxWidth, 20))
+        paramMaterial= wx.TextCtrl(self.scrolled_panel, value="", size=(self.defaultValueBoxWidth, 25))
         paramMaterial.SetValue("1")
         removeParam = wx.CheckBox(self.scrolled_panel, label="remove")
 

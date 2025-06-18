@@ -61,4 +61,5 @@ class HalfWaveDipoleOptionsPage(wx.Panel):
                     ["conductor_radius", self.fieldWireRadius.GetValue()],
                     ["feed_gap", self.fieldFeedGap.GetValue()],
                     ["simulation_frequency", self.fieldFrequency.GetValue()]]
+                # THESE NAMES WILL NEED TO MATCH THE TEMPLATE EXACTLY
         return features

@@ -28,6 +28,12 @@ from gui.page_optimizer.notebook_optimizer.optimizer_panels.sweep_settings_panel
 INPUT_BOX_WIDTH = 100
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
+OPT_GRID_SWEEP = c.OPT_GRID_SWEEP
+OPT_RANDOM_SWEEP = c.OPT_RANDOM_SWEEP
+
+
+
+
 class SWEEPPage(wx.Panel):
     def __init__(self, parent, DC, PC, SO):
         wx.Panel.__init__(self, parent=parent)
@@ -40,7 +46,9 @@ class SWEEPPage(wx.Panel):
         #UI vars
         self.defaultBoxWidth = 115
         #data management
-        self.optimizerName = "GRID_SWEEP"
+        self.optimizerName = OPT_GRID_SWEEP
+        self.surrogateName = None # Default internal optimizer is None
+        self.modelApproximatorName = None # Default surrogate model approx. is None
         #
         self.paramInput = pd.DataFrame({})
 
@@ -90,27 +98,26 @@ class SWEEPPage(wx.Panel):
         rightSizeSizer.Add(self.notebook_settings, 0, wx.ALL, border=10)
         
 
-
         # panel sizer
         panelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=7)
-        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=7)
-        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=10)
+        panelSizer.Add(self.paramSummary, 0, wx.ALL|wx.EXPAND, border=5)
+        panelSizer.Add(self.optimizerMetrics, 0, wx.ALL|wx.EXPAND, border=5)
+        panelSizer.Add(rightSizeSizer, 0, wx.ALL|wx.EXPAND, border=5)
 
         # btn sizer
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
-        btnSizer.Add(self.btnOpen, 0, wx.ALL, border=10)
-        btnSizer.Add(self.btnSelect, 0, wx.ALL, border=10)
-        btnSizer.Add(self.btnExport, 0, wx.ALL, border=10)
-        btnSizer.AddSpacer(7)
+        btnSizer.Add(self.btnOpen, 0, wx.ALL, border=3)
+        btnSizer.Add(self.btnSelect, 0, wx.ALL, border=3)
+        btnSizer.Add(self.btnExport, 0, wx.ALL, border=3)
+        btnSizer.AddSpacer(50)
 
         # main sizer
         pageSizer = wx.BoxSizer(wx.VERTICAL)
         # pageSizer.AddStretchSpacer()
-        pageSizer.Add(panelSizer, 1, wx.ALL|wx.EXPAND, border=10)
-        pageSizer.Add(btnSizer, 0, wx.ALL|wx.ALIGN_RIGHT, border=10)
+        pageSizer.Add(panelSizer, 0, wx.ALL|wx.EXPAND, border=10)
+        pageSizer.AddStretchSpacer()
+        pageSizer.Add(btnSizer, 0, wx.ALL|wx.ALIGN_RIGHT, border=3)
         self.SetSizer(pageSizer)
-
 
 #######################################################
 # Button Events
@@ -123,10 +130,10 @@ class SWEEPPage(wx.Panel):
         # call the optimizer inputs from the child class
         df1, noError = self.notebook_settings.getOptimizerInputs(self.optimizerName)
         # call the optimizer inputs from the page
-        df2, noERror = self.getPageOptimizerInputs()        
+        df2, noError = self.getPageOptimizerInputs()        
 
         # merge the data frames
-        df = result = pd.concat([df1, df2], axis=1)
+        df = pd.concat([df1, df2], axis=1)
 
         #assign
 
@@ -180,10 +187,11 @@ class SWEEPPage(wx.Panel):
         noError = True
         
         #from optimizer scroll - returns ref to widgets
-        metricTxt, targetTxt, checkedBxs = self.optimizerMetrics.getInputBoxVals() 
+        metricTxt, tresholdTxt, targetTxt, checkedBxs = self.optimizerMetrics.getInputBoxVals() 
 
         ctr = 0
         metricVals = []
+        thresholdVals = []
         targetVals = []
         for cb in checkedBxs:
             useMetric = cb.GetValue()
@@ -191,11 +199,14 @@ class SWEEPPage(wx.Panel):
                 mt = metricTxt[ctr].GetValue()
                 mt = mt.split(" ")
                 metricVals.append(mt[0])
+                th = tresholdTxt[ctr].GetValue()
+                thresholdVals.append(th)
                 t =  targetTxt[ctr].GetValue()
                 targetVals.append(t)
             ctr = ctr + 1
              
         self.metricArr = metricVals
+        self.thresholdArr = thresholdVals
         self.targetArr = targetVals
         self.outputVariables = np.shape(targetVals)
 
@@ -226,6 +237,9 @@ class SWEEPPage(wx.Panel):
             df['num_output'] = pd.Series(self.outputVariables)
             df['target_metrics'] = pd.Series([self.metricArr])
             df['target_values'] = pd.Series([self.targetArr])
+            df['target_threshold'] = pd.Series([self.thresholdArr])
+            df['use_surrogate_bool'] = pd.Series([False])
+
         return df, noError
 
 #######################################################
@@ -288,10 +302,11 @@ class TuningPage(wx.Panel):
         # add if/else here when adding more options
         if txt == "grid_sweep":
             self.hideEverythingAndShowSinglePanel(self.grid_sweep_panel)
-            optimizerName = "GRID_SWEEP"
+            optimizerName = OPT_GRID_SWEEP
         elif txt == "random_sweep":
             self.hideEverythingAndShowSinglePanel(self.random_sweep_panel)
-            optimizerName = "RANDOM_SWEEP"
+            optimizerName = OPT_RANDOM_SWEEP
+
         else:
             print("ERROR in panel_SWEEP.py unknown optimizer selected")
 
@@ -301,9 +316,9 @@ class TuningPage(wx.Panel):
         noError = False
         df = None
 
-        if optimizerName == "GRID_SWEEP":
+        if optimizerName == OPT_GRID_SWEEP:
             df, noError = self.grid_sweep_panel.getOptimizerInputs()
-        elif optimizerName == "RANDOM_SWEEP":
+        elif optimizerName == OPT_RANDOM_SWEEP:
             df, noError = self.random_sweep_panel.getOptimizerInputs()
         else:
             print("ERROR: optimizer name not recognized in panel_SWEEP. Select an option from the dropdown menu to continue!")

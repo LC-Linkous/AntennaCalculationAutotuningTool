@@ -6,6 +6,12 @@
 
 Antenna Calculation and Autotuning Tool (AntennaCAT) is a comprehensive implementation of machine learning to automate, evaluate, and optimize the antenna design process using EM simulation software. It utilizes a combined antenna designer and internal calculator to accelerate the CAD construction and EM simulation of several common topologies, while eliminating model disparity for automated data collection.
 
+AntennaCAT 2025.1 is live as of June 2025! We're excited to introduce some streamlined UI features, updated replication study templates, and some optimizer overhauls that include the ability to target threshold values instead of just targets! 
+
+We also have an article coming out! We are going to be in the June edition of IEEE Antennas and Propagation Magazine, which should be released in the next few weeks. To go with that release, we have the official AntennaCAT 2025.2! It will have some polished up features and a few new ones.
+
+To those who have reached out about features (current, planned, and a few bugs), we want to say THANK YOU!! Your input has been greatly appreciated, especially in the early stages of this project and its development.
+
 ## Table of contents
 * [Wiki and Documentation](#wiki-and-documentation)
 * [Current Release](#current-release)
@@ -27,12 +33,13 @@ Pages are being updated daily, so check back in a few days if the information yo
 
 ## Current Release
 
-First 2025 code drop! AntennaCAT 2025.0 is live!
+AntennaCAT 2025.1 is live!
 
 What's happening now?
 * Minor restructuring to get the save&load functionality switched over from a txt file to JSON. This was a requested feature, so it's been bumped up in priority. It's also a good time to clean up the 'file load' functions.
-* Graphics library update for better previews and live parameter editing
-* Streamlining the optimizer class initializations for more modularity + the surrogate model integration
+* Graphics library update for better previews and live parameter editing. Occasionally there’s some line-thickness issues that make it unclear if cuts are overlapping.
+* Streamlining the optimizer class initializations for more modularity + the surrogate model integration. Stress testing is also under way to ensure proper recovery from failed simulations & interrupted simulations (which is a bigger deal for parallel license use than singular)
+* The text boxes are bigger :)
 
 Why are we not matching the literature exactly? 
 * The driving goal behind the development of this software is for it to be useful and to encourage experimentation. Holding back features/functionality to be truer to the publications goes against that. 
@@ -42,11 +49,10 @@ Why not release it all at once?
 
 ## Release Schedule 
 
-**Where are we so far?** (Feb. 2025)
-* AntennaCAT 2025.0 is live!
+**Where are we so far?** 
+* AntennaCAT 2025.1 is live!
 
 We are in the quick release stage for several major features. See the [Past Releases section on the Documentation Wiki page](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/wiki/Documentation#past-releases) for the list of all releases. 2025.0, 2025.1, and 2025.2 and their corresponding lit will be listed in the Wiki.
-
 
 What does that mean for code releases?
 * The code will always be released independently from the journal/magazine publication. While publications are awesome and we want to share what we're up to, sometimes we might move a little faster than planned. Or slower, because code takes time.
@@ -62,6 +68,11 @@ Stages of early 2025 major revision roll out:
   * This is the 'core' functionality of AntennaCAT without the add-ons. 
   * It sets us up for plugging in all of the developments from Summer 2024 onwards (2 conferences + dissertation)
 
+* AntennaCAT v. 2025.1
+  * Replication set updates from user feedback.
+  * Updated naming convention updates in the templates for the paramaterized HFSS files
+  * Surrogate model optimizers are integrated! Stress testing is ongoing to verify failed simulation recovery.
+  * Loading projects now has larger text boxes to make it easier to input parameter names
 
  
 
@@ -83,7 +94,6 @@ Stages of early 2025 major revision roll out:
   * load/detect script features
   * Ansys HFSS integration
   * ANCAT project creation, basic save functionality (a newer feature, but not worth removing)
-
 
 
 
@@ -153,7 +163,6 @@ While there are unit testing artifacts in some code files, entry at other points
 It is recommended to run AntennaCAT in a virtual environment, but it is not a requirement. 
 
 
-
 ## Related Publications and Repositories
 
 1. L. Linkous, “Machine Learning Assisted Optimization for Calculation and Automated Tuning of Antennas,” VCU Scholars Compass, 2024. https://scholarscompass.vcu.edu/etd/7841/ (accessed Oct. 21, 2024).
@@ -170,16 +179,19 @@ It is recommended to run AntennaCAT in a virtual environment, but it is not a re
 
 **Individual Optimizer Repositories:**
 
+
 | Base Optimizer | Alternate Version | Quantum-Inspired Optimizer | Surrogate Model Version |
 | ------------- | ------------- | ------------- |------------- |
-| [pso_python](https://github.com/LC-Linkous/pso_python) | [pso_basic](https://github.com/LC-Linkous/pso_python/tree/pso_basic) | [pso_quantum](https://github.com/LC-Linkous/pso_python/tree/pso_quantum)  | |
-| [cat_swarm_python](https://github.com/LC-Linkous/cat_swarm_python) | [sand_cat_python](https://github.com/LC-Linkous/cat_swarm_python/tree/sand_cat_python)| [cat_swarm_quantum](https://github.com/LC-Linkous/cat_swarm_python/tree/cat_swarm_quantum) | |
-| [chicken_swarm_python](https://github.com/LC-Linkous/chicken_swarm_python) | - | [chicken_swarm_quantum](https://github.com/LC-Linkous/chicken_swarm_python/tree/chicken_swarm_quantum)  | |
+| [pso_python](https://github.com/LC-Linkous/pso_python) | [pso_basic](https://github.com/LC-Linkous/pso_python/tree/pso_basic) | [pso_quantum](https://github.com/LC-Linkous/pso_quantum)  | all versions are options in [surrogate_model_optimization](https://github.com/LC-Linkous/surrogate_model_optimization)|
+| [cat_swarm_python](https://github.com/LC-Linkous/cat_swarm_python) | [sand_cat_python](https://github.com/LC-Linkous/cat_swarm_python/tree/sand_cat_python)| [cat_swarm_quantum](https://github.com/LC-Linkous/cat_swarm_python/tree/cat_swarm_quantum) |all versions are options in [surrogate_model_optimization](https://github.com/LC-Linkous/surrogate_model_optimization) |
+| [chicken_swarm_python](https://github.com/LC-Linkous/chicken_swarm_python) | [2015_improved_chicken_swarm](https://github.com/LC-Linkous/chicken_swarm_python/tree/improved_chicken_swarm) <br>2022 improved chicken swarm| [chicken_swarm_quantum](https://github.com/LC-Linkous/chicken_swarm_python/tree/chicken_swarm_quantum)  | all versions are options in [surrogate_model_optimization](https://github.com/LC-Linkous/surrogate_model_optimization)|
 | [sweep_python](https://github.com/LC-Linkous/sweep_python)  | *alternates in base repo | -  | - |
 | [bayesian optimization_python](https://github.com/LC-Linkous/bayesian_optimization_python)  | -| - | *interchangeable surrogate models <br> included in base repo |
-| [multi_glods_python](https://github.com/LC-Linkous/multi_glods_python)| - | - | |
+| [multi_glods_python](https://github.com/LC-Linkous/multi_glods_python)| GLODS <br> DIRECT | - | multiGLODS option in [surrogate_model_optimization](https://github.com/LC-Linkous/surrogate_model_optimization)|
 
-The [Objective Function Test Suite](https://github.com/LC-Linkous/objective_function_suite)used to collect performance data on the individual optimizers is now public.
+
+The [Objective Function Test Suite](https://github.com/LC-Linkous/objective_function_suite) used to collect performance data on the individual optimizers is now public.
+
 
 
 

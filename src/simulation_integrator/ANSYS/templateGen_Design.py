@@ -217,7 +217,7 @@ class DesignTemplate:
         with open(filepath) as f:
             for line in f.readlines():
                 if re.search('INSERT_PROJECT_PATH', line):
-                    li = repr(projectPath)[1:-1]#strip extra quotes
+                    li = str(projectPath) # repr(projectPath)[1:-1]#strip extra quotes. # this conversion is now done when the path is loaded in & converted to a string
                     line = re.sub('INSERT_PROJECT_PATH', li, line)
                 elif re.search('INSERT_PROJECT_NAME', line):
                     li = str(projectName)
@@ -307,18 +307,22 @@ class DesignTemplate:
 
 
     def patchStripFedScriptGenerator(self, w, l, sw, x0, y0, g,  
-                                     groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                     #groundLength, groundWidth, 
+                                     substrateHeight, substrateLength, substrateWidth,
                                      cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy", units="mm", networkType="modal"):
        patch_sf_sg.patchStripFedScriptGenerator(self, w, l, sw, x0, y0, g,  
-                                                groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                #groundLength, groundWidth, 
+                                                substrateHeight, substrateLength, substrateWidth,
                                                  cMaterial, gpMaterial, sMaterial, units, networkType)
 
    
     def patchProbeFedScriptGenerator(self, w, l, x0, y0, 
-                                     groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                     #groundLength, groundWidth, 
+                                     substrateHeight, substrateLength, substrateWidth,
                                      cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy", units="mm", networkType="modal"):
         patch_pf_sg.patchProbeFedScriptGenerator(self, w, l, x0, y0,  
-                                                 groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                                 #groundLength, groundWidth, 
+                                                 substrateHeight, substrateLength, substrateWidth,
                                                  cMaterial, gpMaterial, sMaterial, units, networkType)
         
 
@@ -334,18 +338,18 @@ class DesignTemplate:
                                                           cMaterial, units, networkType)
     
 
-    def EMicrostripFedScriptGenerator(self, x, l, ls, lg, ps, ws, w, wg,
+    def EMicrostripFedScriptGenerator(self, x, l, ls, lg, ps, ws, w, wg, h,
                                     cMaterial="copper", gpMaterial="copper", units="mm", networkType="modal"):
-        E_sf_sg.EMicrostripFedScriptGenerator(self, x, l, ls, lg, ps, ws, w, wg, 
+        E_sf_sg.EMicrostripFedScriptGenerator(self, x, l, ls, lg, ps, ws, w, wg, h, 
                                               cMaterial, gpMaterial, units, networkType)
 
 
 
-    def slottedRectangularPatchScriptGenerator(self, Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg,fy,
-                                               groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+    def slottedRectangularPatchScriptGenerator(self, Lr,Lh,Lv,l,fx,Pr,Wr,Wu,w,fy,
+                                               substrateHeight, substrateLength, substrateWidth,
                                                cMaterial="copper", gpMaterial="copper",sMaterial="FR4_epoxy",units="mm", networkType="modal"):
-        patch_slotted_sg.slottedRectangularPatchScriptGenerator(self, Lr,Lh,Lv,l,Lg,fx,Pr,Wr,Wu,w,Wg,fy,
-                                               groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+        patch_slotted_sg.slottedRectangularPatchScriptGenerator(self, Lr,Lh,Lv,l,fx,Pr,Wr,Wu,w,fy,
+                                               substrateHeight, substrateLength, substrateWidth,
                                                                 cMaterial, gpMaterial,sMaterial,units, networkType)
   
 
@@ -353,38 +357,46 @@ class DesignTemplate:
     def dualBandSerpentineScriptGenerator(self, fy, px, py, lp, wp,
                                           ps1, ls1, ws1, ps2, ls2, ws2,
                                           ps3, ls3, ws3, ps4, ls4, ws4, lc,
-                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                          #groundLength, groundWidth, 
+                                          substrateHeight, substrateLength, substrateWidth,
                                           cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
         serpentine_db_sg.dualBandSerpentineScriptGenerator(self, fy, px, py, lp, wp,
                                           ps1, ls1, ws1, ps2, ls2, ws2,
                                           ps3, ls3, ws3, ps4, ls4, ws4, lc,
-                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                          #groundLength, groundWidth, 
+                                          substrateHeight, substrateLength, substrateWidth,
                                           cMaterial, gpMaterial, sMaterial,units, networkType)        
 
 
-    def coplanarKeyholeScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist,
-                                       groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+    def coplanarKeyholeScriptGenerator(self, outerRad, innerRad, feedWidth, feedLength, gapDist,
+                                       #groundLength, groundWidth, 
+                                       substrateHeight, substrateLength, substrateWidth,
                                    cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
-        coplanar_keyhole_sg.coplanarKeyholeScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist, 
-                                                        groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+        coplanar_keyhole_sg.coplanarKeyholeScriptGenerator(self, outerRad, innerRad, feedWidth, feedLength, gapDist, 
+                                                        #groundLength, groundWidth,
+                                                        substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units, networkType)
 
 
 
     def circularLoopScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist,
-                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                    #groundLength, groundWidth, 
+                                    substrateHeight, substrateLength, substrateWidth,
                                    cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
         
         circular_loop_sg.circularLoopScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist,
-                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                    #groundLength, groundWidth, 
+                                    substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units, networkType)
 
 
     def squareLoopScriptGenerator(self, l, w, feedWidth, gapDist,
-                                  groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                  #groundLength, groundWidth, 
+                                  substrateHeight, substrateLength, substrateWidth,
                                    cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
         square_loop_sg.squareLoopScriptGenerator(self, l, w, feedWidth, gapDist,
-                                  groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                  #groundLength, groundWidth,
+                                  substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units, networkType)
 
 
@@ -398,10 +410,12 @@ class DesignTemplate:
 
 
     def planarBowtieScriptGenerator(self, l, w, feedWidth, gapDist,
-                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                    #groundLength, groundWidth, 
+                                    substrateHeight, substrateLength, substrateWidth,
                                    cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
         planar_bowtie_sg.planarBowtieScriptGenerator(self, l, w, feedWidth, gapDist,
-                                    groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                    #groundLength, groundWidth, 
+                                    substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units, networkType)
 
 
@@ -409,10 +423,12 @@ class DesignTemplate:
         
 
     def twoArmSquareSpiralScriptGenerator(self, initLength, initWidth, width, x0, y0, spacing, 
-                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                          #groundLength, groundWidth, 
+                                          substrateHeight, substrateLength, substrateWidth,
                                    cMaterial="copper", gpMaterial="copper", sMaterial="FR4_epoxy",units="mm", networkType="modal"):
         two_arm_sq_spiral_sg.twoArmSquareSpiralScriptGenerator(self, initLength, initWidth, width, x0, y0, spacing, 
-                                          groundLength, groundWidth, substrateHeight, substrateLength, substrateWidth,
+                                          #groundLength, groundWidth, 
+                                          substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units)
 
 
