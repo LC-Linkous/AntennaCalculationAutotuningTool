@@ -1,4 +1,5 @@
-# AntennaCAT
+# AntennaCAT Development Branch
+## {Refer to the MAIN BRANCH for the stable software release}
 
 <p align="center">
  <img src="./src/media/antennaCAT-icons/transparent-antennaCAT-logo.png" height="200" >
