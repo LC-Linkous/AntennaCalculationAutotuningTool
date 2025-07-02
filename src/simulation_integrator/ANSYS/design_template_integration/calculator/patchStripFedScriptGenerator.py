@@ -24,7 +24,8 @@ def patchStripFedScriptGenerator(parent, w, l, sw, x0, y0, g,
         print("attempted filepath: ", filepath)
         return
 
-    projectPath = repr(parent.saveProjectAs)  #full save location
+    saveProjectAs = parent.getFullProjectPath()
+    projectPath = repr(saveProjectAs)  #full save location
     wVal =  str(w) + " " + str(units)
     lVal = str(l) + " " + str(units)
     #dVal = str(substrateHeight) + " " + str(units)

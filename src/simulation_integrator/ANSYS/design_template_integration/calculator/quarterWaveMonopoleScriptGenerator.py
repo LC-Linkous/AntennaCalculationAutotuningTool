@@ -20,7 +20,9 @@ def quarterWaveMonopoleScriptGenerator(parent, l, r, gp, fg, cMaterial="copper",
         print("attempted filepath: ", filepath)
         return
 
-    projectPath = repr(parent.saveProjectAs)  #full save location
+    
+    saveProjectAs = parent.getFullProjectPath()
+    projectPath = repr(saveProjectAs)  #full save location
     lVal =  str(l) + " " + str(units)
     rVal = str(r) + " " + str(units)
     gpVal = str(gp) + " " + str(units)
