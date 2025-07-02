@@ -714,14 +714,16 @@ class OptimizerIntegrator():
         #   parent: the parent class passed through
         #   x:  x vals current params in format [[x1], [x2], [x3]...]
 
-        try:
-            # update script tempate
-            self.updateOptimizerTemplate(x)
-        except Exception as e:
-            print("problem with root in optimizer_integrator.py, processDataAndRunSimulation()")
-            print("unable to update optimizer template")
-            print(e)
-            noError = False
+    #try:
+        # update script tempate
+        self.updateOptimizerTemplate(x)
+    #except Exception as e:
+        # print("problem with root in optimizer_integrator.py, processDataAndRunSimulation()")
+        # print("unable to update optimizer template")
+        # print(e)
+        noError = False
+        #return self.F, noError
+
 
 
         try:
@@ -843,7 +845,9 @@ class OptimizerIntegrator():
 #######################################################
 
     def updateScriptTemplate(self, lst, stpCtr):
-       
+        # print("STEP COUNTER!!!!!")
+        # print(stpCtr)
+
         if stpCtr < 1: 
             # the first step includes design and simulation scripts
             # design could be either instructions to build the CAD model, 
@@ -855,10 +859,50 @@ class OptimizerIntegrator():
             # print("STEP CTR 0")
             # print(simulationScript)
 
+            # # change the paramters by list 
+            # self.SO.clearParamEditTemplateScript() #clear previous script
+            # self.SO.paramEditTemplateGen(lst) #add param change for 1 iteration of changes
+            # # add save to param edit script. then don't save after reports (so don't have to clear reports)
+            # self.SO.addSaveToParamEditScript()
+            
+            # # get param edit script
+            # paramEditScript = self.SO.getParamEditTemplateScript()
+                
+            # # report and export do not need to be updated bc they used the same file names
+            # # report creations script (simulation, but without the sim setup)
+            # reportScript = self.DC.getReportsScript()
+            # # get report export script
+            # reportExportScript = self.SO.getReportEditTemplateScript()
+
+
+            # #write all of them out to file to read the damn things
+
+            # with open("designScript_"+str(stpCtr)+".txt", "w") as file:
+            #     file.writelines(designScript)
+
+            # with open("simulationScript_"+str(stpCtr)+".txt", "w") as file:
+            #     file.writelines(simulationScript)
+
+            # with open("paramEditScript_"+str(stpCtr)+".txt", "w") as file:
+            #     file.writelines(paramEditScript)
+
+            # with open("reportScript_"+str(stpCtr)+".txt", "w") as file:
+            #     file.writelines(reportScript)
+
+            # with open("reportExportScript.txt", "w") as file:
+            #     file.writelines(reportExportScript)
+
+            # # time.sleep(25)
+
+            # # combine scripts
+            # #use the spacer to see where each script ends - debug only. 
+            # script = designScript + simulationScript + paramEditScript + reportScript + reportExportScript
 
         else:
             #change the design script to be an 'open project' script. (this works for all options, new and imported)
             projectPath = self.SO.getEMSoftwareProjectName()
+            # print("project path in optimizer_integrator.py")
+            # print(projectPath)
             self.SO.useOpenProjectDesignScript(projectPath) #resets design template object
             designScript = self.DC.getDesignScript()
             # no sim setup
@@ -867,6 +911,47 @@ class OptimizerIntegrator():
             if self.saveReportData == True:
                 msg = "report data will be saved in the next code update. toggle in updateScriptTemplate in optimizer_integrator call"
                 self.updateStatusText(msg)
+
+
+            # # change the paramters by list 
+            # self.SO.clearParamEditTemplateScript() #clear previous script
+            # self.SO.paramEditTemplateGen(lst) #add param change for 1 iteration of changes
+            # # add save to param edit script. then don't save after reports (so don't have to clear reports)
+            # self.SO.addSaveToParamEditScript()
+            
+            # # get param edit script
+            # paramEditScript = self.SO.getParamEditTemplateScript()
+                
+            # # report and export do not need to be updated bc they used the same file names
+            # # report creations script (simulation, but without the sim setup)
+            # reportScript = self.DC.getReportsScript()
+            # # get report export script
+            # reportExportScript = self.SO.getReportEditTemplateScript()
+
+
+            # #write all of them out to file to read the damn things
+
+            # with open("designScript_"+str(stpCtr)+".txt", "w") as file:
+            #     file.writelines(designScript)
+
+            # # with open("simulationScript_"+str(stpCtr)+".txt", "w") as file:
+            # #     file.writelines(simulationScript)
+
+            # with open("paramEditScript_"+str(stpCtr)+".txt", "w") as file:
+            #     file.writelines(paramEditScript)
+
+            # with open("reportScript_"+str(stpCtr)+".txt", "w") as file:
+            #     file.writelines(reportScript)
+
+            # with open("reportExportScript.txt", "w") as file:
+            #     file.writelines(reportExportScript)
+
+            # # time.sleep(25)
+
+            # # combine scripts
+            # #use the spacer to see where each script ends - debug only. 
+            # script = designScript + paramEditScript + reportScript + reportExportScript
+
 
         # change the paramters by list 
         self.SO.clearParamEditTemplateScript() #clear previous script
@@ -884,18 +969,18 @@ class OptimizerIntegrator():
         reportExportScript = self.SO.getReportEditTemplateScript()
 
 
-        #write all of them out to file to read the damn things
+        # #write all of them out to file to read the damn things
 
-        # with open("designScript.txt", "w") as file:
+        # with open("designScript_"+str(stpCtr)+".txt", "w") as file:
         #     file.writelines(designScript)
 
-        # with open("simulationScript.txt", "w") as file:
+        # with open("simulationScript_"+str(stpCtr)+".txt", "w") as file:
         #     file.writelines(simulationScript)
 
-        # with open("paramEditScript.txt", "w") as file:
+        # with open("paramEditScript_"+str(stpCtr)+".txt", "w") as file:
         #     file.writelines(paramEditScript)
 
-        # with open("reportScript.txt", "w") as file:
+        # with open("reportScript_"+str(stpCtr)+".txt", "w") as file:
         #     file.writelines(reportScript)
 
         # with open("reportExportScript.txt", "w") as file:
