@@ -6,9 +6,9 @@
 
 Antenna Calculation and Autotuning Tool (AntennaCAT) is a comprehensive implementation of machine learning to automate, evaluate, and optimize the antenna design process using EM simulation software. It utilizes a combined antenna designer and internal calculator to accelerate the CAD construction and EM simulation of several common topologies, while eliminating model disparity for automated data collection.
 
-AntennaCAT 2025.1 is live as of June 2025! We're excited to introduce some streamlined UI features, updated replication study templates, and some optimizer overhauls that include the ability to target threshold values instead of just targets! 
+AntennaCAT 2025.1 is live as of June 2025! We're excited to introduce some streamlined UI features, updated replication study templates, and some optimizer overhauls that include the ability to target threshold values instead of just targets!
 
-We also have an article coming out! We are going to be in the June edition of IEEE Antennas and Propagation Magazine, which should be released in the next few weeks. To go with that release, we have the official AntennaCAT 2025.2! It will have some polished up features and a few new ones.
+We also have an article coming out! We are going to be in the June edition of IEEE Antennas and Propagation Magazine, which should be released in the next few weeks. To go with that release, we have the official AntennaCAT 2025.2! It will have some polished up features and a few new ones. As we work these new (and some previously unplanned) features into the software based on feedback and bug reports, the [development branch](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/tree/dev) of this repo has been introduced for anyone that wants a preview.  
 
 To those who have reached out about features (current, planned, and a few bugs), we want to say THANK YOU!! Your input has been greatly appreciated, especially in the early stages of this project and its development.
 
@@ -25,7 +25,7 @@ To those who have reached out about features (current, planned, and a few bugs),
 
 See the [Release Schedule](#release-schedule) below for code roll out updates.
 
-As we prepare for the first code release, we're sharing information on the Wiki of how to download, set up and use AntennaCAT.
+As we prepare for major code releases, we're sharing information on the Wiki of how to download, set up and use AntennaCAT.
 
 You can [Start Here](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool/wiki) for general project information.
 
@@ -36,13 +36,15 @@ Pages are being updated daily, so check back in a few days if the information yo
 AntennaCAT 2025.1 is live!
 
 What's happening now?
+* Update to get inline with some ANSYS HFSS graphics changes, and some 2024/2025 features. 
 * Minor restructuring to get the save&load functionality switched over from a txt file to JSON. This was a requested feature, so it's been bumped up in priority. It's also a good time to clean up the 'file load' functions.
 * Graphics library update for better previews and live parameter editing. Occasionally there’s some line-thickness issues that make it unclear if cuts are overlapping.
-* Streamlining the optimizer class initializations for more modularity + the surrogate model integration. Stress testing is also under way to ensure proper recovery from failed simulations & interrupted simulations (which is a bigger deal for parallel license use than singular)
-* The text boxes are bigger :)
+
 
 Why are we not matching the literature exactly? 
 * The driving goal behind the development of this software is for it to be useful and to encourage experimentation. Holding back features/functionality to be truer to the publications goes against that. 
+* Now that we have more users, we're getting feedback on how different versions of Windows and different setups work with AntennaCAT. 
+
 
 Why not release it all at once?
 * The goal of several major releases close together is to have some roll-back points as collaborators join in and want to implement their own features. We won't wait to release what's already been implemented in recent publications, but there will be links to these 'check points' should anyone wish to download an earlier version.
