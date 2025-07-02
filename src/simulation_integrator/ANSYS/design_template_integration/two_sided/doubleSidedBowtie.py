@@ -23,7 +23,9 @@ def doubleSidedBowtieScriptGenerator(parent, w2, w3, w4, w5, w6, w7, w8, l2, l3,
         print("attempted filepath: ", filepath)
         return
 
-    projectPath = repr(parent.saveProjectAs)  #full save location
+    
+    saveProjectAs = parent.getFullProjectPath()
+    projectPath = repr(saveProjectAs)  #full save location
     w2Val = str(w2) + " " + str(units)
     w3Val = str(w3) + " " + str(units)
     w4Val = str(w4) + " " + str(units)
