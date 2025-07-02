@@ -55,6 +55,9 @@ class SimulationIntegrator():
         self.simulationSoftwarePath = None
         self.numLicense = 1
         self.p = -1 #return code for polling
+
+
+
         self.SO = None
         self.DT = None # design template
         self.PT = None # param edit template
@@ -100,14 +103,14 @@ class SimulationIntegrator():
         self.RT = self.SO.getReportEditTemplateObject()
 
     #def createDesignTemplate(self, projName, projDir=None):
-    def createDesignTemplate(self, projDir):
-        self.SO.createDesignTemplate(projDir)
+    def createDesignTemplate(self, fullPath): #projDir):
+        self.SO.createDesignTemplate(fullPath) #projDir)
     
     def createParamEditTemplate(self):
         self.SO.createParamEditTemplate()
     
-    def createSimulationTemplate(self, projDir=None):
-        self.SO.createSimulationTemplate(projDir)
+    def createSimulationTemplate(self):
+        self.SO.createSimulationTemplate()
 
     def createReportExportTemplate(self, projDir):
         self.SO.createReportExportTemplate(projDir)
@@ -192,40 +195,49 @@ class SimulationIntegrator():
     def getDesignTemplateScript(self):
         return self.SO.getDesignTemplateScript()
     
-    def useOpenProjectDesignScript(self, projectPath, filename=None):
-        head, tail = os.path.split(projectPath)
-        filename = tail.split(".")[0]
+    def useOpenProjectDesignScript(self, projectPath):
+        # head, tail = os.path.split(projectPath)
+        # filename = tail.split(".")[0]
         self.SO.clearDesignTemplateScript()
         # create the open-file design base           
-        self.SO.addOpenExistingProjectBase(projectPath, filename)
+        self.SO.addOpenExistingProjectBase(projectPath)
         script = self.getDesignTemplateScript()
         self.DC.setDesignScript(script)
 
     def designTemplateGen(self):
         # all simulations will be created and saved in the antennaCAT project folder
-        projPath = str(self.PC.getResultsDirectory())
+
         #TODO: check for more options as layers and custom shapes are added
 
-       #design from imported script (has full script)
-        if self.PC.getImportScriptBoolean() == True:
-            self.SO.createDesignTemplate(projDir=projPath)#use default projName
-            #TODO: let users add comments to this file
+        #loaded project + manually added params
+        if self.PC.getImportProjectBoolean() == True:
+            importedProjectPath = self.PC.getImportedProjectPath()
+
+            self.SO.createDesignTemplate(importedProjectPath, needsFilename=False)
+            # create the open-file design base           
+            # print("project path in simlation_integrator.py")
+            # print(importedProjectPath)
+            self.SO.addOpenExistingProjectBase(importedProjectPath) #, filename)
+            self.SO.addCommentsToFile("using imported project")
+    
+
+        #design from imported script (has full script)
+        elif self.PC.getImportScriptBoolean() == True:
+            projPath = str(self.PC.getResultsDirectory()) #this is the DIRECTORY. imported scripts dont have imported names
+            self.SO.createDesignTemplate(projPath, needsFilename=True)
             scriptText = self.DC.getImportedScript()
             self.SO.setDesignTemplateScript(scriptText)
             self.SO.addCommentsToFile("using imported design")
 
-        #loaded project + manually added params
-        elif self.PC.getImportProjectBoolean() == True:
-            projectPath = self.PC.getImportedProjectPath()
-            head, tail = os.path.split(projectPath)
-            filename = tail.split(".")[0]
-            self.SO.createDesignTemplate(tail, head)
-            # create the open-file design base           
-            self.SO.addOpenExistingProjectBase(projectPath, filename)
-            self.SO.addCommentsToFile("using imported project")
-    
+
         elif self.PC.getAntennaGeneratorBoolean() == True:
-            self.SO.createDesignTemplate(projDir=projPath)#use default projName
+            #TODO: grab default project name from configs
+
+            projPath = str(self.PC.getResultsDirectory())
+            # print("PROJECT PATH IN SIMULATION INTEGRATOR!!")
+            # print(projPath)
+
+            self.SO.createDesignTemplate(fullPath=projPath, needsFilename=True)#projPath)#use default projName
             # design from calculator
             features = self.DC.getFeatures()
             aType = features["antenna_type"][0]
