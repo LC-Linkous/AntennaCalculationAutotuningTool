@@ -486,7 +486,7 @@ class SimulationTemplate:
         txt="import ScriptEnv \n" +\
             "ScriptEnv.Initialize(\"Ansoft.ElectronicsDesktop\")\n"+\
             "oDesktop.RestoreWindow()\n"+\
-            "oDesktop.OpenProject(r" + repr(filename) + ")\n"+\
+            "oDesktop.OpenProject(" + repr(filename) + ")\n"+\
             "oProject = oDesktop.SetActiveProject(\"GeneratedHFSSProject\")\n"+\
             "oDesign = oProject.SetActiveDesign(\"HFSSDesign1\")\n"+\
             "oEditor = oDesign.SetActiveEditor(\"3D Modeler\")\n" 
