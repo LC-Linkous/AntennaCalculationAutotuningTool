@@ -23,7 +23,9 @@ def twoArmSquareSpiralScriptGenerator(parent, initLength, initWidth, width, x0, 
         print("attempted filepath: ", filepath)
         return
 
-    projectPath = repr(parent.saveProjectAs)  #full save location
+    
+    saveProjectAs = parent.getFullProjectPath()
+    projectPath = repr(saveProjectAs)  #full save location
     initLengthVal = str(initLength) + " " + str(units)
     initWidthVal = str(initWidth) + " " + str(units)
     widthVal = str(width) + " " + str(units)

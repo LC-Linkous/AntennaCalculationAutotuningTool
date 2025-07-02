@@ -23,7 +23,9 @@ def planarBowtieScriptGenerator(parent, l, w, feedWidth, gapDist,
         print("attempted filepath: ", filepath)
         return
 
-    projectPath = repr(parent.saveProjectAs)  #full save location
+    
+    saveProjectAs = parent.getFullProjectPath()
+    projectPath = repr(saveProjectAs)  #full save location
     lVal = str(l) + " " + str(units)
     wVal = str(w) + " " + str(units)
     feedWidthVal = str(feedWidth) + " " + str(units)

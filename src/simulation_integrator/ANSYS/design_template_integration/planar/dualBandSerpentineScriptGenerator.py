@@ -29,7 +29,9 @@ def dualBandSerpentineScriptGenerator(parent, fy, px, py, lp, wp,
         print("attempted filepath: ", filepath)
         return
 
-    projectPath = repr(parent.saveProjectAs)  #full save location
+    
+    saveProjectAs = parent.getFullProjectPath()
+    projectPath = repr(saveProjectAs)  #full save location
     fyVal = str(fy) + " " + str(units)
     pxVal = str(px) + " " + str(units)
     pyVal = str(py) + " " + str(units)

@@ -19,7 +19,9 @@ def EMicrostripFedScriptGenerator(parent, x, l, ls, lg, ps, ws, w, wg, h, cMater
         print("attempted filepath: ", filepath)
         return
 
-    projectPath = repr(parent.saveProjectAs)  #full save location
+    
+    saveProjectAs = parent.getFullProjectPath()
+    projectPath = repr(saveProjectAs)  #full save location
     xVal =  str(x) + " " + str(units)
     lVal = str(l) + " " + str(units)
     lsVal = str(ls) + " " + str(units)

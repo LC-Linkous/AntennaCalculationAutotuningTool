@@ -21,7 +21,9 @@ def slottedRectangularPatchScriptGenerator(parent,Lr,Lh,Lv,l,fx,Pr,Wr,Wu,w,fy,su
         print("attempted filepath: ", filepath)
         return
 
-    projectPath = repr(parent.saveProjectAs)  #full save location
+    
+    saveProjectAs = parent.getFullProjectPath()
+    projectPath = repr(saveProjectAs)  #full save location
     LrVal = str(Lr) + " " + str(units)
     LhVal = str(Lh) + " " + str(units)
     LvVal = str(Lv) + " " + str(units)
