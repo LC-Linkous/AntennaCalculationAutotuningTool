@@ -29,15 +29,20 @@ import project.config.antennaCAT_config as c
 
 
 class SimIntegrator_ANSYS():
-    def __init__(self, softwarePath, numLicenses, projName="generatedProject.aedt", projDir="./output"):
+    def __init__(self, softwarePath, numLicenses):
         self.numSimsRunning = 0
         self.simulationSoftwarePath = softwarePath
         self.numLicense = numLicenses
-        self.projectName = projName
-        self.emSoftwareProjectName = None
         self.p = -1 #return code for polling
         self.fileQueue = [] #files that are in queue to simulate
         self.reportNames = []
+
+
+        # project paths are ONLY FOR THE SIMULATION FILE BEING RUN
+        # this is not the ANTENNACAT directory control. They migh tbe the same path,
+        # this this CAN be different, such as when imported
+        self.projectName = "generatedProject.aedt" #default project name
+        self.fullProjectPath = "generatedProject.aedt" #path with extension
 
         self.DT = None # design template
         self.PT = None # param edit template
@@ -52,21 +57,38 @@ class SimIntegrator_ANSYS():
         self.parameterEditFileName = "DesignParamChange.py"
         self.reportExportFileName = "ReportExport.py"
 
-    def getEMSoftwareProjectName(self): 
-        return self.emSoftwareProjectName
+    # def setProjectName(self, pn):
+    #     self.projectName = str(pn)
 
-    def createDesignTemplate(self, projName="generatedProject.aedt", projDir=None):
-        self.DT = DesignTemplate(projName, projDir)
-        self.emSoftwareProjectName = self.DT.getEMSoftwareProjectName()
-     
+    # def getProjectName(self):
+    #     return self.projectName
+
+    # def setProjectDirectoy(self):
+    #     self
+    
+    # def getProjectDirectory(self):
+    #     return 
+
+    def getEMSoftwareProjectName(self): 
+        # print("GETTING EMSOFTWARE PROJECT NAME FROM simIntegrator_ANSYS.py")
+        # print(self.fullProjectPath) 
+        return self.fullProjectPath
+
+    def createDesignTemplate(self, fullPath, needsFilename=False):#, fullPath): #projName="generatedProject.aedt", projDir=None):
+        if needsFilename == True: #add the default filename to the path
+            self.fullProjectPath = fullPath + "\\generatedProject.aedt"
+        else:
+            self.fullProjectPath = fullPath        
+        self.DT = DesignTemplate(self.fullProjectPath)#fullPath) #projName, projDir)
+
     def createParamEditTemplate(self):
         self.PT = ParamEditTemplate()
     
     def createSimulationTemplate(self):
         self.ST = SimulationTemplate()
     
-    def createReportExportTemplate(self, projDir):
-        self.RT = ReportExportTemplate(projDir)
+    def createReportExportTemplate(self, dataDir): # this is a dataDirectory
+        self.RT = ReportExportTemplate(dataDir)
 
     def getDefaultFilePathNames(self):
         return self.designFileName, self.simulationFileName, self.parameterEditFileName, self.reportExportFileName
@@ -140,8 +162,8 @@ class SimIntegrator_ANSYS():
     def clearDesignTemplateScript(self):
         self.DT.clearTemplateScript()
 
-    def addOpenExistingProjectBase(self, projectPath, filename):
-        self.DT.addOpenExistingProjectBase(projectPath, filename)
+    def addOpenExistingProjectBase(self, fullPath):
+        self.DT.addOpenExistingProjectBase(fullPath)
 
     ########################################################
     # Antenna Generation pre-made script calls
@@ -174,7 +196,6 @@ class SimIntegrator_ANSYS():
         self.DT.halfWaveDipoleScriptGenerator(l, r, fg, 
                                               cMaterial, units)
     
-
 
     def quarterWaveMonopoleScriptGenerator(self,l, r, gp, fg, 
                                            cMaterial, units):

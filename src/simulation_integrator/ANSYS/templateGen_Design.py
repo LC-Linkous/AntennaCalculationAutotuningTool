@@ -7,8 +7,9 @@
 #   Last update: December 1, 2023
 ##--------------------------------------------------------------------\
 
-from datetime import datetime
+from datetime import datetime 
 import os.path
+from pathlib import Path
 import re
 import sys 
 
@@ -30,27 +31,39 @@ import design_template_integration.loop_and_coil.squareLoop as square_loop_sg
 import design_template_integration.two_sided.doubleSidedBowtie as double_sided_bowtie_sg
 
 
-
-
-
-
-
 sys.path.insert(0, './src/config')
 import project.config.antennaCAT_config as c
 
 class DesignTemplate:
-    def __init__(self, projName, projDir):
+    def __init__(self, fullPath): #, fullPath): #projName, projDir):
         self.templateTxt = []
-        self.projectName = projName
-        self.projectPath = projDir
-        self.saveProjectAs = os.path.join(self.projectPath, self.projectName)
+
+        self.fullProjectPath = fullPath # full path of the simulation file 
+            # this is passed in so that FULL ACCESS TO PARENT is not needed
+            # it cuts down on the overhead, especially as this class is created
+            # and destroyed as needed
+
+        # self.saveProjectAs = fullPath
+        # projDir, projName = os.path.split(fullPath)
+        # self.projectName = projName     # the file name
+        # self.projectPath = projDir   # the Dir location
+
+        # print("PROJECT PATH: " + str(projDir))
+        # print("PROJECT NAME: " + str(projName))
+
+        # #self.saveProjectAs = os.path.join(self.projectPath, self.projectName) # this does not concatinate correctly
+        # print("templateGen_Design.py")
+        # print("SAVE PROJECT AS SAVES the FILE PATH WITH PROJECT NAME")
+        # print(self.saveProjectAs)
+
+
         self.templateBaseDir = os.path.join('src','simulation_integrator','ANSYS','code_templates')
         self.calculatorTemplatesDir = os.path.join(self.templateBaseDir, 'calculator-designs')
         self.replicatorTemplatesDir = os.path.join(self.templateBaseDir, 'replication-designs')
         self.solutionTypeDir = os.path.join(self.templateBaseDir,'solution-type')
 
-    def getEMSoftwareProjectName(self):
-        return self.saveProjectAs
+    def getFullProjectPath(self):
+        return self.fullProjectPath
 
     def getTemplateScript(self):
         return self.templateTxt
@@ -68,13 +81,13 @@ class DesignTemplate:
     def addImportedTemplateScript(self, t):
         self.templateTxt.append(t) 
 
-    def checkFileExists(self, filename, filepath):
+    def checkFileExists(self, fullpath):
         fileExists = False
-        if os.path.isfile(filepath) == True:
+        if os.path.isfile(fullpath) == True:
             fileExists = True
         else:
-            print("ERROR: ANSYS/templateGen_Design.py. path error to " + filename + ". check relative paths")
-            print("attempted filepath: ", filepath)
+            print("ERROR: ANSYS/templateGen_Design.py. check relative paths")
+            print("attempted filepath: ", fullpath)
 
         return fileExists
 
@@ -85,7 +98,7 @@ class DesignTemplate:
         now = datetime.now()
         filepath = os.path.join(self.templateBaseDir, 'comments', 'add-comments.txt')
         if os.path.isfile(filepath) == False:
-            print("ERROR: batch-test.py. path error to probe-edit-run-del.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_design.py. path error to comments.txt template. check relative paths")
             print("attempted filepath: ", filepath)
             return
 
@@ -104,7 +117,7 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.solutionTypeDir, "modal_insertDesign.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Simulation.py. path error to modal_insertDesign.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_Design.py. path error to modal_insertDesign.txt template. check relative paths")
             print("attempted filepath: ", filepath)
             return               
         with open(filepath) as f:
@@ -117,7 +130,7 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.solutionTypeDir, "terminal_insertDesign.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Simulation.py. path error to terminal_insertDesign.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_Design.py. path error to terminal_insertDesign.txt template. check relative paths")
             print("attempted filepath: ", filepath)
             return               
         with open(filepath) as f:
@@ -131,7 +144,7 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.solutionTypeDir, "modal_solution.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Simulation.py. path error to modal_solution.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_Design.py. path error to modal_solution.txt template. check relative paths")
             print("attempted filepath: ", filepath)
             return               
         with open(filepath) as f:
@@ -144,7 +157,7 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.solutionTypeDir, "terminal_solution.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Simulation.py. path error to terminal_solution.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_Design.py. path error to terminal_solution.txt template. check relative paths")
             print("attempted filepath: ", filepath)
             return               
         with open(filepath) as f:
@@ -158,7 +171,7 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.calculatorTemplatesDir,'ports', "modal_port.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Simulation.py. path error to modal_port.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_Design.py. path error to modal_port.txt template. check relative paths")
             print("attempted filepath: ", filepath)
             return               
         with open(filepath) as f:
@@ -193,7 +206,7 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.calculatorTemplatesDir, 'ports',"auto_port.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Simulation.py. path error to auto_port.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_Design.py. path error to auto_port.txt template. check relative paths")
             print("attempted filepath: ", filepath)
             return               
         with open(filepath) as f:
@@ -202,7 +215,7 @@ class DesignTemplate:
         return tmpStr
 
 
-    def addOpenExistingProjectBase(self, projectPath, projectName = "GeneratedHFSSProject"):
+    def addOpenExistingProjectBase(self, fullPath):
         # src\simulation_integrator\ANSYS\code_templates\open-file\open-existing-project-base.txt
         # print("templateGen_design prints")
         # print("projectPath: " + str(projectPath))
@@ -210,17 +223,23 @@ class DesignTemplate:
         
         filepath = os.path.join(self.templateBaseDir, 'open-file', 'open-existing-project-base.txt')
         if os.path.isfile(filepath) == False:
-            print("ERROR: batch-test.py. path error to open-existing-project-base.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_Design. path error to open-existing-project-base.txt template. check relative paths")
             print("attempted filepath: ", filepath)
             return
+
+        # print("PROJECT PATH!!!!!! in templateGen_Design")
+        # print(fullPath) # this is correct at this point
+
 
         with open(filepath) as f:
             for line in f.readlines():
                 if re.search('INSERT_PROJECT_PATH', line):
-                    li = str(projectPath) # repr(projectPath)[1:-1]#strip extra quotes. # this conversion is now done when the path is loaded in & converted to a string
+                    li = repr(fullPath)[1:-1]#strip extra quotes. 
                     line = re.sub('INSERT_PROJECT_PATH', li, line)
                 elif re.search('INSERT_PROJECT_NAME', line):
-                    li = str(projectName)
+                    directory_path, filename = os.path.split(fullPath)
+                    name, extension = os.path.splitext(filename)
+                    li = str(name)
                     line = re.sub('INSERT_PROJECT_NAME', li, line)  
                 self.templateTxt.append(line)
 
@@ -232,17 +251,17 @@ class DesignTemplate:
         #src\simulation_integrator\ANSYS\code_templates\parameter\parameter-edit-middle.txt        
         filepath = os.path.join(self.templateBaseDir, 'parameter', 'parameter-base.txt')
         if os.path.isfile(filepath) == False:
-            print("ERROR: batch-test.py. path error to parameter-base.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_Design.py. path error to parameter-base.txt template. check relative paths")
             print("attempted filepath: ", filepath)
             return        
         endFile = os.path.join(self.templateBaseDir, 'parameter', 'parameter-edit-end.txt')
         if os.path.isfile(endFile) == False:
-            print("ERROR: batch-test.py. path error to parameter-edit-end.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_Design.py. path error to parameter-edit-end.txt template. check relative paths")
             print("attempted filepath: ", endFile)
             return
         startFile = os.path.join(self.templateBaseDir, 'parameter', 'parameter-edit-middle.txt')
         if os.path.isfile(startFile) == False:
-            print("ERROR: batch-test.py. path error to parameter-edit-middle.txt template. check relative paths")
+            print("ERROR: ANSYS/templateGen_Design.py. path error to parameter-edit-middle.txt template. check relative paths")
             print("attempted filepath: ", startFile)
             return
 
@@ -291,7 +310,7 @@ class DesignTemplate:
         #src\simulation_integrator\ANSYS\code_templates\parameter\parameter-edit-single.txt
         filepath = os.path.join(self.templateBaseDir, 'parameter', 'parameter-edit-single.txt')
         if os.path.isfile(filepath) == False:
-            print("ERROR: batch-test.py. path error to parameter-edit-single.txt template. check relative paths")
+            print("ERROR: templateGen_Design.py. path error to parameter-edit-single.txt template. check relative paths")
             print("attempted filepath: ", filepath)
             return      
         
@@ -344,7 +363,6 @@ class DesignTemplate:
                                               cMaterial, gpMaterial, units, networkType)
 
 
-
     def slottedRectangularPatchScriptGenerator(self, Lr,Lh,Lv,l,fx,Pr,Wr,Wu,w,fy,
                                                substrateHeight, substrateLength, substrateWidth,
                                                cMaterial="copper", gpMaterial="copper",sMaterial="FR4_epoxy",units="mm", networkType="modal"):
@@ -352,7 +370,6 @@ class DesignTemplate:
                                                substrateHeight, substrateLength, substrateWidth,
                                                                 cMaterial, gpMaterial,sMaterial,units, networkType)
   
-
 
     def dualBandSerpentineScriptGenerator(self, fy, px, py, lp, wp,
                                           ps1, ls1, ws1, ps2, ls2, ws2,
@@ -376,7 +393,6 @@ class DesignTemplate:
                                                         #groundLength, groundWidth,
                                                         substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units, networkType)
-
 
 
     def circularLoopScriptGenerator(self, outerRad, innerRad, feedWidth, inset, gapDist,
@@ -408,7 +424,6 @@ class DesignTemplate:
                                                         cMaterial, gpMaterial, sMaterial, units, networkType)
 
 
-
     def planarBowtieScriptGenerator(self, l, w, feedWidth, gapDist,
                                     #groundLength, groundWidth, 
                                     substrateHeight, substrateLength, substrateWidth,
@@ -418,9 +433,6 @@ class DesignTemplate:
                                     substrateHeight, substrateLength, substrateWidth,
                                                         cMaterial, gpMaterial, sMaterial, units, networkType)
 
-
-        
-        
 
     def twoArmSquareSpiralScriptGenerator(self, initLength, initWidth, width, x0, y0, spacing, 
                                           #groundLength, groundWidth, 
