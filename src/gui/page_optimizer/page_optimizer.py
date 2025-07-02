@@ -237,7 +237,8 @@ class OptimizerPage(wx.Panel):
 #
 # populateDetectedKeywords()   : called by btnDetectClicked()
 # check_and_set_optimizer_params() : called by btnApplyClicked()
-# checkCanBeFloat()            : called by btnApplyClicked()
+# checkCanBeFloat()            : called by btnApplyClicked(), unless checkIfInvalidValueIgnored() is used
+# checkIfInvalidValueIgnored() : callbed by btnApplyClicked()
 #
 #  set_up_optimizer()          : called by btnSelectClicked()
 #  export_optimizer_settings() : called by btnExportClicked()
@@ -266,9 +267,9 @@ class OptimizerPage(wx.Panel):
             # check if the vals can be converted to floats (to cover ints and other number formats).
             # they dont stay floats since it's not an actual conversion.
             # check if f is UNCHECKED (being used) and originalVal value is NOT NUMERIC
-            checkIsOnlyNumbers = self.checkCanBeFloat(b,f) 
+            checkIsOnlyNumbers = self.checkIfInvalidValueIgnored(b,f) 
             if checkIsOnlyNumbers == False:
-                wx.MessageBox('Parameters used for optimization must be numbers (Int or Floats), not NaN or strings.', 'Error', wx.OK | wx.ICON_ERROR)
+                wx.MessageBox('Parameters used for optimization must be numbers (Int or Floats), not NaN or strings. Ignore any non numeric values', 'Error', wx.OK | wx.ICON_ERROR)
                 return  
 
             paramInput[str(a)] = pd.Series([b,c,d,e,f])
@@ -303,6 +304,7 @@ class OptimizerPage(wx.Panel):
         # send a value from self.paramList to make sure that the string value can be converted
         # to a float. This will rule out any NaN, nan, None, True, False, or string vals
         # the optimization algs can ONLY take numbers
+
         try:
             if (origVal.lower()=='nan') or (origVal.lower()=='none'):
                 if ignoreBool == False:
@@ -311,6 +313,21 @@ class OptimizerPage(wx.Panel):
             return True
         except:
             return False
+
+    def checkIfInvalidValueIgnored(self,  origVal, ignoreBool):
+        # complementary to checkCanBeFloat(). 
+        # This function is for when you only care if a NON-IGNORED value can be a float
+        
+        if ignoreBool == True:
+            return True #we don't care, because it's not used by the optimizer
+        # if not ignored, check if it can be a float
+        try:
+            float(origVal)
+            return True
+        except:
+            # value cannot be a float, but ignore is NOT checked, so there's a problem
+            return False
+
 
 
     def set_up_optimizer(self, optimizerName, noError):
