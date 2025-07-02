@@ -23,7 +23,9 @@ def coplanarKeyholeScriptGenerator(parent, outerRad, innerRad, feedWidth, feedLe
         print("attempted filepath: ", filepath)
         return
 
-    projectPath = repr(parent.saveProjectAs)  #full save location
+    
+    saveProjectAs = parent.getFullProjectPath()
+    projectPath = repr(saveProjectAs)  #full save location
     outerRadVal = str(outerRad) + " " + str(units)
     innerRadVal = str(innerRad) + " " + str(units)
     feedWidthVal = str(feedWidth) + " " + str(units)
