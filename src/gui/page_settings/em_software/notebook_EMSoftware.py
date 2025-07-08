@@ -26,7 +26,7 @@ FEKO_EXECUTABLE = c.FEKO_EXECUTABLE
 
 class EMSoftwareNotebook(wx.Notebook):
     def __init__(self, parent, controller):
-        wx.Notebook.__init__(self, parent=parent, size=(450, -1))
+        wx.Notebook.__init__(self, parent=parent, size=(400, -1))
         self.parent = parent # the widget control, used to control the notebook UI
         self.controller = controller # the control class that's 1 step above
 
