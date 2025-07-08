@@ -6,7 +6,7 @@
 #   NOTE: add hooks back in for the other EM sim softwares here post 2024.0
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: July 6, 2025
 ##--------------------------------------------------------------------\
 
 import os
@@ -50,6 +50,9 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
         self.ckbxUseAsDefaultSoftware = wx.CheckBox(self, label="Use as Default EM Simulation Software")
         self.ckbxUseAsDefaultSoftware.SetValue(False)
         self.ckbxUseAsDefaultSoftware.Bind(wx.EVT_CHECKBOX, self.ckbxUseAsDefaultSoftwareChecked)
+
+        # 
+
 
         # sizers
         # btn sizers
@@ -112,6 +115,9 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
                 if self.executable  in files:
                     fullPath = os.path.join(root, self.executable )
                     self.fullExePath = fullPath
+                    # #save this path with the save settings button on the Settings Page
+                    # self.parent.triggerSettingsPageSaveButtonClick()
+                    # return
                     return fullPath
         return self.defaultNoExe
 

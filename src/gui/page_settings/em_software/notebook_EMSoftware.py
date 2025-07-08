@@ -7,7 +7,7 @@
 #
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: July 6, 2025
 ##--------------------------------------------------------------------\
 
 import wx
@@ -25,9 +25,11 @@ EMPIRE_EXECUTABLE = c.EMPIRE_EXECUTABLE
 FEKO_EXECUTABLE = c.FEKO_EXECUTABLE
 
 class EMSoftwareNotebook(wx.Notebook):
-    def __init__(self, parent):
+    def __init__(self, parent, controller):
         wx.Notebook.__init__(self, parent=parent, size=(450, -1))
-        self.parent = parent
+        self.parent = parent # the widget control, used to control the notebook UI
+        self.controller = controller # the control class that's 1 step above
+
         self.SetBackgroundColour(MAIN_BACKGROUND_COLOR)
 
         self.defaultEM = None
@@ -108,6 +110,10 @@ class EMSoftwareNotebook(wx.Notebook):
         #     self.page_cst.uncheckMakeDefaultEMSoftware()
         #     self.page_empire.uncheckMakeDefaultEMSoftware()
 
+
+
+    def triggerSettingsPageSaveButtonClick(self):
+        self.controller.saveSettingsPage()
             
     def applyLoadedProjectSettings(self, PC):
         self.page_ansys.applyLoadedProjectSettings(PC)
