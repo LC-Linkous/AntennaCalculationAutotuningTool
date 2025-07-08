@@ -4,7 +4,7 @@
 #   Class for GUI layout and basic functionality - sidebar of buttons
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: July 6, 2025
 ##--------------------------------------------------------------------\
 
 import wx
@@ -136,6 +136,7 @@ class ButtonMenuPanel(wx.Panel):
         self.parent.panel_mainUI.panel_settings.Show()
         self.parent.panel_mainUI.panel_optimizer.Hide()
         self.parent.Layout() 
+        self.parent.panel_mainUI.panel_settings.updateSettingsProjectInformation()
 
     def btnOptimizerClicked(self):
         self.parent.panel_mainUI.panel_project.Hide()
