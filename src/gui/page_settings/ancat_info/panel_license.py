@@ -46,17 +46,15 @@ class LicenseNotebookPage(wx.Panel):
         self.setCommentText()
     
     def setCommentText(self):
-        s = " Lorem ipsum dolor sit amet, consectetur adipiscing elit." \
-        " Fusce metus dolor, ultrices in blandit sit amet, dictum id velit. Nullam scelerisque " \
-        "velit bibendum dui placerat, eget euismod ligula malesuada. Vestibulum cursus nulla est," \
-        " et feugiat nisl gravida ut. Donec eleifend dui ac lorem ullamcorper tempus. Aenean pharetra ipsum interdum, egestas mauris nec, ultrices odio. Maecenas lobortis, justo ac vehicula finibus, nisl " \
-        "turpis vulputate sapien, in tempus mauris felis in enim. Mauris finibus vulputate neque. Vivamus consequat sapien et eros euismod, a dignissim arcu maximus. Aenean pellentesque risus ut sem ullamcorper" \
-        " sagittis.Sed nec posuere sem. Curabitur ultrices tellus elit, eu iaculis justo consequat vitae. Nulla laoreet congue rutrum. Orci varius natoque penatibus et magnis dis parturient montes," \
-        " nascetur ridiculus mus. Ut et ultricies felis, lacinia aliquet erat. Phasellus rhoncus, odio blandit ornare fermentum, quam dui hendrerit ante, sed molestie lacus tortor iaculis nunc. Sed consectetur " \
-        "orci luctus, luctus felis vel, suscipit lectus. Mauris facilisis, arcu ac finibus fermentum, quam odio mollis quam, elementum tempor diam ligula a odio. Nunc congue aliquet pulvinar. Praesent feugiat orci" \
-        " quis orci hendrerit, ac malesuada velit ornare. Nam efficitur turpis eu mauris interdum eleifend. Integer varius risus libero, eget auctor felis fringilla tempor. " \
-        "Donec fermentum nibh est, at posuere leo mollis ac. Maecenas at tortor leo. Pellentesque consectetur libero ut arcu pulvinar sodales. Mauris fermentum quam tellus, ut eleifend mi condimentum a. "
-
+        s = "\n\t The core AntennaCAT software has been released under the GNU GENERAL PUBLIC LICENSE Version 2 (GPL-2.0) license." \
+        "This license in full is available on the AntennaCAT repo and with a copy of this code in the LICENSE file. " \
+        "\n\t HOWEVER, not all software included in this suite has been released under the GPL-2.0 license. Included dependencies, such as the " \
+        "Antenna Calculator and the optimizer implementations, may have been released by their respective creators under a different license. " \
+        "These dependencies may be under a more restrictive (or less restrictive) license. " \
+        "AntennaCAT's license does NOT take priority over those software - they are modularly integrated for educational purposes, and not all of" \
+        "them were designed for AntennaCAT. Refer to the documentation for links to these dependencies and their respective licenses." \
+        "\n\t" \
+       
         self.commentTxt.SetLabel(s)
 
 
