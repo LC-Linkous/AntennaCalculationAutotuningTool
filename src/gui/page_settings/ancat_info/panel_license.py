@@ -54,7 +54,8 @@ class LicenseNotebookPage(wx.Panel):
         "AntennaCAT's license does NOT take priority over those software - they are modularly integrated for educational purposes, and not all of" \
         "them were designed for AntennaCAT. Refer to the documentation for links to these dependencies and their respective licenses." \
         "\n\t" \
-       
+
+      
         self.commentTxt.SetLabel(s)
 
 
