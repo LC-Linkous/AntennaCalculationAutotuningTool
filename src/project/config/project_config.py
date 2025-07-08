@@ -6,7 +6,7 @@
 #   at the topmost levels
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: July 6, 2025
 ##--------------------------------------------------------------------\
 import os
 import pandas as pd
@@ -35,6 +35,7 @@ class ProjectConfiguration:
         self.projectResultsDir = None
         self.projectName = None 
         self.emSoftwareProjectName = None
+        self.fullPath = None # this is the path as returned from the browser. used for err check
         #script file information
         # design and loop scripts have been broken up into several scripts
         # 1) the model design
@@ -121,6 +122,12 @@ class ProjectConfiguration:
     # results directory: this is where everything generated from the project is saved
     # project name: includes the file extension, but not the path
     #################################################
+
+    def setFullPath(self, s):
+        self.fullPath = s
+
+    def getFullPath(self):
+        return self.fullPath
 
     def setProjectDirectory(self, s):
         self.projectDir = s

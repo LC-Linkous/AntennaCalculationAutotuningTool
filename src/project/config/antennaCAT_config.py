@@ -14,6 +14,9 @@ import wx
 DEBUG = True
 ANTENNACAT_EXE = False  #update to TRUE to use the exe path configs
 
+ANTENNACAT_VERSION = "2025.1"
+
+
 # GUI visuals
 ## default frame/panel sizes
 WIDTH = 1300
