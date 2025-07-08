@@ -163,7 +163,7 @@ class GFrame(wx.Frame):
 
 
 
-        # For when funning AntennaCAT in an IDE
+        # For when running AntennaCAT in an IDE
             # currently no extra code needed
             # set path vars in config files
             
