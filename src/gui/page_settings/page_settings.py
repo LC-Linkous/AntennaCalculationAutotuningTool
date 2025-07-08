@@ -4,7 +4,7 @@
 #   Class for user settings and config inputs
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: October 25, 2023
+#   Last update: July 6, 2025
 ##--------------------------------------------------------------------\
 
 # system level imports
@@ -17,9 +17,13 @@ import wx.lib.newevent
 # local imports
 import project.config.antennaCAT_config as c
 from gui.page_settings.em_software.notebook_EMSoftware import EMSoftwareNotebook
-from gui.page_settings.user_settings.notebook_userSettings import UserSettingsNotebook
-from gui.page_settings.project_information.panel_projectInformation import ProjectInformationPage
-from gui.page_settings.project_settings.notebook_projectSettings import ProjectSettingsNotebook
+# from gui.page_settings.user_settings.notebook_userSettings import UserSettingsNotebook
+#from gui.page_settings.project_information.panel_projectInformation import ProjectInformationPage
+# from gui.page_settings.project_configuration.panel_projectInformation import ProjectInformationPage
+#from gui.page_settings.project_settings.notebook_projectSettings import ProjectSettingsNotebook
+from gui.page_settings.project_configuration.notebook_projectSettings import ProjectSettingsNotebook
+from gui.page_settings.ancat_info.notebook_anCATInfo import AnCATInformationNotebook
+
 
 sys.path.insert(0, './project/')
 from project.antennaCAT_project import AntennaCATProject
@@ -39,19 +43,17 @@ class SettingsPage(wx.Panel):
 
         # upper left EM settings notebok
         boxSoftwareSettings = wx.StaticBox(self, label='EM Software Settings')
-        self.notebook_softwareSettings = EMSoftwareNotebook(boxSoftwareSettings)
-
-        # upper right project information
-        boxProjectInformation = wx.StaticBox(self, label='Project Information')
-        self.panel_projectInformation = ProjectInformationPage(boxProjectInformation, self.DC, self.PC)
-
-        # lower left user settings
-        boxUserSettings = wx.StaticBox(self, label='User Settings')
-        self.notebook_userSettings = UserSettingsNotebook(boxUserSettings, self.PC)
-        
-        # lower right project settings
+        self.notebook_softwareSettings = EMSoftwareNotebook(boxSoftwareSettings, self) # pass in controller class
+       
+        # lower left project settings
         boxProjectSettings= wx.StaticBox(self, label='Project Settings')
         self.notebook_projectSettings = ProjectSettingsNotebook(boxProjectSettings, self.DC, self.PC)
+
+        
+        # right project information
+        boxProjectInformation = wx.StaticBox(self,  label='AntennaCAT Information')
+        self.panel_projectInformation = AnCATInformationNotebook(boxProjectInformation)
+
 
         #TODO: make panel for:
         # "show me first simulation"  "always autorun" "parallel simulations"
@@ -68,23 +70,19 @@ class SettingsPage(wx.Panel):
         softwareSettingSizer.Add(self.notebook_softwareSettings, 1, wx.ALL | wx.EXPAND, border=10)
         boxSoftwareSettings.SetSizer(softwareSettingSizer)
         
-        # project info sizer
-        projectInfoSizer = wx.BoxSizer(wx.VERTICAL)
-        projectInfoSizer.AddSpacer(15)
-        projectInfoSizer.Add(self.panel_projectInformation, 1, wx.ALL | wx.EXPAND, border=10)
-        boxProjectInformation.SetSizer(projectInfoSizer)
-
-        # user settings sizer
-        userSettingsSizer = wx.BoxSizer(wx.VERTICAL)
-        userSettingsSizer.AddSpacer(15)
-        userSettingsSizer.Add(self.notebook_userSettings, 1, wx.ALL | wx.EXPAND, border=10)
-        boxUserSettings.SetSizer(userSettingsSizer)
-
         # project setting sizer
         projectSettingSizer = wx.BoxSizer(wx.VERTICAL)
         projectSettingSizer.AddSpacer(15)
         projectSettingSizer.Add(self.notebook_projectSettings, 1, wx.ALL | wx.EXPAND, border=10)
         boxProjectSettings.SetSizer(projectSettingSizer)
+
+
+        # # project info sizer
+        projectInfoSizer = wx.BoxSizer(wx.VERTICAL)
+        projectInfoSizer.AddSpacer(15)
+        projectInfoSizer.Add(self.panel_projectInformation, 1, wx.ALL | wx.EXPAND, border=10)
+        boxProjectInformation.SetSizer(projectInfoSizer)
+
 
         # btn sizer 
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -92,21 +90,27 @@ class SettingsPage(wx.Panel):
         btnSizer.Add(self.saveBtn, 0, wx.ALL, border=15)
 
         ## main sizer
-        pageSizer = wx.BoxSizer(wx.VERTICAL)
+        pageSizer = wx.BoxSizer(wx.HORIZONTAL)
         
-        topSizer = wx.BoxSizer(wx.HORIZONTAL)
-        topSizer.Add(boxSoftwareSettings, 1, wx.ALL | wx.EXPAND, border=15)
-        topSizer.Add(boxProjectInformation, 1, wx.ALL | wx.EXPAND, border=15)
-        
-        middleSizer = wx.BoxSizer(wx.HORIZONTAL)
-        middleSizer.Add(boxUserSettings, 1, wx.ALL | wx.EXPAND, border=15)
-        middleSizer.Add(boxProjectSettings, 1, wx.ALL | wx.EXPAND, border=15)
+        leftSizer = wx.BoxSizer(wx.VERTICAL)
+        leftSizer.Add(boxSoftwareSettings, 1, wx.ALL | wx.EXPAND, border=15)
+        leftSizer.Add(boxProjectSettings, 1, wx.ALL | wx.EXPAND, border=15)
 
-        pageSizer.Add(topSizer, 1, wx.ALL | wx.EXPAND, border=0)
-        pageSizer.Add(middleSizer, 1, wx.ALL | wx.EXPAND, border=0)
-        pageSizer.Add(btnSizer, 0, wx.ALL | wx.EXPAND, border=0)
+        rightSizer= wx.BoxSizer(wx.VERTICAL)
+        rightSizer.Add(boxProjectInformation, 1, wx.ALL | wx.EXPAND, border=15)
+        rightSizer.Add(btnSizer, 0, wx.ALL | wx.EXPAND, border=0)
+
+        pageSizer.Add(leftSizer, 1, wx.ALL | wx.EXPAND, border=0)
+        pageSizer.Add(rightSizer, 1, wx.ALL | wx.EXPAND, border=0)
+
        
         self.SetSizer(pageSizer)
+
+
+    def saveSettingsPage(self):
+        # called from other sub-classes to force a save after specific updates
+        # seperate to make it clear where the trigger is coming from in debug
+        self.btnSaveClicked()
 
 
     def btnSaveClicked(self, evt=None):
@@ -123,8 +127,6 @@ class SettingsPage(wx.Panel):
                     print(e)
 
 
-        #TODO: read everything into PC properly
-        # still need the author, comments, save options, run options, etc
 
         #get the EM software choices
         ems = self.notebook_softwareSettings.getDefaultEMSoftware()
@@ -144,10 +146,13 @@ class SettingsPage(wx.Panel):
         if DEBUG == True:
             print("EM software saved in page_settings.py")    
 
+
+    def updateSettingsProjectInformation(self):
+        self.notebook_projectSettings.updateSettingsProjectInformation()
+
     def applyLoadedProjectSettings(self, PC):
         self.notebook_softwareSettings.applyLoadedProjectSettings(PC)
-        self.panel_projectInformation.applyLoadedProjectSettings(PC)
-        self.notebook_userSettings.applyLoadedProjectSettings(PC)        
+
         self.notebook_projectSettings.applyLoadedProjectSettings(PC)
 
     
