@@ -17,7 +17,7 @@ MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
 class AnCATInformationNotebook(wx.Notebook):
     def __init__(self, parent):
-        wx.Notebook.__init__(self, parent=parent, size=(450, -1))
+        wx.Notebook.__init__(self, parent=parent, size=(475, -1))
         self.parent = parent
         self.SetBackgroundColour(MAIN_BACKGROUND_COLOR)
        
