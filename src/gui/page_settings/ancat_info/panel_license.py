@@ -27,8 +27,10 @@ class LicenseNotebookPage(wx.Panel):
         commentScroll.SetAutoLayout(1)
         commentScroll.SetupScrolling()
         self.commentTxt = wx.StaticText(commentScroll, style=wx.TE_MULTILINE|wx.TE_RICH, size=(450, -1))
-        self.commentTxt.Wrap(200)
-        self.commentTxt.SetBackgroundColour((235,235,235))
+        self.commentTxt.Wrap(450)
+        self.commentTxt.SetBackgroundColour((240,240,240))
+        font = wx.Font(11, wx.DEFAULT, wx.NORMAL, wx.NORMAL)
+        self.commentTxt.SetFont(font)
 
         # comments
         commentSizer = wx.BoxSizer(wx.VERTICAL)
