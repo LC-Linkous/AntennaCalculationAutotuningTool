@@ -20,7 +20,7 @@ MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
 class ProjectSettingsNotebook(wx.Notebook):
     def __init__(self, parent, DC, PC):
-        wx.Notebook.__init__(self, parent=parent, size=(450, -1))
+        wx.Notebook.__init__(self, parent=parent, size=(400, -1))
         self.parent = parent
         self.DC = DC
         self.PC = PC
