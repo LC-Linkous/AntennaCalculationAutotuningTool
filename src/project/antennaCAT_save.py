@@ -4,7 +4,7 @@
 #   Class for saving antennaCAT projects
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: July 6, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -57,6 +57,8 @@ class SaveAntennaCATProject():
         self.PC.setProjectDirectory(projDir)
         self.PC.setResultsDirectory(resultsDir) #full path
         self.PC.setProjectName(catFile)  
+        self.PC.setFullPath(filepath) # this is everything. mostly used for backup if something is weird
+
         #save project
         #checks file exists
         filepath = os.path.join(resultsDir, catFile)

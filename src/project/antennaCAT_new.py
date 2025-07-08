@@ -31,7 +31,7 @@ class NewAntennaCATProject():
         self.PC.setProjectDirectory(projDir)
         self.PC.setResultsDirectory(resultsDir) #full path
         self.PC.setProjectName(catFile)  
-
+        self.PC.setFullPath(filepath) # this is everything. mostly used for backup if something is weird
     
     def splitPathIntoParts(self, filepath):
         pathArr = os.path.split(filepath) #head, tail. Makes sure no file selected by accident

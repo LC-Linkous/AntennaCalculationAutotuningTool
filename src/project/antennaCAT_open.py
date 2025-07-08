@@ -35,6 +35,8 @@ class OpenAntennaCATProject():
         self.PC.setProjectDirectory(projDir)
         self.PC.setResultsDirectory(newDir) #full path
         self.PC.setProjectName(catFile)
+        self.PC.setFullPath(filepath) # this is everything. mostly used for backup if something is weird
+
 
         self.openFileAndSetProjectValues(filepath)
 
