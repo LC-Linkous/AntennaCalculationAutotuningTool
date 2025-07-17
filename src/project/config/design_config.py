@@ -5,7 +5,7 @@
 #   This class contains values that will change between iterations
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: July 16, 2024
 ##--------------------------------------------------------------------\
 
 import pandas as pd
@@ -17,6 +17,11 @@ class DesignConfiguration:
         # physical model design
         self.designParams = pd.DataFrame({})     #the calculated or provided params sorted by name
         self.designFeatures = pd.DataFrame({})   # values such as the layer composition or num elements
+        # precision settings - these are used with the calculator and 
+        #       other vals so often it's easier to make them a design config than a project config
+        self.numericalPrecisionParameters = pd.DataFrame({})
+        self.numericalPrecisionParameters["default_units"] = pd.Series('mm')
+        self.numericalPrecisionParameters["numerical_precision"] = pd.Series(4)
         #optimizer
         self.optimizerParameters = pd.DataFrame({})
         # simulation
@@ -75,6 +80,13 @@ class DesignConfiguration:
         # physical model design
         self.designParams = pd.DataFrame({})     #the calculated or provided params sorted by name
         self.designFeatures = pd.DataFrame({})   # values such as the layer composition or num elements
+        
+        # numerical precision
+        self.numericalPrecisionParameters = pd.DataFrame({})
+        self.numericalPrecisionParameters["default_units"] = pd.Series('mm')
+        self.numericalPrecisionParameters["calculator_precision"] = pd.Series(4)
+        self.numericalPrecisionParameters["optimizer_precision"] = pd.Series(4)
+        
         # simulation
         self.simulationSettings = pd.DataFrame({})
         self.simulationSettings["simulation_frequency"] = pd.Series(2.4e9)
@@ -227,6 +239,24 @@ class DesignConfiguration:
             self.leadChar = ""
         elif EMsoftware == 'FEKO':
             self.leadChar = ""
+
+    #
+    # Numerical precision and default units
+    #
+
+    def setDefaultUnits(self, units):
+        self.numericalPrecisionParameters["default_units"] = pd.Series(units)
+
+    def getDefaultUnits(self):
+       return  self.numericalPrecisionParameters["default_units"][0]
+
+    def setNumericalPrecision(self, i):
+        self.numericalPrecisionParameters["numerical_precision"] = pd.Series(i)
+
+    def getNumericalPrecision(self):
+       return  self.numericalPrecisionParameters["numerical_precision"][0]
+    
+
 
 #************************************************************************       
 # These couple conversion sections are a mess due to some late additions 
