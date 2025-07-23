@@ -4,7 +4,7 @@
 #   Class for project settings
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: July 6, 2025
+#   Last update: July 23, 2025
 ##--------------------------------------------------------------------\
 
 import wx
@@ -26,7 +26,7 @@ class AnCATInformationNotebook(wx.Notebook):
 
         
         self.AddPage(self.page_ancat, "AntennaCAT")
-        self.AddPage(self.page_license, "License")
+        self.AddPage(self.page_license, "License Summary")
 
 
 
