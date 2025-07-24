@@ -291,6 +291,10 @@ class OptimizerPage(wx.Panel):
         msg = str(paramsCheckedCtr) + " parameters selected for optimization."
         self.updateStatusText(msg)
 
+        # Save this
+
+
+
 
     def populateDetectedKeywords(self, paramVals):
         #read design params into class variables
@@ -398,8 +402,17 @@ class OptimizerPage(wx.Panel):
 
                 # this is NOT a fatal condition (yet)
 
+
+
+        # set the decimial precision value
+        
+        decimalPrecision = self.DC.getNumericalPrecision()
+        optimizerParams['numerical_precision'] = pd.Series(decimalPrecision)
+
                
         self.OI.setOptimizerParams(optimizerParams)
+
+
 
         # get the data collection bools
         saveLog, saveOptimizer, saveData = self.notebook_optimizer.getDataCollectionBools()
