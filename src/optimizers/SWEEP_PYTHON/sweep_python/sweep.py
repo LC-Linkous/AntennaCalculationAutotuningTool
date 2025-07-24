@@ -38,10 +38,16 @@ class sweep:
                     parent=None, 
                     evaluate_threshold=False, obj_threshold=None,
                     useSurrogateModel=False,  # This optimizer cannot use an internal optimizer
-                    surrogateOptimizer=None): # used for format streamlining
+                    surrogateOptimizer=None,  # used for format streamlining
+                    decimal_limit = 4): # set precision 
 
         # Optional parent class func call to write out values that trigger constraint issues
         self.parent = parent 
+
+        self.number_decimals = int(decimal_limit)  # limit the number of decimals
+                                                    # used in cases where real life has limitations on resolution
+
+
 
         #evaluation method for targets
         # True: Evaluate as true targets
@@ -106,13 +112,16 @@ class sweep:
 
             # use NO_OF_PARTICLES to set if this a multi agent search or not
             # first 'particle'
-            self.M = np.array([lbound])  # at least 1 particle strats at the lower bounds
+            self.M = np.round(np.array([lbound]), self.number_decimals)
+                              # at least 1 particle starts at the lower bounds
 
 
             # any other agents (if they exist they're assigned random starting locs)
             for i in range(2,int(NO_OF_PARTICLES)+1):
-                new_M = np.multiply((self.rng.random((1,np.max([heightl, widthl])))), variation)+ lbound
-                self.M = np.vstack([self.M, new_M])
+                M = np.round(np.array(np.multiply(self.rng.random((1,np.max([heightl, widthl]))), variation)+lbound), self.number_decimals)
+                self.M = \
+                    np.vstack([self.M, 
+                               M])
 
             '''
             self.M                      : An array of current search location(s).
@@ -311,7 +320,7 @@ class sweep:
             rand_num = self.rng.uniform(lower, upper)
             random_numbers.append(rand_num)
 
-        self.M[particle] = random_numbers
+        self.M[particle] = np.round(random_numbers, self.number_decimals)
 
 
     def check_global_local(self, Flist, particle):
