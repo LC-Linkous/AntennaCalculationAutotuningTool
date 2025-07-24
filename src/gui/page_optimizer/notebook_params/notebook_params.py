@@ -17,16 +17,17 @@ from gui.page_optimizer.notebook_params.panel_paramSettings import ParamSettings
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
 class ParamsNotebook(wx.Notebook):
-    def __init__(self, parent):
+    def __init__(self, parent, DC):
         wx.Notebook.__init__(self, parent=parent) #, size=(500, -1))
         self.parent = parent
+        self.DC = DC
         self.SetBackgroundColour(MAIN_BACKGROUND_COLOR)
 
-        self.page_parameters = DetectedBoundaryParameterDynamicScrollPanel(self)
-        self.page_settings = ParamSettingsPanel(self)
+        self.page_parameters = DetectedBoundaryParameterDynamicScrollPanel(self, self.DC)
+        #self.page_settings = ParamSettingsPanel(self)  # this is done on the SETTINGS PAGE. reduces confusion
 
         self.AddPage(self.page_parameters, "Controllable Parameters")
-        self.AddPage(self.page_settings, "Settings") 
+        #self.AddPage(self.page_settings, "Settings") 
     
     def btnDetectClicked(self, evt=None):
         self.parent.btnDetectClicked(evt)
