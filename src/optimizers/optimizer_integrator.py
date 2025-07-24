@@ -110,7 +110,8 @@ class OptimizerIntegrator():
         self.controllableParams = pd.DataFrame({}) # detected/applied vals from page_optimizer
         self.optimizerParams = pd.DataFrame({}) #params processed for the optimizer
         self.targetMetrics = None # class var so not called once per loop
-    
+        self.decimalPrecision = 4 # the default for numbers after the decimal
+
         self.simRunningBool = False
         self.dataProcessingDone = True
 
@@ -180,6 +181,13 @@ class OptimizerIntegrator():
         self.saveOptimizerData = saveOptimizer
         self.saveReportData = saveData
     
+    def setPrecision(self, n):
+        self.decimalPrecision = int(n)
+    
+    def getPrecision(self):
+        return self.decimalPrecision
+
+
 
 ####################################################
 # Reset vars
@@ -875,8 +883,7 @@ class OptimizerIntegrator():
             # reportExportScript = self.SO.getReportEditTemplateScript()
 
 
-            # #write all of them out to file to read the damn things
-
+            # #write all of them out to file to read 
             # with open("designScript_"+str(stpCtr)+".txt", "w") as file:
             #     file.writelines(designScript)
 
@@ -929,7 +936,7 @@ class OptimizerIntegrator():
             # reportExportScript = self.SO.getReportEditTemplateScript()
 
 
-            # #write all of them out to file to read the damn things
+            # #write all of them out to file to read 
 
             # with open("designScript_"+str(stpCtr)+".txt", "w") as file:
             #     file.writelines(designScript)
@@ -969,7 +976,7 @@ class OptimizerIntegrator():
         reportExportScript = self.SO.getReportEditTemplateScript()
 
 
-        # #write all of them out to file to read the damn things
+        # #write all of them out to file to read the 
 
         # with open("designScript_"+str(stpCtr)+".txt", "w") as file:
         #     file.writelines(designScript)
