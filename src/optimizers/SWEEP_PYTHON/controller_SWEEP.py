@@ -81,6 +81,7 @@ class CONTROLLER_SWEEP():
         MAX_RES = [float(optimizerParams['max_res'][0])]                   # max search resolution (for adaptive search)
 
 
+        DECIMALS = int(optimizerParams['numerical_precision'][0])
         THRESHOLD = list(optimizerParams['target_threshold'][0])          # Threshold symbols ["=", "≤", "≥"]
 
         self.useSurrogateModel = optimizerParams['use_surrogate_bool'][0]   # UPDATE THIS IN THE UI. The model is set up from an external call, (where the swarm obj is created)
@@ -125,7 +126,8 @@ class CONTROLLER_SWEEP():
                                 evaluate_threshold=self.evaluate_threshold, 
                                 obj_threshold=self.THRESHOLD, 
                                 useSurrogateModel=self.useSurrogateModel, 
-                                surrogateOptimizer=self.sm_opt)    
+                                surrogateOptimizer=self.sm_opt,
+                                decimal_limit=DECIMALS)        
     
         msg = "optimizer configured"
         self.debug_message_printout(msg)
