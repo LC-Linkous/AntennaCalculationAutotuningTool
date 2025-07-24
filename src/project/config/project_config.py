@@ -406,3 +406,112 @@ class ProjectConfiguration:
 
     def resetReportsBool(self):
         self.setReportExportConfigBool(False)
+
+
+
+    #################################################
+    # EXPORT
+    #################################################
+
+    def export_PC(self):
+        # This is turned into a dataframe and exported properly in the driver class.
+        # That way the file format and naming are always set to whatever the most updated version is
+
+        PC_export = {            
+            'str_simulationSoftwarePath': [self.simulationSoftwarePath],
+            'str_simulationSoftware': [self.simulationSoftware],
+            'int_numSimulationLicenses': [self.numSimulationLicenses],
+            'bool_useSingleLicense': [self.useSingleLicense],
+            'str_defaultEMSoftware': [self.defaultEMSoftware],
+
+
+            'obj_optimizer': [self.optimizer],
+
+            'str_projectDir': [self.projectDir],
+            'str_projectResultsDir': [self.projectResultsDir],
+            'str_projectName': [self.projectName],
+            'str_emSoftwareProjectName': [self.emSoftwareProjectName],
+            'str_fullPath': [self.fullPath],
+
+
+            'bool_designConfigCreated': [self.designConfigCreated],
+            'bool_designScriptCreated': [self.designScriptCreated],
+            'str_designScriptPath': [self.designScriptPath],
+            'str_designFileName': [self.designFileName],
+
+            'bool_simulationConfigCreated': [self.simulationConfigCreated],
+            'bool_simulationImportedConfigCreated': [self.simulationImportedConfigCreated],
+            'str_simulationScriptPath': [self.simulationScriptPath],
+            'str_simulationFileName': [self.simulationFileName],
+
+            'bool_parameterEditConfigCreated': [self.parameterEditConfigCreated],
+            'str_parameterEditScriptPath': [self.parameterEditScriptPath],
+            'str_parameterEditFileName': [self.parameterEditFileName],
+
+            'bool_reportExportConfigCreated': [self.reportExportConfigCreated],
+            'str_reportExportPath': [self.reportExportPath],
+            'str_reportExportFileName': [self.reportExportFileName],
+
+            'str_ImportedProjectPath': [self.ImportedProjectPath],
+            'str_importedDXFPath': [self.importedDXFPath],
+
+            'bool_useCalculatedConductor': [self.useCalculatedConductor],
+            'bool_useImportedConductor': [self.useImportedConductor]}        
+       
+        return PC_export # this is turned into a dataframe in the driver class
+    
+
+    #################################################
+    # IMPORT
+    #################################################
+
+    def import_PC(self, PC_import):
+        # DC_import is a DF of DFs
+
+        noError = False
+
+        try:
+            self.simulationSoftwarePath= PC_import['str_simulationSoftwarePath'][0] 
+            self.simulationSoftware= PC_import['str_simulationSoftware'][0] 
+            self.numSimulationLicenses= PC_import['int_numSimulationLicenses'][0] 
+            self.useSingleLicense= PC_import['bool_useSingleLicense'][0] 
+            self.defaultEMSoftware= PC_import['str_defaultEMSoftware'][0] 
+
+            self.optimizer= PC_import['obj_optimizer'][0] 
+
+            self.projectDir= PC_import['str_projectDir'][0] 
+            self.projectResultsDir= PC_import['str_projectResultsDir'][0] 
+            self.projectName= PC_import['str_projectName'][0] 
+            self.emSoftwareProjectName= PC_import['str_emSoftwareProjectName'][0] 
+            self.fullPath= PC_import['str_fullPath'][0] 
+            
+            self.designConfigCreated= PC_import['bool_designConfigCreated'][0] 
+            self.designScriptCreated= PC_import['bool_designScriptCreated'][0] 
+            self.designScriptPath= PC_import['str_designScriptPath'][0] 
+            self.designFileName= PC_import['str_designFileName'][0] 
+
+            self.simulationConfigCreated= PC_import['bool_simulationConfigCreated'][0] 
+            self.simulationImportedConfigCreated= PC_import['bool_simulationImportedConfigCreated'][0] 
+            self.simulationScriptPath= PC_import['str_simulationScriptPath'][0] 
+            self.simulationFileName= PC_import['str_simulationFileName'][0] 
+
+            self.parameterEditConfigCreated= PC_import['bool_parameterEditConfigCreated'][0] 
+            self.parameterEditScriptPath= PC_import['str_parameterEditScriptPath'][0] 
+            self.parameterEditFileName= PC_import['str_parameterEditFileName'][0] 
+
+            self.reportExportConfigCreated= PC_import['bool_reportExportConfigCreated'][0] 
+            self.reportExportPath= PC_import['str_reportExportPath'][0] 
+            self.reportExportFileName= PC_import['str_reportExportFileName'][0] 
+
+            self.ImportedProjectPath= PC_import['str_ImportedProjectPath'][0] 
+            self.importedDXFPath= PC_import['str_importedDXFPath'][0] 
+
+            self.useCalculatedConductor= PC_import['bool_useCalculatedConductor'][0] 
+            self.useImportedConductor= PC_import['bool_useImportedConductor'][0] 
+
+            noError = True
+        except:
+            print("Error in design_config.py importing information from saved file")
+
+        return noError
+
