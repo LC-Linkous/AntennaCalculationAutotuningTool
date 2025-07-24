@@ -186,7 +186,7 @@ def select_domlevel(Plist, Flist, alfa_in, active, tol_active_points, level):
 
     return sel_level, Plist, Flist, alfa
 
-def select_pollcenter(Plist, Flist, alfa, radius, active, tol_active_points):
+def select_pollcenter(Plist, Flist, alfa, radius, active, tol_active_points, num_decimals): 
     level = 0
     sel_level = 0
 
@@ -217,6 +217,12 @@ def select_pollcenter(Plist, Flist, alfa, radius, active, tol_active_points):
     Plist = np.hstack([np.vstack(Plist[:, int(index)]),
                        Plist[:, 0:int(index)],
                        Plist[:, (int(index)+1):(mlist)]])
+    
+    # can round here to make sure to get everything, but there might be a better place for the math
+    # Plist = np.round(np.hstack([np.vstack(Plist[:, int(index)]),
+    #                Plist[:, 0:int(index)],
+    #                Plist[:, (int(index)+1):(mlist)]]), num_decimals)
+
     Flist = np.hstack([np.vstack(Flist[:, int(index)]),
                        Flist[:, 0:int(index)],
                        Flist[:, (int(index)+1):(mlist)]])

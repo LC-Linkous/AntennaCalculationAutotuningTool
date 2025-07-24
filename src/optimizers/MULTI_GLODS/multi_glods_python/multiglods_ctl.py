@@ -35,8 +35,9 @@ except:# for local, unit testing
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_alg import select_pollcenter
 
 
+
 def one_time_init(NO_OF_VARS, LB, UB, TARGETS, E_TOL, R_TOL, MAXIT,
-                              BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD):    
+                              BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD, number_decimals):        
 
     LB = np.vstack(np.array(LB))
     UB = np.vstack(np.array(UB))
@@ -48,7 +49,7 @@ def one_time_init(NO_OF_VARS, LB, UB, TARGETS, E_TOL, R_TOL, MAXIT,
     alg = {'lbound': LB,
            'ubound': UB, 'targets': TARGETS, 'threshold': THRESHOLD, 'evaluate_threshold': evaluate_threshold, 
             'err_tol_stop': E_TOL, 'tol_stop': R_TOL, 'beta_par': BP, 'gamma_par': GP, 'poll_complete': 0,
-           'search_freq': SF}
+           'search_freq': SF, 'number_decimals': number_decimals}
     
     nn = np.shape(alg['lbound'])[0]
     if NO_OF_VARS > 1:
@@ -68,7 +69,7 @@ def one_time_init(NO_OF_VARS, LB, UB, TARGETS, E_TOL, R_TOL, MAXIT,
 
     ctl = {'func_eval': 0, 'match': 0, 'func_iter': 0, 'objective_iter': 0, 'eval': 0, 'finite': 0,
            'search_loop': 0, 'poll_loop': 0, 'i': 0, 'sel_level': 0,
-           'Flist': [], 'D': [], 'count_d': [], 'nd': [], 'maxit': MAXIT, 
+           'Flist': [], 'D': [], 'count_d': [], 'nd': [], 'maxit': MAXIT, 'number_decimals': number_decimals,
            'obj_func': obj_func, 'constr_func': constr_func}
     init = []
     run_ctl = {'search_size': prob['n'], 'iter': 0,
@@ -264,7 +265,7 @@ def pre_objective_poll(prob, ctl, run_ctl, alg):
             prob['alfa'], prob['radius'], prob['active'] = \
             select_pollcenter(prob['Plist'], ctl['Flist'],
                               prob['alfa'], prob['radius'],
-                              prob['active'], alg['tol_stop'])
+                              prob['active'], alg['tol_stop'], ctl['number_decimals'])
 
         if sel_level:
             nd = np.shape(D)[1]
@@ -287,7 +288,7 @@ def pre_objective_poll(prob, ctl, run_ctl, alg):
     ctl['sel_level'] = sel_level
     ctl['count_d'] = count_d
     ctl['nd'] = nd
-    prob['xtemp'] = xtemp
+    prob['xtemp'] = np.round(xtemp, ctl['number_decimals'])
 
     return prob, ctl, run_ctl
 

@@ -48,7 +48,8 @@ class multi_glods:
                     parent=None, 
                     evaluate_threshold=False, obj_threshold=None,
                     useSurrogateModel=False,  # This optimizer cannot use an internal optimizer
-                    surrogateOptimizer=None): # used for format streamlining
+                    surrogateOptimizer=None,  # used for format streamlining
+                    decimal_limit = 4):      # this is used in this optimizer
 
 
         # vars for using surrogate model
@@ -69,8 +70,8 @@ class multi_glods:
 
    
         #reformat since multi_glods needs single []
-        # LB = LB[0]
-        # UB = UB[0]
+        LB = LB[0]
+        UB = UB[0]
 
         # enforce typing
         NO_OF_VARS = int(len(LB))
@@ -96,13 +97,10 @@ class multi_glods:
                 THRESHOLD = np.array(obj_threshold).reshape(-1, 1) #np.array
         
 
-
-
-
         self.init, self.run_ctl, self.alg, \
             self.prob, self.ctl, self.state = \
                 one_time_init(NO_OF_VARS, LB, UB, TARGETS, E_TOL, R_TOL, MAXIT,
-                              BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD)
+                              BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD, decimal_limit)
 
         self.prob['parent'] = parent
         self.done = 0

@@ -32,21 +32,23 @@ def inc_iter(ctl, run_ctl):
 
     return run_ctl
 
-# replicate 
-def replicate(v, M):
-    if np.ndim(v) < 2:
-        v = np.array([v])
+# replicate - NOT USED. 
+# Included to support features not yet integrated from the original MultiGLODS
+# 
+# def replicate(v, M):
+#     if np.ndim(v) < 2:
+#         v = np.array([v])
 
-    M_new = np.hstack([M, np.tile(v[0][0], (np.shape(M)[0], 1))])
-    if (np.shape(v)[0] > 1):
-        for i in np.linspace(2, np.shape(v)[0], np.shape(v)[0]-1):
-            M_new = np.vstack([M_new,
-                               np.hstack([M,
-                                          np.tile(v[int(i-1)],
-                                                  (np.shape(M)[0],
-                                                   1))])])
+#     M_new = np.hstack([M, np.tile(v[0][0], (np.shape(M)[0], 1))])
+#     if (np.shape(v)[0] > 1):
+#         for i in np.linspace(2, np.shape(v)[0], np.shape(v)[0]-1):
+#             M_new = np.round(np.vstack([M_new,
+#                                np.hstack([M,
+#                                           np.tile(v[int(i-1)],
+#                                                   (np.shape(M)[0],
+#                                                    1))])])
 
-    return M_new
+#     return M_new
 
 # logical indexing
 def logical_index_1d(log_idx, list_in):
@@ -142,30 +144,32 @@ def logical_index_h2d_Plist(log_idx, list):
 
     return ret_list
 
-# logical indexing
-def logical_index_v2d(log_idx, list):
-    log_idx = copy.deepcopy(log_idx)
-    log_idx = log_idx.astype(int)
-    ret_list = list
+# # logical indexing -NOT USED. 
+# Included to support features not yet integrated from the original MultiGLODS
+# 
+# def logical_index_v2d(log_idx, list):
+#     log_idx = copy.deepcopy(log_idx)
+#     log_idx = log_idx.astype(int)
+#     ret_list = list
 
-    if np.shape(np.shape(list))[0]:
+#     if np.shape(np.shape(list))[0]:
 
-        if np.shape(np.shape(list))[0] > 1:
-            if np.shape(list)[0] > np.shape(list)[1]:
-                length = np.shape(list)[0]
-            else:
-                length = np.shape(list)[1]
-        else:
-            length = np.shape(list)[0]
-        count = 0
-        for i in range(0, length):
-            if log_idx[i]:
-                ret_list[count, :] = list[i, :]
-                count = count + 1
+#         if np.shape(np.shape(list))[0] > 1:
+#             if np.shape(list)[0] > np.shape(list)[1]:
+#                 length = np.shape(list)[0]
+#             else:
+#                 length = np.shape(list)[1]
+#         else:
+#             length = np.shape(list)[0]
+#         count = 0
+#         for i in range(0, length):
+#             if log_idx[i]:
+#                 ret_list[count, :] = list[i, :]
+#                 count = count + 1
 
-        ret_list = ret_list[0:count, :]
+#         ret_list = ret_list[0:count, :]
 
-    return ret_list
+#     return ret_list
 
 # set value from logical index
 def logical_set_val(log_idx, list, val):
@@ -219,7 +223,7 @@ def print_debug(run_ctl, state, ctl, prob, init, alg, NO_OF_LOOPS, INSPECT_LOOP)
 def  f_eval(state, xlist, prob, location):
     state['evaluate'] = 1
     state['location'] = location
-    prob['xtemp'] = xlist   
+    prob['xtemp'] = xlist   # here prob['xtemp'] is being set with prob['xtemp'] from multiglods.py
     return state, prob
 
 # handle objective function return at appropriate call location
@@ -238,18 +242,7 @@ def f_eval_return(state, prob, alg, location):
                                                     alg['targets'],
                                                     alg['evaluate_threshold'],
                                                     alg['threshold'])
-    
-        
-        # # IF TARGET:
-        # if alg['evaluate_threshold'] == False:
-        #     prob['Ftemp'] = abs(alg['targets']-prob['FValtemp'])
 
-            # target format here is:
-            # [[0]
-            #  [0]]
-
-        # IF THRESHOLD:
-        
     return state, prob
 
 # call objective function, allow it to update when desired
@@ -365,4 +358,3 @@ def objective_function_evaluation(Fvals, targets, evaluate_threshold, obj_thresh
 
 
         return Flist
-        
