@@ -14,7 +14,7 @@ import wx
 DEBUG = True
 ANTENNACAT_EXE = False  #update to TRUE to use the exe path configs
 
-ANTENNACAT_VERSION = "2025.1"
+ANTENNACAT_VERSION = "2025.1.1" #W11 patch
 
 
 # GUI visuals
