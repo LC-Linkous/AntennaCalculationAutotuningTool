@@ -44,7 +44,7 @@ class BatchPage(wx.Panel):
 
         # controllable parameters panel (dynamically populated) (top left)
         boxControl = wx.StaticBox(self, label='Controllable Parameters', size=(-1, 150))
-        self.scrollPanel = DetectedBoundaryParameterDynamicScrollPanel(boxControl)
+        self.scrollPanel = DetectedBoundaryParameterDynamicScrollPanel(boxControl, self.DC)
 
         # settings and summary notebooks
         self.notebook_summary = SummaryNotebook(self)

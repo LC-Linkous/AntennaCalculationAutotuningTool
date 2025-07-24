@@ -14,9 +14,10 @@ import wx.lib.scrolledpanel as scrolled
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
 class DetectedBoundaryParameterDynamicScrollPanel(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, DC):
         wx.Panel.__init__(self, parent=parent)
         self.parent = parent
+        self.DC = DC
 
         self.numRows = 0
 
@@ -145,6 +146,7 @@ class DetectedBoundaryParameterDynamicScrollPanel(wx.Panel):
         minN = 0
         maxN = 0
         varPercent = float(varPercent)
+        decimalPrecision = self.DC.getNumericalPrecision()
         try:
             if (t == None) or (t=="None"):
                 ignoreVal == True
@@ -152,8 +154,8 @@ class DetectedBoundaryParameterDynamicScrollPanel(wx.Panel):
                 n = float(t)
                 minN = n * (1-varPercent)
                 maxN = n * (1+varPercent)
-                minN = format(minN, '.5f')
-                maxN = format(maxN, '.5f')
+                minN = round(minN, decimalPrecision)
+                maxN = round(maxN, decimalPrecision)
                 ignoreVal=False
         except:
             ignoreVal = True
@@ -162,9 +164,10 @@ class DetectedBoundaryParameterDynamicScrollPanel(wx.Panel):
 
     def formatDisplay(self, t):
         t = t.strip('\"')
+        decimalPrecision = self.DC.getNumericalPrecision()
         try:
             n = float(t)
-            t = format(n, '.5f')
+            t = str(round(n, decimalPrecision))
             ignoreVal=False
         except:
             ignoreVal = True

@@ -52,7 +52,7 @@ class OptimizerPage(wx.Panel):
         self.notebook_optimizer = OptimizerNotebook(self, self.DC, self.PC, self.SO)
         self.notebook_optimizer.SetMaxSize(wx.Size(-1, 450))  # set a max so the controllable parameters menu is readable
         # controllable parameters panel
-        self.notebook_params  = ParamsNotebook(self)
+        self.notebook_params  = ParamsNotebook(self, self.DC)
         # summary notebook
         self.notebook_summary = SummaryNotebook(self)
 
