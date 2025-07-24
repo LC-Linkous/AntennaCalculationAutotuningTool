@@ -66,7 +66,7 @@ class DesignConfiguration:
 
         #layers 
         self.conductorLayers = []
-        self.substrateLaters = []
+        self.substrateLayers = []
         self.superstrateLayers = []
         # bend & shape
         # TODO
@@ -84,8 +84,7 @@ class DesignConfiguration:
         # numerical precision
         self.numericalPrecisionParameters = pd.DataFrame({})
         self.numericalPrecisionParameters["default_units"] = pd.Series('mm')
-        self.numericalPrecisionParameters["calculator_precision"] = pd.Series(4)
-        self.numericalPrecisionParameters["optimizer_precision"] = pd.Series(4)
+        self.numericalPrecisionParameters["numerical_precision"] = pd.Series(4)
         
         # simulation
         self.simulationSettings = pd.DataFrame({})
@@ -534,13 +533,80 @@ class DesignConfiguration:
         return self.conductorLayers 
 
     def setSubstrateLayers(self, arr):
-        self.substrateLaters = arr
+        self.substrateLayers = arr
 
     def getSubstrateLayers(self):
-        return self.substrateLaters 
+        return self.substrateLayers 
     
     def setSuperstrateLayers(self, arr):
         self.superstrateLayers = arr
 
     def getSuperstrateLayers(self):
         return self.superstrateLayers 
+
+
+    #################################################
+    # EXPORT
+    #################################################
+
+    def export_DC(self):
+        # This is turned into a dataframe and exported properly in the driver class.
+        # That way the file format and naming are always set to whatever the most updated version is
+
+        DC_export = {            
+            # dataframes
+            'df_designParams': [self.designParams],
+            'df_designFeatures': [self.designFeatures],
+            'df_numericalPrecisionParameters': [self.numericalPrecisionParameters],
+            'df_optimizerParameters': [self.optimizerParameters],
+            'df_simulationSettings': [self.simulationSettings],
+            'df_simulationReports': [self.simulationReports],
+            'arr_importedScript': [self.importedScript],
+            'arr_designScript': [self.designScript],
+            'arr_simulationScript': [self.simulationScript],
+            'arr_reportsScript': [self.reportsScript],
+            'arr_batchScript': [self.batchScript],
+            'arr_lastParamEditScript': [self.lastParamEditScript],
+            'arr_reportExportScript': [self.reportExportScript],
+            'arr_conductorLayers': [self.conductorLayers],
+            'arr_substrateLayers': [self.substrateLayers],
+            'arr_superstrateLayers': [self.superstrateLayers]}        
+       
+        return DC_export # this is turned into a dataframe in the driver class
+    
+
+    #################################################
+    # IMPORT
+    #################################################
+
+    def import_DC(self, DC_import):
+        # DC_import is a DF of DFs
+
+        noError = False
+
+        try:
+
+            self.designParams= DC_import['df_designParams'][0] 
+            self.designFeatures= DC_import['df_designFeatures'][0] 
+            self.numericalPrecisionParameters= DC_import['df_numericalPrecisionParameters'][0] 
+            self.optimizerParameters= DC_import['df_optimizerParameters'][0] 
+            self.simulationSettings= DC_import['df_simulationSettings'][0] 
+            self.simulationReports= DC_import['df_simulationReports'][0] 
+            self.importedScript= DC_import['arr_importedScript'][0] 
+
+            self.designScript= DC_import['arr_designScript'][0]
+            self.simulationScript= DC_import['arr_simulationScript'][0]
+            self.reportsScript= DC_import['arr_reportsScript'][0]
+            self.batchScript= DC_import['arr_batchScript'][0]
+            self.lastParamEditScript= DC_import['arr_lastParamEditScript'][0]
+            self.reportExportScript= DC_import['arr_reportExportScript'][0]
+            self.conductorLayers= DC_import['arr_conductorLayers'][0]
+            self.substrateLayers= DC_import['arr_substrateLayers'][0]
+            self.superstrateLayers= DC_import['arr_superstrateLayers'][0]
+
+            noError = True
+        except:
+            print("Error in design_config.py importing information from saved file")
+
+        return noError
+
