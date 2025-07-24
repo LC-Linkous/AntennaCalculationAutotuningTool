@@ -9,7 +9,7 @@
 #      
 #
 #   Author(s): Lauren Linkous
-#   Last update: May 30, 2025
+#   Last update: July 23, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -25,7 +25,8 @@ class BayesianOptimization:
     # func, func,
     # dataFrame,
     # class obj, 
-    # bool, [int, int, ...]) 
+    # bool, [int, int, ...], 
+    # int) 
     #  
     # opt_df contains class-specific tuning parameters
     # NO_OF_PARTICLES: int
@@ -40,11 +41,15 @@ class BayesianOptimization:
                  parent=None, 
                  evaluate_threshold=False, obj_threshold=None,
                  useSurrogateModel=False,  # This optimizer cannot use an internal optimizer
-                 surrogateOptimizer=None): # used for format streamlining
+                 surrogateOptimizer=None, # used for format streamlining
+                 decimal_limit = 4): # set precision
 
         
         # Optional parent class func call to write out values that trigger constraint issues
         self.parent = parent 
+
+        self.number_decimals = int(decimal_limit)  # limit the number of decimals
+                                              # used in cases where real life has limitations on resolution
 
 
         #evaluation method for targets
@@ -67,11 +72,13 @@ class BayesianOptimization:
 
 
 
+
         #unpack the opt_df standardized vals
         init_points = int(opt_df['INIT_PTS'][0])
         n_restarts = int(opt_df['NUM_RESTARTS'][0])
         xi = float(opt_df['XI'][0])
-
+        self.sm = opt_df['SM_MODEL'][0] #No force type, this is a class object
+        
 
         # problem height and width
         heightl = np.shape(lbound)[0]
@@ -158,9 +165,6 @@ class BayesianOptimization:
             self.objective_function_case = 0 #initial pts by default
         
 
-
-
-
     def call_objective(self, allow_update=False):
 
        # may have re-run in an upstream optimizer
@@ -175,7 +179,7 @@ class BayesianOptimization:
 
         # case 0: first point of initial points (must have minimum 1)
         if self.objective_function_case == 0:
-            new_M = self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound))
+            new_M = np.round(self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound)), self.number_decimals)
             newFVals, noError = self.obj_func(new_M[0], self.output_size)  # Cumulative Fvals
 
             if noError == True:
@@ -190,7 +194,7 @@ class BayesianOptimization:
 
         # case 1: any other initial points before optimiation begins
         elif self.objective_function_case == 1:
-            new_M = self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound))
+            new_M = np.round(self.rng.uniform(self.lbound.reshape(1,-1)[0], self.ubound.reshape(1,-1)[0], (1, len(self.ubound))).reshape(1,len(self.ubound)), self.number_decimals)
             newFVals, noError = self.obj_func(new_M[0], self.output_size) 
             if noError == True:
                 self.Fvals = np.array([newFVals]).reshape(-1, 1) 
@@ -296,20 +300,26 @@ class BayesianOptimization:
 
         return Flist
         
-
-    # SURROGATE MODEL CALLS
+    # SURROGATE MODEL FUNCS
+    # testing moving these from the controller class. 
     def fit_model(self, x, y):
         # call out to parent class to use surrogate model
-        self.parent.fit_model(x,y)
+        self.sm.fit(x,y)
 
     def model_predict(self, x) : #, outvar):
         # call out to parent class to use surrogate model
-        mu, noError = self.parent.model_predict(x)
+        # mu, noError = self.parent.model_predict(x)
+        #'mean' is regressive definition. not statistical
+        #'variance' only applies for some surrogate models
+        mu, noError = self.sm.predict(x, self.output_size)
         return mu, noError
     
     def model_get_variance(self):
-        sigma = self.parent.model_get_variance()
-        return sigma
+        # sigma = self.parent.model_get_variance()
+        # return sigma
+        variance = self.sm.calculate_variance()
+        return variance
+
 
     # COMPLETION CHECKS
     def converged(self):
@@ -395,7 +405,7 @@ class BayesianOptimization:
             min_x = self.rng.uniform(self.lbound.reshape(1, -1)[0], self.ubound.reshape(1, -1)[0])
 
 
-        return np.array([min_x])
+        return np.round(np.array([min_x]), self.number_decimals)
 
 
     def minimize(self, x0, max_iter=100, tol=1e-6):
@@ -425,9 +435,9 @@ class BayesianOptimization:
 
 
     def step(self, suppress_output=False):
-
         if not suppress_output:
-            msg = "\n-----------------------------\n" + \
+            if self.ctr < self.init_points:
+                msg = "\n-----------------------------\n" + \
                 "STEP #" + str(self.iter) +"\n" + \
                 "-----------------------------\n" + \
                 "Completed Initial Sample #" + str(self.ctr) + " of " + str(self.init_points) + "\n" +\
@@ -438,10 +448,24 @@ class BayesianOptimization:
                 "Best Particle Position: \n" +\
                 str(np.hstack(self.Gb)) + "\n" +\
                 "-----------------------------"
+            else:
+                msg = "\n-----------------------------\n" + \
+                "STEP #" + str(self.iter) +"\n" + \
+                "-----------------------------\n" + \
+                "Initial samples done, now running optimizer\n" +\
+                "Last Proposed Point:\n" + \
+                str(self.new_point) +"\n" + \
+                "Best Fitness Solution: \n" +\
+                str(np.linalg.norm(self.F_Gb)) +"\n" +\
+                "Best Particle Position: \n" +\
+                str(np.hstack(self.Gb)) + "\n" +\
+                "-----------------------------"
+
+
+
             self.debug_message_printout(msg)
 
-        if self.allow_update:      
-
+        if self.allow_update:     
             #initialize the first couple runs
             if self.doneInitializationBoolean == False:
                 #1) the initial points need to be run
@@ -467,7 +491,7 @@ class BayesianOptimization:
                     # get the sample points out (to ensure standard formatting)
                     x_sample, y_sample = self.get_sample_points()
                     # fit GP model.
-                    self.parent.fit_model(x_sample, y_sample)
+                    self.fit_model(x_sample, y_sample)
                     ### ABOVE HERE IS THE END OF THE FULL INITIALIZATION SETUP###
                     self.doneInitializationBoolean = True
                     
