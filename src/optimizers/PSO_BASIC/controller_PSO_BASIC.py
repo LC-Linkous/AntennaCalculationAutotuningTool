@@ -79,6 +79,7 @@ class CONTROLLER_PSO_BASIC():
         BOUNDARY = int(optimizerParams['boundary'][0])                    # int boundary 1 = random,      2 = reflecting
                                                                           #              3 = absorbing,   4 = invisible
 
+        DECIMALS = int(optimizerParams['numerical_precision'][0])
         THRESHOLD = list(optimizerParams['target_threshold'][0])          # Threshold symbols ["=", "≤", "≥"]
 
         self.useSurrogateModel = optimizerParams['use_surrogate_bool'][0]   # UPDATE THIS IN THE UI. The model is set up from an external call, (where the swarm obj is created)
@@ -153,7 +154,8 @@ class CONTROLLER_PSO_BASIC():
                                 evaluate_threshold=self.evaluate_threshold, 
                                 obj_threshold=self.THRESHOLD, 
                                 useSurrogateModel=self.useSurrogateModel, 
-                                surrogateOptimizer=self.sm_opt)    
+                                surrogateOptimizer=self.sm_opt,
+                                decimal_limit=DECIMALS)        
     
         msg = "optimizer configured"
         self.debug_message_printout(msg)
@@ -194,30 +196,30 @@ class CONTROLLER_PSO_BASIC():
     def get_optimized_outs(self):
         return self.optimizer.get_optimized_outs()
     
-######################################################
-# SURROGATE MODEL APPROXIMATOR FUNCS
-######################################################
+# ######################################################
+# # SURROGATE MODEL APPROXIMATOR FUNCS
+# ######################################################
 
-    def fit_model(self, x, y):
-        # call out to parent class to use surrogate model
-        self.sm_approx.fit(x,y)
+#     def fit_model(self, x, y):
+#         # call out to parent class to use surrogate model
+#         self.sm_approx.fit(x,y)
         
 
-    def model_predict(self, x, output_size=None):
-        # call out to parent class to use surrogate model
-        #'mean' is regressive definition. not statistical
-        #'variance' only applies for some surrogate models
+#     def model_predict(self, x, output_size=None):
+#         # call out to parent class to use surrogate model
+#         #'mean' is regressive definition. not statistical
+#         #'variance' only applies for some surrogate models
 
-        if output_size == None:
-            output_size = self.out_vars
+#         if output_size == None:
+#             output_size = self.out_vars
 
-        mean, noErrors = self.sm_approx.predict(x, output_size)
-        return mean, noErrors
+#         mean, noErrors = self.sm_approx.predict(x, output_size)
+#         return mean, noErrors
 
 
-    def model_get_variance(self):
-        variance = self.sm_approx.calculate_variance()
-        return variance
+#     def model_get_variance(self):
+#         variance = self.sm_approx.calculate_variance()
+#         return variance
 
  
 
