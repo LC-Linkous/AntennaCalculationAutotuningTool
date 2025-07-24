@@ -85,6 +85,7 @@ class CONTROLLER_CHICKEN_SWARM_2015():
         C = float(optimizerParams['c_factor'][0])                   # Learning factor. Weight of rooster location for current particle sub-group
         
 
+        DECIMALS = int(optimizerParams['numerical_precision'][0])
         THRESHOLD = list(optimizerParams['target_threshold'][0])          # Threshold symbols ["=", "≤", "≥"]
 
         self.useSurrogateModel = optimizerParams['use_surrogate_bool'][0]   # UPDATE THIS IN THE UI. The model is set up from an external call, (where the swarm obj is created)
@@ -162,7 +163,8 @@ class CONTROLLER_CHICKEN_SWARM_2015():
                                 evaluate_threshold=self.evaluate_threshold, 
                                 obj_threshold=self.THRESHOLD, 
                                 useSurrogateModel=self.useSurrogateModel, 
-                                surrogateOptimizer=self.sm_opt)    
+                                surrogateOptimizer=self.sm_opt,
+                                decimal_limit=DECIMALS)        
     
         msg = "optimizer configured"
         self.debug_message_printout(msg)
