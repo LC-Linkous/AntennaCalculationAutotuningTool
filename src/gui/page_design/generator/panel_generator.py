@@ -107,7 +107,10 @@ class GeneratorNotebookPage(wx.Panel):
 
         #Summary of numbers
         self.boxDesign = wx.StaticBox(self, label='Calculated Parameter Values:')
-        self.stDesign = wx.StaticText( self.boxDesign, style=wx.ALIGN_LEFT, size=(250, 120))
+        self.stDesign = wx.StaticText(self.boxDesign, style=wx.ALIGN_LEFT, size=(250, 120))
+        # Create and set a monospace font - this allows for the 
+        font = wx.Font(10, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName="Lucida Console")
+        self.stDesign.SetFont(font)
         self.updateDesignSummaryBox()
 
         #export generated options
@@ -438,15 +441,17 @@ class GeneratorNotebookPage(wx.Panel):
                 self.updateSummaryText(msg)
 
     def updateDesignSummaryBox(self):
+        decimalPrecision = self.DC.getNumericalPrecision()
         tmp = self.DC.getParams() #gets DF obj
         txt = "\n"
         for t in tmp:
             tName = t #name of column
             tVal = float(tmp[str(t)][0])
-             #catch the 'null' issue for rounding
-            try: v = str("{:.6}".format(round(tVal, 6))) +" mm"
+            #catch the 'null' issue for rounding
+            try: v = str(round(tVal, decimalPrecision)) +" mm"
             except: v = "NA"
-            txt = txt + str(tName) + ":\t" + str(v) + "\n"
+            # [:25] truncates long strings, :<25 pads short strings. num capped at 15 for now. shouldn't really be more than 8 or 9?
+            txt = txt + f"{str(tName)[:25]:<25}{str(v):<15}\n"
         self.stDesign.SetLabel(txt)
 
     def getExportSelections(self):
