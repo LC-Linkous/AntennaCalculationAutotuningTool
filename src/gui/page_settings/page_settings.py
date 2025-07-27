@@ -131,13 +131,27 @@ class SettingsPage(wx.Panel):
         #get the EM software choices
         ems = self.notebook_softwareSettings.getDefaultEMSoftware()
         softwareSelection, softwarePath, numLicenses, useSingle, defaultSoftware = self.notebook_softwareSettings.getEMSettings() #return a dataFrame to write to PC
+        
+        try:
+            numL = int(numLicenses)
+            if numL < 1:
+                msg = "The number of licenses for EM Simulation software must be an INTEGER greater than 0"
+                self.updateSummaryText(msg)
+                wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
+                return
+        except:
+                msg = "The number of licenses for EM Simulation software must be an INTEGER greater than 0"
+                self.updateSummaryText(msg)
+                wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
+                return
+
         self.PC.setSimulationSoftware(ems)
         self.PC.setSimulationSoftwarePath(str(softwarePath))
-        self.PC.setNumSimulationLicenses(float(numLicenses))
+        self.PC.setNumSimulationLicenses(numL)
         self.PC.setUseSingleLicense(useSingle)
         self.PC.setDefaultEMSoftware(defaultSoftware)      
 
-        self.SO.setupSI(softwareSelection, softwarePath, float(numLicenses))
+        self.SO.setupSI(softwareSelection, softwarePath, numL)
 
         #project save
         acp = AntennaCATProject(self.DC, self.PC, self.SO)
