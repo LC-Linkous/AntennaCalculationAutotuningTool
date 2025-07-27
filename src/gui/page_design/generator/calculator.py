@@ -107,10 +107,13 @@ class Calculator():
 
 
     def convertFromMetersToMillimeters(self, params):
+        # converts from m to mm AND applies the numerical precision
+
+        decimalPrecision = self.DC.getNumericalPrecision()
         convertedParams = []
         if type(params) == tuple: #rectangular patch
             for p in params:
-                pmm = round(float(p)*1000, 3) # convert and round to 3 decimal pts.
+                pmm = round(float(p)*1000, decimalPrecision) # convert and round to 3 decimal pts.
                 convertedParams.append(pmm)
         elif type(params)== float:  #monopole, dipole
             pmm = float(params)*1000
