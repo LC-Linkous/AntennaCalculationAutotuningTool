@@ -36,9 +36,9 @@ class PrecisionNotebookPage(wx.Panel):
 
         # Calculated value precision - for the calculator values
         # label and text box. 4 after decimal is default
-        lblCalcPrecision = wx.StaticText(boxPrecision, label="Calculator Decimal Precision:")
-        self.fieldCalcPrecision = wx.TextCtrl(boxPrecision, value="", size=(INPUT_BOX_WIDTH, 20))
-        self.fieldCalcPrecision.SetValue("4")
+        # lblCalcPrecision = wx.StaticText(boxPrecision, label="Calculator Decimal Precision:")
+        # self.fieldCalcPrecision = wx.TextCtrl(boxPrecision, value="", size=(INPUT_BOX_WIDTH, 20))
+        # self.fieldCalcPrecision.SetValue("4")
 
 
         # optimizer value precision 
@@ -54,11 +54,11 @@ class PrecisionNotebookPage(wx.Panel):
         boxInputRight = wx.BoxSizer(wx.VERTICAL)
         
         boxInputLeft.Add(lblUnit, 0, wx.ALL|wx.EXPAND, border=7)
-        boxInputLeft.Add(lblCalcPrecision, 0, wx.ALL|wx.EXPAND, border=7)
+        #boxInputLeft.Add(lblCalcPrecision, 0, wx.ALL|wx.EXPAND, border=7)
         boxInputLeft.Add(lblOptPrecision, 0, wx.ALL|wx.EXPAND, border=7)
 
         boxInputRight.Add(self.unitDropDown, 0, wx.ALL|wx.EXPAND, border=3)
-        boxInputRight.Add(self.fieldCalcPrecision, 0, wx.ALL|wx.EXPAND, border=3)
+        #boxInputRight.Add(self.fieldCalcPrecision, 0, wx.ALL|wx.EXPAND, border=3)
         boxInputRight.Add(self.fieldOptPrecision, 0, wx.ALL|wx.EXPAND, border=3)
 
 
@@ -85,7 +85,7 @@ class PrecisionNotebookPage(wx.Panel):
 
 
         try:
-            numPrecis = int(self.fieldCalcPrecision.GetValue())
+            numPrecis = int(self.fieldOptPrecision.GetValue())
         except:
             numPrecis = 4
             # todo, error message
