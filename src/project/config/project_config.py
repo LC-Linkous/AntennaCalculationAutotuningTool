@@ -93,7 +93,7 @@ class ProjectConfiguration:
         return self.simulationSoftware
     
     def setNumSimulationLicenses(self, s):
-        self.numSimulationLicenses = s
+        self.numSimulationLicenses = int(s)
 
     def getNumSimulationLicenses(self):
         return self.numSimulationLicenses
