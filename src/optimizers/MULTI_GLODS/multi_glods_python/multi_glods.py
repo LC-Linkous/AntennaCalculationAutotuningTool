@@ -120,20 +120,20 @@ class multi_glods:
                                                       allow_update)
         return noErrorBool
 
-    def export_glods(self):
+    def export_configuration(self):
         glods_export = {'init': self.init, 'run_ctl': self.run_ctl,
                         'alg': self.alg, 'prob': self.prob,
                         'ctl': self.ctl, 'state': self.state}
         return glods_export
     
-    def import_glods(self, glods_export, obj_func):
+    def import_configuration(self, glods_export) : #, obj_func):
         self.init = glods_export['init']
         self.run_ctl = glods_export['run_ctl']
         self.alg = glods_export['alg']
         self.prob = glods_export['prob']
         self.ctl = glods_export['ctl']
         self.state = glods_export['state']
-        self.ctl['obj_func'] = obj_func
+        #self.ctl['obj_func'] = obj_func #add this back with the streamline
 
     # swapping this version out for one that matches the AntennaCAT standard set
     # def complete(self):
