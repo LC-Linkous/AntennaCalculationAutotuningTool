@@ -4,13 +4,14 @@
 #   Class for saving antennaCAT projects
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: July 6, 2025
+#   Last update: July 28, 2025
 ##--------------------------------------------------------------------\
 
 
 import os
 import numpy as np
 import pandas as pd
+import copy
 import time
 
 import project.config.antennaCAT_config as c
@@ -22,7 +23,9 @@ class SaveAntennaCATProject():
     def __init__(self, DC, PC, SO):
         self.DC = DC  
         self.PC = PC
-        self.SO = SO
+        self.SO = SO# this might need to be removed. 
+                    # there's too many mem object passes. 
+                    # might be better to reconstruct
 
     def saveProjectFile(self):
         #checks file exists
@@ -38,8 +41,16 @@ class SaveAntennaCATProject():
         self.checkProjectFileExists(filepath)
 
         #write out to file
-        #TODO: switch this to the real format
-        self.saveTempDebugInfo(filepath)
+        ## set to dictionary, convert to df
+        PC_export = {            
+            'df_DC': [copy.deepcopy(self.DC.export_DC())],
+            'df_PC' : [copy.deepcopy(self.PC.export_PC())],
+            'df_SO': [copy.deepcopy(self.SO.export_SO())]}
+           
+
+        data_df = pd.DataFrame(PC_export)
+        data_df.to_pickle(filepath)
+
 
     def saveProjectFileAs(self, filepath):
         #make new project
