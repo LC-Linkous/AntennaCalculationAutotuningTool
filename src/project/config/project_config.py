@@ -511,7 +511,7 @@ class ProjectConfiguration:
 
             noError = True
         except:
-            print("Error in design_config.py importing information from saved file")
+            print("Error in project_config.py importing information from saved file")
 
         return noError
 
