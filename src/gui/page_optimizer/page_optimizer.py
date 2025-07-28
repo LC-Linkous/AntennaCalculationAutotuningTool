@@ -181,9 +181,9 @@ class OptimizerPage(wx.Panel):
         return self.optimizerSelected
 
 
-    def btnOpenClicked(self, pth):
+    def btnOpenClicked(self):
         #called from panels in optimizer notebook, calls OI function
-        self.OI.openSaved(pth)
+        self.OI.openSaved()
     
     def btnSelectClicked(self, optimizerName, noError):
         # TODO This should probably be pulled out one level higher or to a different file, 
