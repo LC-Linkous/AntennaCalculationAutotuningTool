@@ -26,6 +26,7 @@ class ProjectConfiguration:
         self.simulationSoftware = None
         self.numSimulationLicenses = None
         self.useSingleLicense = False
+        self.useStudentLicense = False
         self.defaultEMSoftware = None
         #optimizer memory
         self.optimizer = None
@@ -104,6 +105,12 @@ class ProjectConfiguration:
     def getUseSingleLicense(self):
         return self.useSingleLicense
     
+    def setUseStudentLicense(self, s):
+        self.useStudentLicense = s
+
+    def getUseStudentLicense(self):
+        return self.useStudentLicense
+
     def setDefaultEMSoftware(self, s):
         self.defaultEMSoftware = s
 
@@ -422,6 +429,7 @@ class ProjectConfiguration:
             'str_simulationSoftware': [self.simulationSoftware],
             'int_numSimulationLicenses': [self.numSimulationLicenses],
             'bool_useSingleLicense': [self.useSingleLicense],
+            'bool_useStudentLicense': [self.useStudentLicense],
             'str_defaultEMSoftware': [self.defaultEMSoftware],
 
 
@@ -475,6 +483,7 @@ class ProjectConfiguration:
             self.simulationSoftware= PC_import['str_simulationSoftware'][0] 
             self.numSimulationLicenses= PC_import['int_numSimulationLicenses'][0] 
             self.useSingleLicense= PC_import['bool_useSingleLicense'][0] 
+            self.useStudentLicense = PC_import['bool_useStudentLicense'][0]
             self.defaultEMSoftware= PC_import['str_defaultEMSoftware'][0] 
 
             self.optimizer= PC_import['obj_optimizer'][0] 
