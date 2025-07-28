@@ -481,19 +481,19 @@ class OptimizerIntegrator():
  
 
 
-    def openSaved(self, pth):
+    def openSaved(self):
         # TODO
         #opens saved optimizer progress/settings from non-antennaCAT file
         #has more processing here. 
+        # NOTE: no longer passing the path through multiple layers
 
-        # 1) check path exists
-        # 2) import as DF
+        # 1) open file browser
+        # 2) parse file as DF
         # 3) attempt import to optimizer (use try/except)
         # 4) if works fine (might not be right, but it imported), then output message
         # 5) if didn't work, output message via popup to make it harder to ignore
 
         msg = "Coming Soon! Optimizer Import Checks are Being Finalized"
-        self.updateSummaryText(msg)
         wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
     
     
