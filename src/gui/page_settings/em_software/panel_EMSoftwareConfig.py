@@ -109,15 +109,14 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
         self.btnAutodetect.SetLabel("Autodetect")
 
     def detectExectuablePath(self):
+        # TODO: make this non-blocking (maybe with asyncio)
         if self.executable is not None:
             rootPath = os.path.abspath(os.sep)
             for root, dirs, files in os.walk(rootPath):
                 if self.executable  in files:
                     fullPath = os.path.join(root, self.executable )
                     self.fullExePath = fullPath
-                    # #save this path with the save settings button on the Settings Page
-                    # self.parent.triggerSettingsPageSaveButtonClick()
-                    # return
+                    # do not autosave
                     return fullPath
         return self.defaultNoExe
 
