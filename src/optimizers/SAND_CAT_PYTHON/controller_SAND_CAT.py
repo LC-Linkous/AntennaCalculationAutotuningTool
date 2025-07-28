@@ -45,7 +45,11 @@ class CONTROLLER_SAND_CAT():
 
     def get_export_configuration(self):
         # returns dictionary to parent class
-        return self.optimizer.export_configuration()
+        return self.optimizer.export_swarm()
+
+    def set_import_configuration(self, import_df):
+        # passes in dataframe
+        return self.optimizer.import_swarm()
     
 
 ####################################################
