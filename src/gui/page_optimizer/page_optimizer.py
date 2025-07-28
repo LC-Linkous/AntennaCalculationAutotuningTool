@@ -199,7 +199,7 @@ class OptimizerPage(wx.Panel):
             self.updateStatusText(msg)
             return
 
-        self.export_optimizer_settings()        
+        self.OI.exportOptimizerConfigs()     
 
 
     def btnDetectClicked(self, evt=None):
@@ -241,7 +241,6 @@ class OptimizerPage(wx.Panel):
 # checkIfInvalidValueIgnored() : callbed by btnApplyClicked()
 #
 #  set_up_optimizer()          : called by btnSelectClicked()
-#  export_optimizer_settings() : called by btnExportClicked()
 #######################################################
 
 # TODO This should probably be pulled out one level higher or to a different file, 
@@ -433,33 +432,6 @@ class OptimizerPage(wx.Panel):
             self.OI.enableRun() 
 
 
-    def export_optimizer_settings(self):
-        
-        #GET optimizer state and write out current
-        st = self.OI.getState()
-
-        d = self.OI.getOptimizerDir()
-        msg = "optimizer directory is " + str(d)
-        self.updateStatusText(msg)
-        d = self.OI.getDataDir()
-        msg = "optimizer data directory is " + str(d)
-        self.updateStatusText(msg)
-
-        # TODO: Write out    
-        msg = "TODO: write out state to file"
-        self.updateStatusText(msg)
-
-        with wx.FileDialog(self, "Export optimizer state", wildcard="JSON (*.json)|*.json",
-                style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
-            if fileDialog.ShowModal() == wx.ID_CANCEL:
-                return     # user cancelled
-            pathname = fileDialog.GetPath()
-            try:
-                msg = "TODO: write out. path selected " + str(pathname)
-                self.updateStatusText(msg)
-            except Exception as e:
-                print(e)
- 
 
 #######################################################
 # Error checking
