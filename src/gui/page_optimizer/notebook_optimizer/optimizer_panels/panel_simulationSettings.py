@@ -144,7 +144,7 @@ class SolutionSettingsPanel(wx.Panel):
         saveData = self.cbSaveReports.GetValue()
         return saveLog, saveOptimizer, saveData
 
-    def btnApplyClicked(self, evt):
+    def btnApplyClicked(self, evt=None):
         #get vals from fields and set to DC
         self.updateDCValsFromUI()
         #self.updateAutoGenValues()
