@@ -43,6 +43,11 @@ class CONTROLLER_PSO_QUANTUM():
     def debug_message_printout(self, t):
         self.parent.updateStatusText(t)
 
+    def get_export_configuration(self):
+        # returns dictionary to parent class
+        return self.optimizer.export_configuration()
+    
+
 ####################################################
 # Toggle allow updates
 ####################################################
