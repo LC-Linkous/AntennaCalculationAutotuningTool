@@ -19,10 +19,14 @@ class SimulationNotebookPage(wx.Panel):
         self.parent = parent
         self.SetBackgroundColour(MAIN_BACKGROUND_COLOR)
 
-        boxSimulationRun = wx.StaticBox(self, label='Simulation Run Options')
+        boxSimulationRun = wx.StaticBox(self, label='Simulation Run Options (Coming Soon!)')
         self.rbFirst = wx.RadioButton(boxSimulationRun, label = 'Wait on First Simulation', style = wx.RB_GROUP) 
         self.rbEvery = wx.RadioButton(boxSimulationRun, label = 'Wait on Every Simulation')
-        self.rbAutomated = wx.RadioButton(boxSimulationRun, label = 'Automated Control')
+        self.rbAutomated = wx.RadioButton(boxSimulationRun, label = 'Automated Control (Default)')
+        self.rbFirst.Enable(False)
+        self.rbEvery.Enable(False)
+        self.rbAutomated.Enable(False)
+
         lblNote = wx.StaticText(boxSimulationRun, label="Selecting a 'wait' option will require the simulaiton software to be manually closed before the next will run")
         lblNote.Wrap(-1)
 
