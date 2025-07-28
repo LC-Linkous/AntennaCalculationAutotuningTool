@@ -280,8 +280,15 @@ class OptimizerPage(wx.Panel):
         # set to class varriable after checking if it's a valid setup
         self.paramInput = paramInput 
 
+        # NOTE: this has had a semi-recent swap to a df, so its no longer an ARRAY where
+        # the length trick is going to work. INSTEAD, get the number of columns for the TOTAL
+        # number of controllable variables detected
+        # leave this note until this edit has been propagated through the program
 
-        numControllable = len(self.paramInput) + 1
+        numControllable = self.paramInput.shape[1] #len(self.paramInput) + 1
+
+
+
         msg = str(numControllable) + " controllable parameters detected."
         self.updateStatusText(msg)
 
