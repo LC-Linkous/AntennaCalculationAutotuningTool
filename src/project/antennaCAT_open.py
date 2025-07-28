@@ -4,10 +4,11 @@
 #   Class for opening antennaCAT project
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: July 28, 2025
 ##--------------------------------------------------------------------\
 
 import os
+import pandas as pd
 
 import project.config.antennaCAT_config as c
 
@@ -15,7 +16,9 @@ class OpenAntennaCATProject():
     def __init__(self, DC, PC, SO):
         self.DC = DC
         self.PC = PC
-        self.SO = SO
+        self.SO = SO # this might need to be removed. 
+                    # there's too many mem object passes. 
+                    # might be better to reconstruct
 
     def openProjectFile(self, filepath):
         validProject = False
@@ -50,27 +53,46 @@ class OpenAntennaCATProject():
         return newDir, projDir, catFile
 
     def openFileAndSetProjectValues(self, filepath):
-        
-        #TODO: set the rest of it
-        self.readTempDebugInfo(filepath)
+        #TODO: needs detailed error checks for logging
+        # Also, figure out the SO set up bc that's not df based
 
-    def readTempDebugInfo(self, filepath):
-        tmpArr=[]
-        with open(filepath, 'r') as fp:
-            for line in fp.readlines():
-                line = line.strip()
-                tmpArr.append(line)
+        # read in the file
+        PC_import = pd.read_pickle(filepath) 
 
-        if len(tmpArr) > 0:
-            softwareSelection = str(tmpArr[0])
-            softwarePath = str(tmpArr[1])
-            numLicenses = float(tmpArr[2])
-            self.PC.setSimulationSoftware(softwareSelection)
-            self.PC.setSimulationSoftwarePath(softwarePath)
-            self.PC.setNumSimulationLicenses(numLicenses)
+        # set main shared objects
+        self.DC.import_DC(PC_import['df_DC'][0])
+        self.PC.import_PC(PC_import['df_PC'][0])
+        self.SO.import_SO(PC_import['df_SO'][0])
 
-            self.SO.setupSI(softwareSelection, softwarePath, numLicenses)
+        # SO is set up from vals from DC and PC
+        #self.SO.setupSI(softwareSelection, softwarePath, numLicenses)
+        self.SO.openFileSetupSI()
 
-        # else:
-        #     print("read in error with file in antennaCAT_open.py")
+
+        # after these are imported, higher up in the project structure
+        # it has to go down the list of major pages and set everything.
+        # That does not happen HERE
+
+
+
+
+    # def readTempDebugInfo(self, filepath):
+    #     tmpArr=[]
+    #     with open(filepath, 'r') as fp:
+    #         for line in fp.readlines():
+    #             line = line.strip()
+    #             tmpArr.append(line)
+
+    #     if len(tmpArr) > 0:
+    #         softwareSelection = str(tmpArr[0])
+    #         softwarePath = str(tmpArr[1])
+    #         numLicenses = float(tmpArr[2])
+    #         self.PC.setSimulationSoftware(softwareSelection)
+    #         self.PC.setSimulationSoftwarePath(softwarePath)
+    #         self.PC.setNumSimulationLicenses(numLicenses)
+
+    #         self.SO.setupSI(softwareSelection, softwarePath, numLicenses)
+
+    #     # else:
+    #     #     print("read in error with file in antennaCAT_open.py")
 
