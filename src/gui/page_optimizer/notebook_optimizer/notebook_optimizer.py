@@ -78,6 +78,7 @@ class OptimizerNotebook(wx.Notebook):
         self.parent.btnStopClicked()
 
     def btnOpenClicked(self):
+        #called from panel_OPTIMIZERNAME
         self.parent.btnOpenClicked()
     
     def btnSelectClicked(self, optimizerName, noError=True):
