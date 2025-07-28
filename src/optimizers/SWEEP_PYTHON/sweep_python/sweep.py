@@ -429,3 +429,11 @@ class sweep:
             print(msg)
         else:
             self.parent.debug_message_printout(msg)
+
+
+    def export_configuration(self):
+        # keeping the naming convention for now
+        return {}
+    
+    def import_configuration(self, config_export):
+        pass
