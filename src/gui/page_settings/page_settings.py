@@ -131,7 +131,7 @@ class SettingsPage(wx.Panel):
         #get the EM software choices
         ems = self.notebook_softwareSettings.getDefaultEMSoftware()
         softwareSelection, softwarePath, numLicenses, useSingle, defaultSoftware = self.notebook_softwareSettings.getEMSettings() #return a dataFrame to write to PC
-        
+        self.notebook_projectSettings.updateProjectSettings() # PC and DC are passed in, so these vals are updated
         try:
             numL = int(numLicenses)
             if numL < 1:

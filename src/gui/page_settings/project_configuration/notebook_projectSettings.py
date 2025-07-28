@@ -80,5 +80,10 @@ class ProjectSettingsNotebook(wx.Notebook):
         self.page_projInfo.applyLoadedProjectSettings(PC)
 
 
+    def updateProjectSettings(self):
+        self.setNumericPrecision()
+        # TODO, other functions set by this hook
+        
+
 
 
