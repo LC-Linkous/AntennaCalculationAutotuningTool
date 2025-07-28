@@ -130,7 +130,7 @@ class SettingsPage(wx.Panel):
 
         #get the EM software choices
         ems = self.notebook_softwareSettings.getDefaultEMSoftware()
-        softwareSelection, softwarePath, numLicenses, useSingle, defaultSoftware = self.notebook_softwareSettings.getEMSettings() #return a dataFrame to write to PC
+        softwareSelection, softwarePath, numLicenses, useSingle, defaultSoftware, useStudent = self.notebook_softwareSettings.getEMSettings() #return a dataFrame to write to PC
         self.notebook_projectSettings.updateProjectSettings() # PC and DC are passed in, so these vals are updated
         try:
             numL = int(numLicenses)
@@ -150,6 +150,7 @@ class SettingsPage(wx.Panel):
         self.PC.setNumSimulationLicenses(numL)
         self.PC.setUseSingleLicense(useSingle)
         self.PC.setDefaultEMSoftware(defaultSoftware)      
+        self.PC.setUseStudentLicense(useStudent)
 
         self.SO.setupSI(softwareSelection, softwarePath, numL)
 
@@ -166,7 +167,6 @@ class SettingsPage(wx.Panel):
 
     def applyLoadedProjectSettings(self, PC):
         self.notebook_softwareSettings.applyLoadedProjectSettings(PC)
-
         self.notebook_projectSettings.applyLoadedProjectSettings(PC)
 
     
