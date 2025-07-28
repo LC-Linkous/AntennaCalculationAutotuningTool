@@ -50,7 +50,7 @@ class ProjectSettingsNotebook(wx.Notebook):
     def applyLoadedProjectSettings(self, PC):        
         self.page_simulation.applyLoadedProjectSettings(PC)
         self.page_save.applyLoadedProjectSettings(PC)
-        self.page_projInfo.applyLoadedProjectSettings(PC)
+        self.page_projInfo.updateSettingsProjectInformation()
 
 
     def updateProjectSettings(self):
