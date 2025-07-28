@@ -145,7 +145,7 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
         # print("apply loaded settings - panel from panel_EMSoftwareConfig.py")
         if PC.getSimulationSoftware() == self.EMSoftwareID:
 
-            pth = PC.getSimulationSoftwarePath()
+            pth = str(PC.getSimulationSoftwarePath())
             #check if path exists
             if os.path.exists(pth): 
                 self.fieldExecutableDir.SetValue(str(PC.getSimulationSoftwarePath()))
