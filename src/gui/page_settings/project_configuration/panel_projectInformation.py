@@ -4,7 +4,7 @@
 #   Class for project settings - displayed, uneditable project information
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: July 6, 2025
+#   Last update: July 28, 2025
 ##--------------------------------------------------------------------\
 
 import os
@@ -29,7 +29,7 @@ class ProjectInformationPage(wx.Panel):
 
         self.lblPath = wx.StaticText(boxProperties, label="Project Location: ")
         self.lblResults = wx.StaticText(boxProperties, label="Results Location: ")
-        self.lblSize = wx.StaticText(boxProperties, label="Project Size: ")
+        self.lblSize = wx.StaticText(boxProperties, label="Project Size on Disk: ")
 
         boxDates = wx.StaticBox(self, label='Related Dates')
         self.lblDateModified = wx.StaticText(boxDates, label="Modified: ")
@@ -73,7 +73,7 @@ class ProjectInformationPage(wx.Panel):
         self.lblResults.SetLabel(s)
 
     def setProjectSize(self, t):
-        s = "Project Size: " + str(t)
+        s = "Project Size on Disk: " + str(t)
         self.lblSize.SetLabel(s)
         # this should probably be the FOLDER size, but that's a TODO list item
 
@@ -87,6 +87,8 @@ class ProjectInformationPage(wx.Panel):
 
 
     def updateSettingsProjectInformation(self):
+        # PC is passed in because it might be called before everything propagates through with the open file
+        # tracking that is in progress
         a = self.PC.getFullPath() #full path to the ancat file
         b = self.PC.getResultsDirectory() # get the project folder
         if a == None:
@@ -106,16 +108,26 @@ class ProjectInformationPage(wx.Panel):
 
             s = 0
             # get size
+            anCATsize = os.path.getsize(a)
             for path, dirs, files in os.walk(resPath):
                 for f in files:
                     fp = os.path.join(path, f)
                     s += os.path.getsize(fp)
 
-            sz = str(s/1000) + " kb" # this will be more intelligent later
-            self.setProjectSize(sz) # in kb for now
+            s = s + anCATsize # save directory and the .ancat file 
+
+            # added multiple unit handling, just to round it out. 
+            # could probably use 1000 instaed of 1024
+            if s < 1024:
+                sz = f"{s} bytes"
+            elif s < 1024**2:
+                sz = f"{s/1024:.1f} KB"
+            elif s < 1024**3:
+                sz = f"{s/((1024**2)):.1f} MB"
+            else:
+                sz = f"{s/((1024**3)):.1f} GB"
+            
+            self.setProjectSize(sz)
             self.setDateModified( time.ctime(stat_info.st_mtime))
             self.setDateCreated(time.ctime(stat_info.st_birthtime))
 
-
-    def applyLoadedProjectSettings(self, PC):
-        pass
