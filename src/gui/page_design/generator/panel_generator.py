@@ -108,7 +108,8 @@ class GeneratorNotebookPage(wx.Panel):
         #Summary of numbers
         self.boxDesign = wx.StaticBox(self, label='Calculated Parameter Values:')
         self.stDesign = wx.StaticText(self.boxDesign, style=wx.ALIGN_LEFT, size=(250, 120))
-        # Create and set a monospace font - this allows for the 
+        # Create and set a monospace font - this allows for the spacing to be 2 cols.
+        # TODO: find something prettier
         font = wx.Font(10, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName="Lucida Console")
         self.stDesign.SetFont(font)
         self.updateDesignSummaryBox()
