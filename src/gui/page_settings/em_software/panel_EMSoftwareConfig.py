@@ -136,14 +136,31 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
         #returns ID, full path, int, bool, bool (redundant)
         numLicenses = float(self.fieldNumLicenses.GetValue())
         useSingle = self.ckbxUseSingleLicense.GetValue()
+        useStudent = self.ckbxUseStudentVersion.GetValue()
         defaultSoftware = self.ckbxUseAsDefaultSoftware.GetValue()
-        return self.EMSoftwareID, self.fullExePath, numLicenses, useSingle, defaultSoftware
+        
+        return self.EMSoftwareID, self.fullExePath, numLicenses, useSingle, defaultSoftware, useStudent
 
     def applyLoadedProjectSettings(self, PC):
         # print("apply loaded settings - panel from panel_EMSoftwareConfig.py")
         if PC.getSimulationSoftware() == self.EMSoftwareID:
-            self.fieldExecutableDir.SetValue(str(PC.getSimulationSoftwarePath()))
-            self.fieldNumLicenses.SetValue(str(int(PC.getNumSimulationLicenses())))
+
+            pth = PC.getSimulationSoftwarePath()
+            #check if path exists
+            if os.path.exists(pth): 
+                self.fieldExecutableDir.SetValue(str(PC.getSimulationSoftwarePath()))
+            else:
+                # this needs some extra checking and propagation, but is fine for now
+                msg = "Invalid EM Simulation Software Executable. Make sure EM Simulation software is installed"
+                self.fieldExecutableDir.SetValue(str("no//executable//path//set"))
+                wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
+
+            try:
+                self.fieldNumLicenses.SetValue(str(int(PC.getNumSimulationLicenses())))
+            except Exception as e:
+                self.fieldNumLicenses.SetValue(str("1"))
+                print("invalid number of licenses on Settings import")
+
             #TODO: set rest of features
 
     def ckbxUseStudentVersionChecked(self, evt):
