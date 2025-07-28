@@ -605,8 +605,9 @@ class DesignConfiguration:
             self.superstrateLayers= DC_import['arr_superstrateLayers'][0]
 
             noError = True
-        except:
-            print("Error in design_config.py importing information from saved file")
+        except Exception as e:
+             print(e)
+             print("Error in design_config.py importing information from saved file")
 
         return noError
 
