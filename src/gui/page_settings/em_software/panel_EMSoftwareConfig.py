@@ -38,7 +38,7 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
         #licenses
         boxLicense = wx.StaticBox(self, label='License Options')
         lblNumLicenses = wx.StaticText(boxLicense, label="Max Number of Licenses for Simulation Software: ")
-        self.fieldNumLicenses = wx.TextCtrl(boxLicense, value=str(1), size=(-1, 20))
+        self.fieldNumLicenses = wx.TextCtrl(boxLicense, value=str(int(1)), size=(-1, 20))
         self.ckbxUseSingleLicense = wx.CheckBox(boxLicense, label="Limit Simulations to Single License")
         self.ckbxUseStudentVersion = wx.CheckBox(boxLicense, label="Use Student Version")
         self.ckbxUseSingleLicense.SetValue(True)
@@ -144,10 +144,12 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
         # print("apply loaded settings - panel from panel_EMSoftwareConfig.py")
         if PC.getSimulationSoftware() == self.EMSoftwareID:
             self.fieldExecutableDir.SetValue(str(PC.getSimulationSoftwarePath()))
-            self.fieldNumLicenses.SetValue(str(PC.getNumSimulationLicenses()))
+            self.fieldNumLicenses.SetValue(str(int(PC.getNumSimulationLicenses())))
             #TODO: set rest of features
 
     def ckbxUseStudentVersionChecked(self, evt):
+        # TODO:
+        # update as other em sim softwares are integrated. 
         if self.executable == "ansysedt.exe":
             self.executable = "ansysedtsv.exe"
         elif self.executable == "ansysedtsv.exe":
