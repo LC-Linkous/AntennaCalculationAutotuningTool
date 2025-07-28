@@ -482,6 +482,9 @@ class OptimizerIntegrator():
 
 
     def openSaved(self):
+        # AKA import optimizer state
+
+
         # TODO
         #opens saved optimizer progress/settings from non-antennaCAT file
         #has more processing here. 
@@ -490,12 +493,13 @@ class OptimizerIntegrator():
         # 1) open file browser
         # 2) parse file as DF
         # 3) attempt import to optimizer (use try/except)
+        # (self.OO.set_import_configuration(import_df))
         # 4) if works fine (might not be right, but it imported), then output message
         # 5) if didn't work, output message via popup to make it harder to ignore
 
         msg = "Coming Soon! Optimizer Import Checks are Being Finalized"
         wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
-    
+        
     
     def setOptimizerFromPC(self):
         # Setting from loaded project
@@ -503,6 +507,31 @@ class OptimizerIntegrator():
         optimizerSelection = self.PC.getOptimizerSelection()
         #select the optimizer
         self.selectOptimizerIntegrator(optimizerSelection) 
+
+
+    def exportOptimizerConfigs(self):
+        # Export state
+        #try:
+        if self.iteration > 0:
+            try:
+                data = self.OO.get_export_configuration()
+                data_df = pd.DataFrame(data)
+                with wx.FileDialog(self, "Export optimizer state", wildcard="PKL (*.pkl)|*.pkl",
+                        style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+                    if fileDialog.ShowModal() == wx.ID_CANCEL:
+                        return     # user cancelled
+                    pathname = fileDialog.GetPath()
+                    print(data_df)
+                    data_df.to_pickle(pathname)
+            except Exception as e:
+                print("ERROR: optimizer_integrator.py export error")
+                print(e)
+
+        else:
+            msg = "WARNING: Cannot export optimizer state before optimizer runs. \n" \
+            "The optimizer can be paused and the current state saved at anytime."
+            wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
+
 
 
 ####################################################
