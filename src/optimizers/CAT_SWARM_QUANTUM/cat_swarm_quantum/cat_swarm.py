@@ -31,7 +31,7 @@ class swarm:
     #  
     # opt_df contains class-specific tuning parameters
     # NO_OF_PARTICLES: int
-    # weights: [[float, float, float]]
+    # weights: [[float]]
     # boundary: int. 1 = random, 2 = reflecting, 3 = absorbing,   4 = invisible
     # MR: float. Small value
     # SMP: int
