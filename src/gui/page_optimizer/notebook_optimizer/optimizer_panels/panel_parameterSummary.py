@@ -24,7 +24,8 @@ class ParameterSummaryPanel(wx.Panel):
         # widgets
         boxParametersSummary = wx.StaticBox(self, label="Parameter Summary")
         self.stParameterSummary = wx.TextCtrl(boxParametersSummary, style=wx.TE_READONLY|wx.TE_MULTILINE|wx.TE_RICH|wx.BORDER_SUNKEN)
-
+        font = wx.Font(9, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName="Lucida Console")
+        self.stParameterSummary.SetFont(font)
         self.clearParameterSummaryText()
 
         # sizer
@@ -45,6 +46,7 @@ class ParameterSummaryPanel(wx.Panel):
             numTxt = "# Controllable Input Parameters: " + str(int(numPar)) + "\n"
         except:
             numTxt = "# Controllable Input Parameters: " + str(numPar) + "\n"
+
         mutableTxt = "# Selected Parameters: " + str(len(lbArr)) + "\n"
         lbTxt = ""
         ubTxt = ""
@@ -54,14 +56,14 @@ class ParameterSummaryPanel(wx.Panel):
         else:
             ctr = 0
             for lb in lbArr:
-                tmpTxt = str(namePar[ctr]) + ": \t\t" + str(lb)
-                lbTxt = lbTxt + tmpTxt  + "\n"
+                tmpTxt = str(namePar[ctr]) 
+                lbTxt = lbTxt + f"{str(tmpTxt)[:25]:<25}{str(lb):<15}\n" # + tmpTxt  + "\n"
                 ctr = ctr + 1
 
             ctr = 0
             for ub in ubArr:
-                tmpTxt = str(namePar[ctr]) + ": \t\t" + str(ub)
-                ubTxt = ubTxt + tmpTxt  + "\n"
+                tmpTxt = str(namePar[ctr]) #+ ": \t\t" + str(ub)
+                ubTxt = ubTxt + f"{str(tmpTxt)[:25]:<25}{str(ub):<15}\n" # + tmpTxt  + "\n"#+ tmpTxt  + "\n"
                 ctr = ctr + 1
 
         txt = numTxt + \
