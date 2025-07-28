@@ -47,6 +47,10 @@ class CONTROLLER_SWEEP():
     def get_export_configuration(self):
         # returns dictionary to parent class
         return self.optimizer.export_configuration()
+
+    def set_import_configuration(self, import_df):
+        # passes in dataframe
+        return self.optimizer.import_configuration()
     
 
 ####################################################
