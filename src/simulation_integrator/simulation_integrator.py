@@ -82,6 +82,14 @@ class SimulationIntegrator():
         dfn, sfn, pfn, rfn = self.SO.getDefaultFilePathNames() # this should  be moved
         self.PC.setDefaultScriptPaths(dfn, sfn, pfn, rfn)
 
+    def openFileSetupSI(self):
+        # pull vals from PC. called from antennaCAT_open.py
+        # Eventually, this won't be needed as reintegrating data from an opened file is settled 
+        softwareSelection = self.PC.getSimulationSoftware()
+        softwarePath = self.PC.getSimulationSoftwarePath()
+        numLicenses = self.PC.getNumSimulationLicenses()
+        self.setupSI(softwareSelection, softwarePath, numLicenses)
+
     def selectSimIntegrator(self, softwareSelection, softwarePath, numLicenses=1):
         if softwareSelection == "ANSYS":
            SO = SimIntegrator_ANSYS(softwarePath, numLicenses)
@@ -799,3 +807,55 @@ class SimulationIntegrator():
         elif self.PC.getAntennaGeneratorBoolean() == True:
             pass
 
+    #################################################
+    # EXPORT
+    #################################################
+
+    def export_SO(self):
+        # This is turned into a dataframe and exported properly in the driver class.
+        # That way the file format and naming are always set to whatever the most updated version is
+
+        # vals NOT set by files
+        # self.numSimsRunning = 0
+        # self.p = -1 #return code for polling
+        # self.simulationSoftwarePath = FROM PC
+        # self.numLicense = FROM PC            
+
+
+        PC_export = {            
+            'str_SO': [self.SO],
+            'arr_DT': [self.DT],
+            'arr_PT': [self.PT],
+            'arr_ST': [self.ST],
+            'arr_RT': [self.RT]}        
+       
+        return PC_export # this is turned into a dataframe in the driver class
+    
+
+    #################################################
+    # IMPORT
+    #################################################
+
+    def import_SO(self, SO_import):
+        noError = False
+        # vals NOT set by files
+        # self.numSimsRunning = 0
+        # self.p = -1 #return code for polling
+        # self.simulationSoftwarePath = FROM PC
+        # self.numLicense = FROM PC            
+        # DC and PC, which are imported
+
+        try:
+            # class maybe created before config uploaded
+                        
+            self.SO = SO_import['str_SO'][0]
+            self.DT = SO_import['arr_DT'][0] # design template
+            self.PT = SO_import['arr_PT'][0] # param edit template
+            self.ST = SO_import['arr_ST'][0] # simulation export template
+            self.RT = SO_import['arr_RT'][0] # report export template
+
+            noError = True
+        except:
+            print("Error in simulation_integrator.py importing information from saved file")
+
+        return noError
