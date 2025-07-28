@@ -144,7 +144,7 @@ class BAYESIANPage(wx.Panel):
 # Button Events
 #######################################################
     
-    def btnOpenClicked(self):
+    def btnOpenClicked(self, evt=None):
         self.parent.btnOpenClicked()
     
     def btnSelectClicked(self, evt=None):
