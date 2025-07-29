@@ -148,12 +148,15 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
             pth = str(PC.getSimulationSoftwarePath())
             #check if path exists
             if os.path.exists(pth): 
-                self.fieldExecutableDir.SetValue(str(PC.getSimulationSoftwarePath()))
+                self.fieldExecutableDir.SetValue(pth)
+                self.fullExePath = pth
             else:
                 # this needs some extra checking and propagation, but is fine for now
                 msg = "Invalid EM Simulation Software Executable. Make sure EM Simulation software is installed"
                 self.fieldExecutableDir.SetValue(str("no//executable//path//set"))
                 wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
+                print("PATH WITH ISSUE in panel_EMSoftwareConfig")
+                print(pth)
 
             try:
                 self.fieldNumLicenses.SetValue(str(int(PC.getNumSimulationLicenses())))
@@ -161,7 +164,14 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
                 self.fieldNumLicenses.SetValue(str("1"))
                 print("invalid number of licenses on Settings import")
 
-            #TODO: set rest of features
+
+            try:
+                self.ckbxUseSingleLicense.SetValue(PC.getUseSingleLicense())
+                self.ckbxUseStudentVersion.SetValue(PC.getUseStudentLicense())
+                self.ckbxUseAsDefaultSoftware.SetValue(PC.getDefaultEMSoftware())
+            except Exception as e:
+                self.fieldNumLicenses.SetValue(str("1"))
+                print("ERROR with emsoftware checkboxes. defaults used")
 
     def ckbxUseStudentVersionChecked(self, evt):
         # TODO:
