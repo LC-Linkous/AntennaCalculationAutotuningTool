@@ -87,8 +87,6 @@ class ProjectInformationPage(wx.Panel):
 
 
     def updateSettingsProjectInformation(self):
-        # PC is passed in because it might be called before everything propagates through with the open file
-        # tracking that is in progress
         a = self.PC.getFullPath() #full path to the ancat file
         b = self.PC.getResultsDirectory() # get the project folder
         if a == None:
