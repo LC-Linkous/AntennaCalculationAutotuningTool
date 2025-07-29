@@ -136,7 +136,7 @@ class ButtonMenuPanel(wx.Panel):
         self.parent.panel_mainUI.panel_settings.Show()
         self.parent.panel_mainUI.panel_optimizer.Hide()
         self.parent.Layout() 
-        self.parent.panel_mainUI.panel_settings.updateSettingsProjectInformation()
+        self.parent.panel_mainUI.panel_settings.updateSettingsInformation()
 
     def btnOptimizerClicked(self):
         self.parent.panel_mainUI.panel_project.Hide()
