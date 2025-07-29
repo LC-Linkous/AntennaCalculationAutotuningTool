@@ -30,7 +30,7 @@ class ProjectSettingsNotebook(wx.Notebook):
         self.page_simulation = SimulationNotebookPage(self) 
         self.page_save = SaveNotebookPage(self)
         self.page_projInfo = ProjectInformationPage(self, self.DC, self.PC) 
-        self.page_userInfo = UserInfoNotebookPage(self)  
+        self.page_userInfo = UserInfoNotebookPage(self, self.PC)  
         self.page_precision = PrecisionNotebookPage(self, self.DC)
 
         
@@ -44,19 +44,20 @@ class ProjectSettingsNotebook(wx.Notebook):
     def setNumericPrecision(self):
         self.page_precision.setNumericPrecisionSettings()
 
-    def updateSettingsProjectInformation(self):
+    def updateSettingsInformation(self):
         self.page_projInfo.updateSettingsProjectInformation()
+        
 
     def applyLoadedProjectSettings(self, PC):        
         self.page_simulation.applyLoadedProjectSettings(PC)
         self.page_save.applyLoadedProjectSettings(PC)
         self.page_projInfo.updateSettingsProjectInformation()
+        self.page_userInfo.applyLoadedProjectSettings()# has PC access for write
 
 
     def updateProjectSettings(self):
         self.setNumericPrecision()
-        # TODO, other functions set by this hook
-        
+        self.page_userInfo.setUserInformationValues()
 
 
 
