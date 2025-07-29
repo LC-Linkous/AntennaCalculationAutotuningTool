@@ -9,6 +9,7 @@
 
 import os
 import pandas as pd
+import copy
 
 import project.config.antennaCAT_config as c
 
@@ -60,9 +61,9 @@ class OpenAntennaCATProject():
         PC_import = pd.read_pickle(filepath) 
 
         # set main shared objects
-        self.DC.import_DC(PC_import['df_DC'][0])
-        self.PC.import_PC(PC_import['df_PC'][0])
-        self.SO.import_SO(PC_import['df_SO'][0])
+        self.DC.import_DC(copy.deepcopy(PC_import['df_DC'][0]))
+        self.PC.import_PC(copy.deepcopy(PC_import['df_PC'][0]))
+        self.SO.import_SO(copy.deepcopy(PC_import['df_SO'][0]))
 
         # SO is set up from vals from DC and PC
         #self.SO.setupSI(softwareSelection, softwarePath, numLicenses)
@@ -75,24 +76,4 @@ class OpenAntennaCATProject():
 
 
 
-
-    # def readTempDebugInfo(self, filepath):
-    #     tmpArr=[]
-    #     with open(filepath, 'r') as fp:
-    #         for line in fp.readlines():
-    #             line = line.strip()
-    #             tmpArr.append(line)
-
-    #     if len(tmpArr) > 0:
-    #         softwareSelection = str(tmpArr[0])
-    #         softwarePath = str(tmpArr[1])
-    #         numLicenses = float(tmpArr[2])
-    #         self.PC.setSimulationSoftware(softwareSelection)
-    #         self.PC.setSimulationSoftwarePath(softwarePath)
-    #         self.PC.setNumSimulationLicenses(numLicenses)
-
-    #         self.SO.setupSI(softwareSelection, softwarePath, numLicenses)
-
-    #     # else:
-    #     #     print("read in error with file in antennaCAT_open.py")
 
