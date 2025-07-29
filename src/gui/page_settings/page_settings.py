@@ -122,11 +122,10 @@ class SettingsPage(wx.Panel):
                 pathname = fileDialog.GetPath()
                 try:
                     acp = AntennaCATProject(self.DC, self.PC, self.SO)
-                    acp.createNewProject(pathname)
+                    acp.saveProject(pathname) #createNewProject(pathname)
                 except Exception as e:
+                    print("ERROR saving in page_settings.py")
                     print(e)
-
-
 
         #get the EM software choices
         ems = self.notebook_softwareSettings.getDefaultEMSoftware()
@@ -146,7 +145,7 @@ class SettingsPage(wx.Panel):
                 return
 
         self.PC.setSimulationSoftware(ems)
-        self.PC.setSimulationSoftwarePath(str(softwarePath))
+        self.PC.setSimulationSoftwarePath(softwarePath)
         self.PC.setNumSimulationLicenses(numL)
         self.PC.setUseSingleLicense(useSingle)
         self.PC.setDefaultEMSoftware(defaultSoftware)      
@@ -162,8 +161,8 @@ class SettingsPage(wx.Panel):
             print("EM software saved in page_settings.py")    
 
 
-    def updateSettingsProjectInformation(self):
-        self.notebook_projectSettings.updateSettingsProjectInformation()
+    def updateSettingsInformation(self):
+        self.notebook_projectSettings.updateSettingsInformation()
 
     def applyLoadedProjectSettings(self, PC):
         self.notebook_softwareSettings.applyLoadedProjectSettings(PC)
