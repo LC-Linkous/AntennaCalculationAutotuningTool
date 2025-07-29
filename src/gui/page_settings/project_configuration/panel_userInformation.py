@@ -15,9 +15,10 @@ import project.config.antennaCAT_config as c
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
 
 class UserInfoNotebookPage(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, PC):
         wx.Panel.__init__(self, parent=parent)
         self.parent = parent
+        self.PC = PC
         self.SetBackgroundColour(MAIN_BACKGROUND_COLOR)
 
         # Author information (optional)
@@ -53,10 +54,18 @@ class UserInfoNotebookPage(wx.Panel):
         self.SetSizer(pageSizer)
 
     
-    def getValues(self):
+    def setUserInformationValues(self):
+        # set to PC
         authorName = self.fieldAuthor.GetValue()
         comments = self.commentTxt.GetValue()
-        return authorName, comments
 
-    def applyLoadedProjectSettings(self, PC):
-        pass
+        self.PC.setUserInformationAuthor(authorName)
+        self.PC.setUserInformationComments(comments)
+
+    def applyLoadedProjectSettings(self):
+        # get from PC object
+        authorName = str(self.PC.getUserInformationAuthor())
+        comments = str(self.PC.getUserInformationComments())
+        self.fieldAuthor.SetValue(authorName)
+        self.commentTxt.SetValue(comments)
+
