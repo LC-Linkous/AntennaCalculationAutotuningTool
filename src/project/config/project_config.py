@@ -28,6 +28,9 @@ class ProjectConfiguration:
         self.useSingleLicense = False
         self.useStudentLicense = False
         self.defaultEMSoftware = None
+        # user information
+        self.userInformationAuthor = ""
+        self.userInformationComments = ""
         #optimizer memory
         self.optimizer = None
         # path information
@@ -82,13 +85,13 @@ class ProjectConfiguration:
     #################################################
 
     def setSimulationSoftwarePath(self, p=None):
-        self.simulationSoftwarePath = p
+        self.simulationSoftwarePath = str(p)
     
     def getSimulationSoftwarePath(self):
         return self.simulationSoftwarePath
     
     def setSimulationSoftware(self, s):
-        self.simulationSoftware = s
+        self.simulationSoftware = str(s)
         
     def getSimulationSoftware(self):
         return self.simulationSoftware
@@ -100,28 +103,48 @@ class ProjectConfiguration:
         return self.numSimulationLicenses
     
     def setUseSingleLicense(self, s):
-        self.useSingleLicense = s
+        self.useSingleLicense = bool(s)
 
     def getUseSingleLicense(self):
         return self.useSingleLicense
     
     def setUseStudentLicense(self, s):
-        self.useStudentLicense = s
+        self.useStudentLicense = bool(s)
 
     def getUseStudentLicense(self):
         return self.useStudentLicense
 
     def setDefaultEMSoftware(self, s):
-        self.defaultEMSoftware = s
+        self.defaultEMSoftware = bool(s)
 
     def getDefaultEMSoftware(self):
         return self.defaultEMSoftware    
 
     def setOptimizerSelection(self, s):
-        self.optimizer = s
+        self.optimizer = s #object
     
     def getOptimizerSelection(self):
         return self.optimizer
+    
+
+
+    #################################################
+    # Brief User information
+    #
+    #################################################
+
+    def setUserInformationAuthor(self, s):
+        self.userInformationAuthor = str(s)
+    
+    def getUserInformationAuthor(self):
+        return self.userInformationAuthor
+    
+    def setUserInformationComments(self, s):
+        self.userInformationComments = str(s)
+    
+    def getUserInformationComments(self):
+        return self.userInformationComments
+
 
     #################################################
     # Root Project/Dir paths
@@ -432,6 +455,8 @@ class ProjectConfiguration:
             'bool_useStudentLicense': [self.useStudentLicense],
             'str_defaultEMSoftware': [self.defaultEMSoftware],
 
+            'str_userInformationAuthor': [self.userInformationAuthor],
+            'str_userInformationComments': [self.userInformationComments],
 
             'obj_optimizer': [self.optimizer],
 
@@ -485,6 +510,10 @@ class ProjectConfiguration:
             self.useSingleLicense= PC_import['bool_useSingleLicense'][0] 
             self.useStudentLicense = PC_import['bool_useStudentLicense'][0]
             self.defaultEMSoftware= PC_import['str_defaultEMSoftware'][0] 
+
+
+            self.userInformationAuthor = PC_import['str_userInformationAuthor'][0] 
+            self.userInformationComments = PC_import['str_userInformationComments'][0] 
 
             self.optimizer= PC_import['obj_optimizer'][0] 
 
