@@ -41,6 +41,13 @@ To those who have reached out about features (current, planned, and a few bugs),
 * All optimizers now have TARGET and THRESHOLD options for evaluation
 * Extra break conditions have been added for the MultiGLODS optimizer so that a maximum limit of obective function calls have equal priority to the radii tolerance
 * MultiGLODS Objective function evaluation to target tolerance now as a seperate value from the radii tolerance
+* removed unused clean project, this is streamlined so that the .ancat file can be deleted. No collected data is deleted if the .ancat file is deleted, just project configs
+* updated parsing for size on disk and user info
+* studen license option can be remembered, but is not a default setting
+* save overwrite for path set to correctly remember path string (extension of Windows issues)
+* user information and comments are now properly saved and loaded (no more split strings or half-messages)
+* deep copy used so that PC, DC, and SO read in objects are split properly in memory at creation
+* updated Save button on Settings page to save ALL paths for project configs
 
 
 
