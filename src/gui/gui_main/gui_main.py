@@ -137,20 +137,31 @@ class GFrame(wx.Frame):
 
     def openProjectCheck(self, pathname):
         # called by the open file btn and clicking recent from panel
-        print("open project selected. this functionality does not exist yet, but save location is used")
+        print("open project selected. this functionality is still in progress")
         # check that project file and needed directories exist
         acp = AntennaCATProject(self.DC, self.PC, self.SO)
-        acp.openExistingProject(pathname) #sets PC
+        acp.openExistingProject(pathname) #sets PC, DC, and SO
 
-        #apply settings
-        self.applyLoadedProjectSettings()
+       
+        #apply settings - this is where the bulk of the work is still happening Jul. 2025
+        noError = True
+        ne = self.applyLoadedProjectSettings()
 
-        # trigger design button push to show design page as first page
-        self.panel_btnMenu.btnDesignClicked()            
+        if noError == False:
+            # there's been an error, likely with the import of the EM sim software path
+            # open first view to settings and have a pop up with a note of the error
+
+            pass
+
+        else:
+            # trigger design button push to show design page as first page
+            self.panel_btnMenu.btnDesignClicked()            
 
     def applyLoadedProjectSettings(self):
         # no PC pass bc it calls UP
-        self.panel_mainUI.applyLoadedProjectSettings()
+        noError = self.panel_mainUI.applyLoadedProjectSettings()
+        
+        return noError
 
 
    

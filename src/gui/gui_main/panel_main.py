@@ -58,10 +58,24 @@ class MainPanel(wx.Panel):
         self.parent.btnOpenProjectClicked(evt)
 
     def applyLoadedProjectSettings(self):
-        self.panel_project.applyLoadedProjectSettings(self.PC)
+        # load recent projects on the home page - TODO
+        ne = self.panel_project.applyLoadedProjectSettings(self.PC) 
+        if ne == False:
+            return ne # error
+        
+        # load user settings and comments
+        self.panel_settings.applyLoadedProjectSettings(self.PC)
+        if ne == False:
+            return ne # error
+        
         self.panel_simulation.applyLoadedProjectSettings(self.PC) 
+        if ne == False:
+            return ne # error
+        
         self.panel_batch.applyLoadedProjectSettings(self.PC)
-        self.panel_settings.applyLoadedProjectSettings(self.PC) #passing so everything is working off a copy and not modding
+        if ne == False:
+            return ne # error
+        return True # noError
 
     def updateProjectValues(self):
         # triggers the auto update events that tie widgets/values together
