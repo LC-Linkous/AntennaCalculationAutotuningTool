@@ -90,6 +90,7 @@ AntennaCAT 2025.1 is live!... and so is our first official minor release!
 * The driving goal behind the development of this software is for it to be useful and to encourage experimentation. Holding back features/functionality to be truer to the publications goes against that. 
 * Now that we have more users, we're getting feedback on how different versions of Windows and different setups work with AntennaCAT. 
 
+
 **Why not release it all at once?**
 * The goal of several major releases close together is to have some roll-back points as collaborators join in and want to implement their own features. We won't wait to release what's already been implemented in recent publications, but there will be links to these 'check points' should anyone wish to download an earlier version.
 
