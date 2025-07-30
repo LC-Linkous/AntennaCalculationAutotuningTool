@@ -94,5 +94,11 @@ class PrecisionNotebookPage(wx.Panel):
 
 
 
-    def applyLoadedProjectSettings(self, PC):
-        pass
+    def applyLoadedProjectSettings(self):
+        # don't need to set any class vars bc these are only saved with a button
+        # based on what is currently in the widget.
+        unitval = self.DC.getDefaultUnits()
+        decVal = int(self.DC.getNumericalPrecision())
+
+        self.unitDropDown.SetValue(str(unitval))
+        self.fieldOptPrecision.SetValue(str(decVal))

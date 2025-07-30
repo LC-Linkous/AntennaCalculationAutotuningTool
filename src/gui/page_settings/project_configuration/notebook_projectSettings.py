@@ -48,16 +48,19 @@ class ProjectSettingsNotebook(wx.Notebook):
         self.page_projInfo.updateSettingsProjectInformation()
         
 
-    def applyLoadedProjectSettings(self, PC):        
-        self.page_simulation.applyLoadedProjectSettings(PC)
-        self.page_save.applyLoadedProjectSettings(PC)
-        self.page_projInfo.updateSettingsProjectInformation()
-        self.page_userInfo.applyLoadedProjectSettings()# has PC access for write
-
-
     def updateProjectSettings(self):
+        # called with btnSaveClicked() from page_settings.py
         self.setNumericPrecision()
         self.page_userInfo.setUserInformationValues()
 
+
+
+    def applyLoadedProjectSettings(self, PC): 
+        # called by root GUI class when opening an existing project      
+        self.page_simulation.applyLoadedProjectSettings(PC)
+        self.page_save.applyLoadedProjectSettings(PC)
+        self.page_projInfo.updateSettingsProjectInformation()
+        self.page_userInfo.applyLoadedProjectSettings()# already has PC access for write
+        self.page_precision.applyLoadedProjectSettings() # already has access to DC, NOT PC
 
 
