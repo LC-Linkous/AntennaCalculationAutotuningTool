@@ -69,6 +69,7 @@ class multi_glods:
                                         # R_TOL becomes 'tol_stop' & 'tol_active_points' in the polling step. 
 
    
+        # NOTE: this is a difference in optimizer structures that's compensated for in the controller
         #reformat since multi_glods needs single []
         LB = LB[0]
         UB = UB[0]

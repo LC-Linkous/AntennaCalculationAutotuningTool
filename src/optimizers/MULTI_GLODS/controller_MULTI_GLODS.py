@@ -86,8 +86,11 @@ class CONTROLLER_MULTI_GLODS():
         E_TOL = float(optimizerParams['tolerance'][0])         # Convergence tolerance, error tolerance
         R_TOL = float(optimizerParams['rad_tolerance'][0])     # Convergence Tolerance (This is a radius 
                                                                # based tolerance, not target based tolerance)
-        self.LB = list(optimizerParams['lower_bounds'][0])     # Lower boundaries
-        self.UB = list(optimizerParams['upper_bounds'][0])     # Upper Boundaries
+        # self.LB = list(optimizerParams['lower_bounds'][0])     # Lower boundaries
+        # self.UB = list(optimizerParams['upper_bounds'][0])     # Upper Boundaries
+        # Note: due to how MultiGLODS processes data, this is a DIFFERENCE between this and other controllers
+        self.LB = list(optimizerParams['lower_bounds'])     # Lower boundaries
+        self.UB = list(optimizerParams['upper_bounds'])     # Upper Boundaries
         BP = float(optimizerParams['beta'][0])                 # Beta Par
         GP = float(optimizerParams['gamma'][0])                # Gamma Par
         SF = float(optimizerParams['search_frequency'][0])     # Search Frequency

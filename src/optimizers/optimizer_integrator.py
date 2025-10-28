@@ -753,6 +753,10 @@ class OptimizerIntegrator():
 # Post processing
 #######################################################
 
+    # This is the func_F objective function passed into the optimizers
+    # x is the horizontal list [x1,x2,x3,x4...] of values, 
+    # while numOutVars is a hold over from the individual optimizer implementations
+    # thi etains the format, but does not need to be used here
     def processDataAndRunSimulation(self, x, numOutVars=2):
 
         noError = True
@@ -761,15 +765,15 @@ class OptimizerIntegrator():
         #   parent: the parent class passed through
         #   x:  x vals current params in format [[x1], [x2], [x3]...]
 
-    #try:
-        # update script tempate
-        self.updateOptimizerTemplate(x)
-    #except Exception as e:
-        # print("problem with root in optimizer_integrator.py, processDataAndRunSimulation()")
-        # print("unable to update optimizer template")
-        # print(e)
-        noError = False
-        #return self.F, noError
+        try:
+            # update script tempate
+            self.updateOptimizerTemplate(x)
+        except Exception as e:
+            print("problem with root in optimizer_integrator.py, processDataAndRunSimulation()")
+            print("unable to update optimizer template")
+            print(e)
+            noError = False
+            #return self.F, noError
 
 
 
