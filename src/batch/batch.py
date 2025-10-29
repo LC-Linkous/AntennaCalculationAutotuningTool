@@ -4,7 +4,7 @@
 #   Class for batch configuration setup to be passed to sim object
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -13,6 +13,9 @@ import os.path
 import wx
 import numpy as np
 import pandas as pd
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class Batch:
@@ -117,6 +120,7 @@ class Batch:
         if combinationCtr > 20000:                        
             msg = "These parameters result in a total of " + str(combinationCtr) + \
                 " simulations. Continue anyways?"
+            logger.debug(msg)
             dlg = wx.MessageDialog(None, msg,'WARNING',wx.YES_NO | wx.ICON_QUESTION)
             result = dlg.ShowModal()
             if result == wx.ID_YES:
@@ -124,7 +128,7 @@ class Batch:
                 self.updateStatusText(msg)
                 
             else:
-                msg = "Design attempt canceled by user."
+                msg = "Design attempt cancelled by user."
                 self.updateAllText(msg)
                 return
 
@@ -132,6 +136,7 @@ class Batch:
             #use meshgrid to get all combinations of values in 2D array
             combArr = np.stack(np.meshgrid(*valArr), axis=-1).reshape(-1, len(valArr))
             msg = "Matrix mesh success."
+            logger.debug(msg)
             self.updateStatusText(msg)
         except Exception as e:
                 msg = "Matrix mesh failure. " + str(combinationCtr) +  " combinations exceeds available memory. Try a larger delta."

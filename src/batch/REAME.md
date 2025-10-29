@@ -1,0 +1,1 @@
+Batch is a process that exists outside of the Batch Page because it's re-usable code and not part of the GUI. 
