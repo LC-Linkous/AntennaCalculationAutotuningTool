@@ -4,10 +4,12 @@
 #   Class for loading project and indicating changable parameters 
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import wx
+import logging
+logger = logging.getLogger(__name__)
 import project.config.antennaCAT_config as c
 from gui.page_design.load_project.panel_paramDynamicScroll import ParamDynamicScrollPanel
 
@@ -76,6 +78,7 @@ class LoadProjectNotebookPage(wx.Panel):
         msg = "Setting " + str(len(designParams)) + " parameters"
         self.updateSummaryText(msg)        
         if len(designParams) == 0:
+            logger.info("imported project issue")
             msg = "No parameters were set. In order for AntennaCAT to control parameters for an imported project, \
                   you must manually add them in the window under the 'Import Project' tab. Include units. \
                  mm is assumed in most cases, but is not enforced by this program."
@@ -91,7 +94,9 @@ class LoadProjectNotebookPage(wx.Panel):
         #user selects save location. any sub-folders are generated as needed in this location
         with wx.FileDialog(self, "Select File Location", "",
                     style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+            logger.info("user prompt: select file location from browser")
             if fileDialog.ShowModal() == wx.ID_CANCEL:
+                logger.info("user action: cancelled")
                 return
             fpath = str(fileDialog.GetPath())
             self.fieldFile.SetValue(fpath)
