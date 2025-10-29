@@ -4,7 +4,7 @@
 #   Main class for design, import, or editing basic antenna/fss designs
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 # system level imports
@@ -13,6 +13,9 @@ import sys
 import wx.aui
 import wx.lib.newevent
 import wx.lib.mixins.inspection as wit
+import logging
+logger = logging.getLogger(__name__)
+
 import matplotlib
 import matplotlib.pyplot as plt
 #from matplotlib.figure import Figure
@@ -121,7 +124,7 @@ class DesignPage(wx.Panel):
         self.axes.clear()
         #TODO:replace this with DrawAntenna class
         #try:
-        print("calling draw3DDesignOnCanvas() on page_design")
+        logger.info("calling draw3DDesignOnCanvas() on page_design")
         cDraw = CalculateAndDraw()
         if self.PC.getAntennaGeneratorBoolean() == True:
             cDraw.calculateGeneratedCoordinates(self.axes, self.DC.getFeatures(), self.DC.getParams())
@@ -129,7 +132,7 @@ class DesignPage(wx.Panel):
             shapeVec =[]
             cDraw.parseImportedConductorDesignCoordinates(self.axes, shapeVec)
         #except Exception as e:
-        #    print(e)
+        #    logger.debug(e)
         #    self.updateSummaryText("skipping drawing for now from page_design.py. Updating drawing class")
         self.canvas.draw()
 
@@ -143,14 +146,17 @@ class DesignPage(wx.Panel):
         if self.PC.getProjectDirectory()== None:
             with wx.FileDialog(self, "Save antennaCAT project", wildcard="AntennaCAT files (*.ancat)|*.ancat",
                     style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+                logger.info("user prompt: save AntennaCAT project?")
                 if fileDialog.ShowModal() == wx.ID_CANCEL:
+                    logger.info("user action: cancel")
                     return     # user cancelled
                 pathname = fileDialog.GetPath()
                 try:
                     acp = AntennaCATProject(self.DC, self.PC, self.SO)
                     acp.createNewProject(pathname)
+                    logger.info("create new project")
                 except Exception as e:
-                    print(e)
+                    logger.info(e)
         self.generateScript() 
         
 
@@ -177,6 +183,7 @@ class DesignPage(wx.Panel):
 
 
     def btnExportClicked(self, evt=None):
+        logger.info("user action: design export event triggered")
         if self.PC.getDesignConfigBool() == False:
             self.updateSummaryText("No design detected to export")
             return
@@ -196,12 +203,14 @@ class DesignPage(wx.Panel):
             msg = "file exported to " + str(pathname)
             self.updateSummaryText(msg)
         except Exception as e:
+                logger.info("exception occured when exporting script")
                 msg = "Cannot save current data in file " + str(pathname)
                 self.updateSummaryText(msg)
                 self.updateSummaryText(e)
 
     def updateSummaryText(self, t):
         self.designSummaryTxt.updateText(str(t))
+        logger.info(t)
 
 
     def updateProjectValues(self):
