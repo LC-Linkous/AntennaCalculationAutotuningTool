@@ -7,10 +7,14 @@
 #       non-simulation based data should be able to be uploaded in the future
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
+
 import re
+import logging
+logger = logging.getLogger(__name__)
+
 
 class ImportANSYSScript():
     def __init__(self, filepath):
@@ -34,7 +38,7 @@ class ImportANSYSScript():
                     self.script.append(line)
             noErrors = True
         except Exception as e:
-            print(e)
+            logger.error(e)
         return noErrors    
 
 
@@ -42,14 +46,14 @@ class ImportANSYSScript():
         try:
             txt = self.script
             if txt == [] or txt == None:
-                print("no parameters detected")
+                logger.error("no parameters detected")
                 pass
             else:
                 keyLst, valLst = self.identifyKeywords(txt)
                 self.paramList = keyLst
                 self.paramValLst = self.cleanList(valLst) #get rid of newlines and some spacing
         except Exception as e:
-            print(e)
+            logger.error(e)
 
 
     def identifyKeywords(self, txt):
