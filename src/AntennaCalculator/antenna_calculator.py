@@ -1,3 +1,14 @@
+#! /usr/bin/python3
+
+##--------------------------------------------------------------------\
+#   AntennaCalculator
+#   This is an imported project with several edits to work with 
+#       AntennaCAT. The original project can be found at:
+#       https://github.com/Dollarhyde/AntennaCalculator
+#   Last update: October 29, 2025
+##--------------------------------------------------------------------\
+
+
 import argparse
 try:
     # import sys
@@ -10,6 +21,7 @@ except:
     from rectangular_patch import RectangularPatch
     from dipole import Dipole
     from monopole import Monopole
+
 
 class AntennaCalculator:
     def __init__(self, a=None):
@@ -129,6 +141,8 @@ class AntennaCalculator:
         return self.calcedParams
 
 if __name__ ==  "__main__":
+    # unit testing only. This does not run unless this file is used as the entry point for the antenna calculator
+
     import sys
     if sys.stdin and sys.stdin.isatty():
         # CLI input e.g. python antenna_calculator.py rectangular_patch -f 2.4e9 -er 4.4 -h 1.6e-3 --variable_return
@@ -145,4 +159,4 @@ if __name__ ==  "__main__":
         args = shell.getArgs()
         shell.main(args)
         print(shell.getCalcedParams())
-    print("!!!!")
+

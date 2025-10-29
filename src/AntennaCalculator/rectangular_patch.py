@@ -1,3 +1,14 @@
+#! /usr/bin/python3
+
+##--------------------------------------------------------------------\
+#   AntennaCalculator
+#   This is an imported project with several edits to work with 
+#       AntennaCAT. The original project can be found at:
+#       https://github.com/Dollarhyde/AntennaCalculator
+#   Last update: October 29, 2025
+##--------------------------------------------------------------------\
+
+
 import math
 from cmath import e
 from pint import UnitRegistry
@@ -8,7 +19,7 @@ try:
     from AntennaCalculator.dxf_generator import DXFGenerator
     from AntennaCalculator.gerber_generator import GerberGenerator
 except:
-    print("relative directory used for rectangular_patch.py")
+    # print("relative directory used for rectangular_patch.py")
     from print_generator import PrintGenerator
     from dxf_generator import DXFGenerator
     from gerber_generator import GerberGenerator

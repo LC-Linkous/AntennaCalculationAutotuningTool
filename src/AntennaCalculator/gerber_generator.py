@@ -1,4 +1,14 @@
 #! /usr/bin/python3
+
+##--------------------------------------------------------------------\
+#   AntennaCalculator
+#   This is an imported project with several edits to work with 
+#       AntennaCAT. The original project can be found at:
+#       https://github.com/Dollarhyde/AntennaCalculator
+#   Last update: October 29, 2025
+##--------------------------------------------------------------------\
+
+
 import gerberex # pip install pcb-tools-extension
 
 class GerberGenerator:
