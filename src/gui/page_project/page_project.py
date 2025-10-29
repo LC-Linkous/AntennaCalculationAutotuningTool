@@ -76,7 +76,6 @@ class ProjectPage(wx.Panel):
 
 
     def applyLoadedProjectSettings(self, PC):
-        print("page_project applyLoadedProjectSettings()")
         self.notebook_project.applyLoadedProjectSettings(PC)
 
 
