@@ -112,7 +112,7 @@ PROG_DIR_LIST = {PROG_TEMP_PATH, PROG_CONFIG_PATH}
 # cache files
 PROG_RECENTS_FILE = os.path.join(PROG_TEMP_PATH, "recent_local.json") #project files
 PROG_CONFIG_FILE = os.path.join(PROG_CONFIG_PATH, "config_local.json") #user and other program config
-PROG_FILES_LIST = {PROG_RECENTS_FILE,PROG_CONFIG_FILE}
+PROG_FILES_LIST = {} #PROG_RECENTS_FILE,PROG_CONFIG_FILE} # removed until restruct
 
 
 #SOFTWARE PATHS
