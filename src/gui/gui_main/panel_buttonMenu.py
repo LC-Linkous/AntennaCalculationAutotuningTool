@@ -4,11 +4,14 @@
 #   Class for GUI layout and basic functionality - sidebar of buttons
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: July 6, 2025
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import wx
 import project.config.antennaCAT_config as c
+
+import logging
+logger = logging.getLogger(__name__)
 
 # default frame/panel sizes and visuals
 #CHANGE IN CONSTANTS.PY FOR CONSISTENCY ACROSS PROJECT

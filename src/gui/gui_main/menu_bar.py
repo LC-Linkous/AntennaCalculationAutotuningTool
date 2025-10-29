@@ -4,10 +4,13 @@
 #   Class for frame level menu toolbar
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import wx
+
+import logging
+logger = logging.getLogger(__name__)
 
 class MenuBar(wx.MenuBar):             
     def __init__(self, parent):
@@ -85,6 +88,6 @@ class MenuBar(wx.MenuBar):
         elif id == 20: #home
             self.parent.openHome()
         elif id == 30: #documentation
-            print("documentation call not set")
+            logger.debug("documentation call not set")
         elif id == 31: #about
-            print("about page call not set")
+            logger.debug("about page call not set")

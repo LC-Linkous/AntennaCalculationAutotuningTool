@@ -4,12 +4,15 @@
 #   Class for GUI layout and basic functionality
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: December 30, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import sys
 import os
 import wx
+
+import logging
+logger = logging.getLogger(__name__)
 
 sys.path.insert(0, './gui')
 from gui.gui_main.panel_buttonMenu import ButtonMenuPanel
@@ -79,14 +82,17 @@ class GFrame(wx.Frame):
     def saveAsProject(self):
         with wx.FileDialog(self, "Save antennaCAT project", wildcard="AntennaCAT files (*.ancat)|*.ancat",
                 style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+            logger.info("user attempt: saveas project")
             if fileDialog.ShowModal() == wx.ID_CANCEL:
+                logger.info("user cancelled: saveas project")
                 return   # user cancelled
             pathname = fileDialog.GetPath()
             try:
                 acp = AntennaCATProject(self.DC, self.PC, self.SO)
                 acp.saveAsProject(pathname)
+                logger.info("project saved")
             except Exception as e:
-                print(e)   
+                logger.error(e)   
 
     def openSettings(self):
         self.panel_btnMenu.btnSettingsClicked()
@@ -99,16 +105,19 @@ class GFrame(wx.Frame):
         #select save location
         with wx.FileDialog(self, "Save antennaCAT project", wildcard="AntennaCAT files (*.ancat)|*.ancat",
                 style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+            logger.info("user attempt: new project")
             if fileDialog.ShowModal() == wx.ID_CANCEL:
+                logger.info("user cancelled: new project")
                 return   # user cancelled
             pathname = fileDialog.GetPath()
             try:
                 acp = AntennaCATProject(self.DC, self.PC, self.SO)
                 acp.createNewProject(pathname)
+                logger.info("new project created")
                 #open settings page to finish the project setup
                 self.panel_btnMenu.btnSettingsClicked()
             except Exception as e:
-                print(e) 
+                logger.info(e) 
 
     def btnOpenProjectClicked(self, evt=None):
         #called from page_project.py
@@ -119,7 +128,9 @@ class GFrame(wx.Frame):
         # open file browser
         with wx.FileDialog(self, "Open an AntennaCAT project", wildcard="AntennaCAT files (*.ancat)|*.ancat",
                 style=wx.FD_OPEN|wx.FD_FILE_MUST_EXIST) as fileDialog:
+            logger.info("user attempt: open project")
             if fileDialog.ShowModal() == wx.ID_CANCEL:
+                logger.info("user cancelled: open project")
                 return     # user cancelled
             # get pathname
             pathname = fileDialog.GetPath()
@@ -127,7 +138,7 @@ class GFrame(wx.Frame):
         try:
             self.openProjectCheck(pathname)
         except Exception as e:
-            print(e)
+            logger.info(e)
            
 
     def recentProjectClicked (self, pathname):
@@ -137,7 +148,7 @@ class GFrame(wx.Frame):
 
     def openProjectCheck(self, pathname):
         # called by the open file btn and clicking recent from panel
-        print("open project selected. this functionality is still in progress")
+        logger.info("open project selected. this functionality is still in progress")
         # check that project file and needed directories exist
         acp = AntennaCATProject(self.DC, self.PC, self.SO)
         acp.openExistingProject(pathname) #sets PC, DC, and SO
@@ -206,13 +217,16 @@ class GFrame(wx.Frame):
 
         dlg = wx.MessageDialog(None, msg,'Delete Project Cache',wx.CANCEL|wx.CANCEL_DEFAULT | wx.ICON_QUESTION)
         result = dlg.ShowModal()
+        logger.info("user action: clear project cache prompt")
         if result == wx.ID_OK:
             if os.path.exists(PROG_TEMP_PATH):
                 os.remove(PROG_TEMP_PATH)
             output_msg = "Project cache has been cleared"
+            logger.info(output_msg)
             self.loadAntennaCATSystemFiles()
         else:
             output_msg = "Project cache has not been deleted"
+            logger.info(output_msg)
 
         return output_msg
 
@@ -224,13 +238,16 @@ class GFrame(wx.Frame):
 
         dlg = wx.MessageDialog(None, msg,'Reset AntennaCAT Settings',wx.CANCEL|wx.CANCEL_DEFAULT | wx.ICON_QUESTION)
         result = dlg.ShowModal()
+        logger.info("user action: reset AntennaCAT settings")
         if result == wx.ID_OK:
             for dirPath in PROG_DIR_LIST:
                 if os.path.exists(dirPath):
                     os.remove(dirPath)
             output_msg = "AntennaCAT cache and settings have been reset"
+            logger.info(output_msg)
             self.loadAntennaCATSystemFiles()
         else:
             output_msg = "AntennaCAT settings have not been deleted"
+            logger.info(output_msg)
 
         return output_msg

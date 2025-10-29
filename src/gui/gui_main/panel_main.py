@@ -4,11 +4,14 @@
 #   Class for GUI layout and basic functionality - main gui interaction panel
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import sys
 import wx
+
+import logging
+logger = logging.getLogger(__name__)
 
 sys.path.insert(0, './gui')
 from gui.page_batch.page_batch import BatchPage
