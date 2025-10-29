@@ -4,13 +4,16 @@
 #   Class for batch data collection page
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 # system level imports
 import wx
 import wx.aui
 import wx.lib.newevent
 import pandas as pd
+
+import logging
+logger = logging.getLogger(__name__)
 
 # local imports
 import project.config.antennaCAT_config as c
@@ -88,11 +91,13 @@ class BatchPage(wx.Panel):
     def updateStatusText(self, t):
         if t is None:
             return
+        logger.info(t)
         self.notebook_summary.updateStatusText(t)
 
     def updateDetailsText(self, t):
         if t is None:
             return
+        logger.info(t)
         self.notebook_summary.updateDetailsText(t)
 
     def clearTextWindows(self):
@@ -125,6 +130,7 @@ class BatchPage(wx.Panel):
         self.populateDetectedKeywords(designParams)
         if self.paramList == [] or self.paramList == None:
             wx.MessageBox('No design configuration detected.', 'Error', wx.OK | wx.ICON_ERROR)            
+            logger.info("user error: no design config detected for batch. go to Design page to create or import")
         else:
             self.scrollPanel.addRows(self.paramList, self.paramValLst)
 
@@ -134,6 +140,7 @@ class BatchPage(wx.Panel):
         #check that there's either a loaded design, or that the param list isn't empty
         if (self.PC.getDesignConfigBool() == False) or (self.paramList == [] or self.paramList == None):
             wx.MessageBox('No design configuration detected.', 'Error', wx.OK | wx.ICON_ERROR)
+            logger.info("user error: no design config detected for batch. go to Design page to create or import")
             return        
         #get the vals from the scrollbox
         # set vals to array/tuple
@@ -183,7 +190,7 @@ class BatchPage(wx.Panel):
         # loc and vals to script gen in batch incase script needs to be split
         useSingleBool, numScripts = self.notebook_scripts.getExportSettings()
         if useSingleBool == True:
-            numScripts = 1 #use just one license 
+            numScripts = 1 #use just one license. This is the default 
             
         # generate and export scripts in Batch
         self.batchFunc.generateBatchScripts(numScripts)

@@ -4,11 +4,13 @@
 #   Class for displaying detail text on notebook page 
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import wx
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 
@@ -35,6 +37,7 @@ class MessageDisplay(wx.Panel):
         curTime = time.strftime("%H:%M:%S", time.localtime())
         msg = "[" + str(curTime) +"] " + str(t)  + "\n"
         self.summaryTxt.AppendText(msg)
+        logger.info(msg)
 
     def applyLoadedProjectSettings(self, PC):
         pass
