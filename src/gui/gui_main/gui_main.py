@@ -202,6 +202,7 @@ class GFrame(wx.Frame):
                 os.makedirs(dirPath)
 
         for filePath in PROG_FILES_LIST:
+            # NOTE: this should not generate any of the .json files until user config and customization is better set
             print(filePath)
             if not os.path.exists(filePath):
                 with open(filePath, 'w') as file:
