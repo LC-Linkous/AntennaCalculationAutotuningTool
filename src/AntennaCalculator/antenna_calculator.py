@@ -10,6 +10,10 @@
 
 
 import argparse
+import logging
+logger = logging.getLogger(__name__)
+
+
 try:
     # import sys
     # sys.path.insert(0, './AntenaCalculator')
@@ -17,7 +21,7 @@ try:
     from AntennaCalculator.dipole import Dipole
     from AntennaCalculator.monopole import Monopole
 except:
-    print("relative directory used for antenna_calculator.py")
+    logger.debug("relative directory used for antenna_calculator.py")
     from rectangular_patch import RectangularPatch
     from dipole import Dipole
     from monopole import Monopole
@@ -141,9 +145,9 @@ class AntennaCalculator:
         return self.calcedParams
 
 if __name__ ==  "__main__":
-    # unit testing only. This does not run unless this file is used as the entry point for the antenna calculator
-
+    # unit testing only. 
     import sys
+
     if sys.stdin and sys.stdin.isatty():
         # CLI input e.g. python antenna_calculator.py rectangular_patch -f 2.4e9 -er 4.4 -h 1.6e-3 --variable_return
         shell = AntennaCalculator()

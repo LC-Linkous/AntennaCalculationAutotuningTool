@@ -11,6 +11,9 @@
 
 from os import sep
 import ezdxf
+import logging
+logger = logging.getLogger(__name__)
+
 
 class DXFGenerator:
     def __init__(self, args):
@@ -72,7 +75,7 @@ class DXFGenerator:
             doc2.saveas(filename.split(".")[0] + "_substrate.dxf")
 
         # Print message
-        print("[*] DXF file generated: " + filename)
+        logger.info("[*] DXF file generated: " + filename)
         if separate_layers:
-            print("[*] Top Layer DXF file generated: " + filename.split(".")[0] + "_top.dxf")
-            print("[*] Substrate DXF file generated: " + filename.split(".")[0] + "_substrate.dxf")
+            logger.info("[*] Top Layer DXF file generated: " + filename.split(".")[0] + "_top.dxf")
+            logger.info("[*] Substrate DXF file generated: " + filename.split(".")[0] + "_substrate.dxf")

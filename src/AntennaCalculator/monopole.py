@@ -8,8 +8,12 @@
 #   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
+
 from pint import UnitRegistry
 ureg = UnitRegistry()
+import logging
+logger = logging.getLogger(__name__)
+
 
 class Monopole:
     def __init__(self, args):
@@ -20,9 +24,9 @@ class Monopole:
 
     def unit_print(self, name, value, unit=None):
         if unit != None:
-            print("[*]", name, "= {:.2f}".format((value*ureg.meter).to(self.args.unit)))
+            logger.info("[*]", name, "= {:.2f}".format((value*ureg.meter).to(self.args.unit)))
         else:
-            print("[*]", name, "= {:.2f}".format((value*ureg.meter).to_compact()))
+            logger.info("[*]", name, "= {:.2f}".format((value*ureg.meter).to_compact()))
 
     def quarter_wave_monopole_calculator(self):
         f = self.args.frequency

@@ -11,6 +11,9 @@
 
 from pint import UnitRegistry
 ureg = UnitRegistry()
+import logging
+logger = logging.getLogger(__name__)
+
 
 class Dipole:
     def __init__(self, args):
@@ -21,9 +24,9 @@ class Dipole:
 
     def unit_print(self, name, value, unit=None):
         if unit != None:
-            print("[*]", name, "= {:.2f}".format((value*ureg.meter).to(self.args.unit)))
+            logger.info("[*]", name, "= {:.2f}".format((value*ureg.meter).to(self.args.unit)))
         else:
-            print("[*]", name, "= {:.2f}".format((value*ureg.meter).to_compact()))
+            logger.info("[*]", name, "= {:.2f}".format((value*ureg.meter).to_compact()))
 
     def half_wave_dipole_calculator(self):
         f = self.args.frequency

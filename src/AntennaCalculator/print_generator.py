@@ -10,6 +10,9 @@
 
 
 from PIL import Image, ImageDraw
+import logging
+logger = logging.getLogger(__name__)
+
 
 class PrintGenerator:
     def __init__(self, args):
@@ -42,7 +45,7 @@ class PrintGenerator:
         if W * 2 > 15:
             substrate_origin = 1.0
         if W * 2 > 22:
-            print("[*] The substrate is too large for letter paper. Please adjust paper size.")
+            logger.info("[*] The substrate is too large for letter paper. Please adjust paper size.")
 
         # Origin of patch
         originW = substrate_origin + 0.5 * W
@@ -76,4 +79,4 @@ class PrintGenerator:
 
         # Save image
         img.save(filename, dpi=(res_x, res_y))
-        print("[*] Image saved: " + filename)
+        logger.info("[*] Image saved: " + filename)

@@ -13,6 +13,9 @@ import math
 from cmath import e
 from pint import UnitRegistry
 ureg = UnitRegistry()
+import logging
+logger = logging.getLogger(__name__)
+
 
 try:
     from AntennaCalculator.print_generator import PrintGenerator
@@ -50,17 +53,17 @@ class RectangularPatch():
     def A_check(self, Z0, er):
         A = self.A_calculation(Z0, er)
         if self.args.verbose:
-            print("[*] A =", A)
+            logger.info("[*] A =", A)
         wsd = (8 * e**(A))/(e**(2*A) - 2)
         if self.args.verbose:
-            print("[*] A Ws/d =", wsd)
+            logger.info("[*] A Ws/d =", wsd)
         if wsd < 2:
             if self.args.verbose:
-                print("[*] A is valid")
+                logger.info("[*] A is valid")
             return wsd
         else:
             if self.args.verbose:
-                print("[*] A is not valid")
+                logger.info("[*] A is not valid")
             return -1
 
     def B_calculation(self, Z0, er):
@@ -69,17 +72,17 @@ class RectangularPatch():
     def B_check(self, Z0, er):
         B = self.B_calculation(Z0, er)
         if self.args.verbose:
-            print("[*] B =", B)
+            logger.info("[*] B =", B)
         wsd = (2/math.pi)*(B - 1 - math.ln(2*B-1) + (er-1)/(2*er) * (math.ln(B-1) + 0.39 - 0.61/(er)))
         if self.args.verbose:
-            print("[*] B Ws/d =", wsd)
+            logger.info("[*] B Ws/d =", wsd)
         if wsd > 2:
             if self.args.verbose:
-                print("[*] B is valid")
+                logger.info("[*] B is valid")
             return wsd
         else:
             if self.args.verbose:
-                print("[*] B is not valid")
+                logger.info("[*] B is not valid")
             return -1
 
     def ws_calculation(self, h, Z0, er):
@@ -89,30 +92,30 @@ class RectangularPatch():
             return self.B_check(Z0, er) * h
         else:
             if self.args.verbose:
-                print("No valid Stripline width found")
+                logger.info("No valid Stripline width found")
 
     def y0_calculation(self, W):
         if self.args.verbose:
-            print("[*] y0 =", W/2)
+            logger.info("[*] y0 =", W/2)
         return W/2
 
     def x0_calculation(self, L, W, er, Z0):
         Zin_0 = (90 * (er**2))/(er-1) * (L/W)
         if self.args.verbose:
-            print("[*] Zin_0 =", Zin_0)
+            logger.info("[*] Zin_0 =", Zin_0)
         Zin_x0 = Z0
         if self.args.verbose:
-            print("[*] Zin_x0 =", Zin_x0)
+            logger.info("[*] Zin_x0 =", Zin_x0)
         x0 = math.acos(math.sqrt(Zin_x0/Zin_0)) * (L/math.pi)
         if self.args.verbose:
-            print("[*] x0 =", x0)
+            logger.info("[*] x0 =", x0)
         return x0
 
     def unit_print(self, name, value, unit=None):
         if unit != None:
-            print("[*]", name, "= {:.2f}".format((value*ureg.meter).to(self.args.unit)))
+            logger.info("[*]", name, "= {:.2f}".format((value*ureg.meter).to(self.args.unit)))
         else:
-            print("[*]", name, "= {:.2f}".format((value*ureg.meter).to_compact()))
+            logger.info("[*]", name, "= {:.2f}".format((value*ureg.meter).to_compact()))
 
     def export_png(self, filename, W, L, x0, y0, ws):
         if self.args.pngoutput:
@@ -177,7 +180,7 @@ class RectangularPatch():
 
         ereff = self.effective_relative_permittivity(self.args.frequency, self.args.relative_permittivity, self.args.height, W)
         if self.args.verbose:
-            print("[*] Ereff = {:.2f}".format(ereff))
+            logger.info("[*] Ereff = {:.2f}".format(ereff))
 
         dL = self.delta_length(self.args.height, ereff, W)
         if self.args.verbose:
