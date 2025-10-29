@@ -4,7 +4,7 @@
 #   Class for custom material layering scroll panel
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import wx
@@ -100,7 +100,7 @@ class ParamDynamicScrollPanel(wx.Panel):
     def removeParams(self):
         #iterate through all checkboxes in collection and get their data
         numElements = len(self.paramName) 
-        print(numElements)
+        # print(numElements)
         #local vars
         ctr = 0
         paramName = []
