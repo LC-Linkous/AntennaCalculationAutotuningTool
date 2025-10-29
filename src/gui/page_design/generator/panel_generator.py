@@ -1,15 +1,16 @@
 ##--------------------------------------------------------------------\
 #   Antenna Calculation and Autotuning Tool
-#   '.src/gui/page_design/generator/panel_calculator.py'
-#   GUI panel for taking user input for antenna calculator
-#   Antenna calculator from: https://github.com/Dollarhyde/AntennaCalculator
+#   '.src/gui/page_design/generator/panel_generator.py'
+#   GUI panel for taking user input for antenna generator
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import os
 import wx
+import logging
+logger = logging.getLogger(__name__)
 
 from gui.page_design.generator.calculator import Calculator
 from gui.page_design.generator.replicator import Replicator
@@ -182,6 +183,7 @@ class GeneratorNotebookPage(wx.Panel):
     def updateSummaryText(self, t):
         if t is not None:
             self.parent.updateSummaryText(t)
+            logger.info(t)
 
     def antennaDesignSelectionChange(self, evt):
         boxText = evt.GetEventObject().GetValue()

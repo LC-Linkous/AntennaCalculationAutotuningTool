@@ -4,11 +4,13 @@
 #   Class for creating designs using templates for replication studies
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import sys
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 
@@ -48,6 +50,8 @@ class Replicator():
 
     def exportMicrostripRectangularPatch(self, filePath, dxfBool, pngBool, gerberBool):
         print("EXPORTING FROM REPLICATOR.PY DOES NOT EXIST YET")
+        logger.info("WARNING: feature does not exist. exporting microstrip rectangular patch from replicator.py is not yet supported")
 
     def exportProbeRectangularPatch(self, filePath, dxfBool, pngBool, gerberBool):
         print("EXPORTING FROM REPLICATOR.PY DOES NOT EXIST YET")
+        logger.info("WARNING: feature does not exist. exporting probe fed rectangular patch from replicator.py is not yet supported")
