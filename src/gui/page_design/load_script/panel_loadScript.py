@@ -4,10 +4,13 @@
 #   Class for loading scripts and detecting changable parameters 
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import wx
+import logging
+logger = logging.getLogger(__name__)
+
 
 import project.config.antennaCAT_config as c
 from gui.page_design.load_script.panel_detectedParamDynamicScroll import DetectedParameterDynamicScrollPanel
@@ -91,10 +94,13 @@ class LoadScriptNotebookPage(wx.Panel):
         #user selects save location. any sub-folders are generated as needed in this location
         with wx.FileDialog(self, "Select File Location", "",
                     style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+            logger.info("user prompt: select file location to load script from")
             if fileDialog.ShowModal() == wx.ID_CANCEL:
+                logger.info("user action: cancel")
                 return
             fpath = str(fileDialog.GetPath())
             self.fieldFile.SetValue(fpath)
+            logger.info("file path set")
             self.loadFilePath = fpath
             self.DC.clearParams() #clear old vars
             self.detectParams()
@@ -142,6 +148,7 @@ class LoadScriptNotebookPage(wx.Panel):
             inScript= ImportFEKOScript(self.loadFilePath)
         else:
             wx.MessageBox('No software set or detected.', 'Error', wx.OK | wx.ICON_ERROR)    
+            logger.info("ERROR: unknown EM sim software input. This is a UI issue")
             return
     
         self.paramList, self.paramValLst, self.script = inScript.importScript()
