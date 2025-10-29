@@ -1,15 +1,17 @@
 ##--------------------------------------------------------------------\
-#   Frequency Selective Surface Calculation Autotuning Tool
-#   '.gui/page_design/canvas_draw/drawDesign.py'
+#   Antenna Calculation Autotuning Tool
+#   './gui/page_design/canvas_draw/drawDesign.py'
 #   Class for drawing to the matplotlib canvas. 
 #       replaces the helper_funcs version
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 ZEROS_ARR = [0, -0, 0.0, -0.0] #cover the different ways zeros can be represented (also deals w weird user input)
 
@@ -95,14 +97,14 @@ class DrawDesign:
         conPts=[]
         supPts=[]
         if len(self.substrateLayers) <1:
-            print("No substrate layers to draw")
+            logger.info("No substrate layers to draw")
         else:
             #TODO: if/else for selecting shape of substrate 
             subPts  = self.flatRectangleSubstrate(ax)
             ax.axis([(-1.25*self.x_lim)+self.k,  (1.25*self.y_lim)+self.h,    self.k,  (1.25*self.y_lim)+self.h])
 
         if len(self.conductorLayers) <1:
-            print("No conductor layers to draw")
+            logger.info("No conductor layers to draw")
         else:
             #if/else statements here to control what the conductor is (the calculator will be used for some of this)
             if self.conductorType == 'loop':
@@ -110,7 +112,7 @@ class DrawDesign:
                 conPts = self.flatLoopAntenna(ax)
 
         if len(self.superstrateLayers) <1:
-            print("No superstrate layers to draw")
+            logger.info("No superstrate layers to draw")
         else:
             #TODO: if/else for selecting shape of substrate 
            supPts = self.flatRectangleSuperstrate(ax)
@@ -134,13 +136,13 @@ class DrawDesign:
 
 
         if len(self.substrateLayers) <1:
-            print("No substrate layers to draw")
+            logger.info("No substrate layers to draw")
         else:
             #TODO: if/else for selecting shape of substrate 
             subPts, subEqs = self.curvedRectangleSubstrate(ax) 
 
         if len(self.conductorLayers) <1:
-            print("No conductor layers to draw")
+            logger.info("No conductor layers to draw")
         else:
             #if/else statements here to control what the conductor is (the calculator will be used for some of this)
             if self.conductorType == 'loop':
@@ -148,7 +150,7 @@ class DrawDesign:
                 conPts = self.curvedLoopAntenna(ax)
 
         if len(self.superstrateLayers) <1:
-            print("No superstrate layers to draw")
+            logger.info("No superstrate layers to draw")
         else:
             #TODO: if/else for selecting shape of superstrate 
             supPts, supEqs = self.curvedRectangleSuperstrate(ax)

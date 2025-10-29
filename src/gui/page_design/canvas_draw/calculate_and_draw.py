@@ -1,17 +1,19 @@
 ##--------------------------------------------------------------------\
 #   Antenna Calculation Autotuning Tool
-#   './gui/page_design/geometry_calculator/calculate_and_draw.py'
+#   './gui/page_design/canvas_draw/calculate_and_draw.py'
 #   Class for calculating coordinate points used in the GUI drawing,
 #   and some of the simulation polyshape creation
 #   Not all points used for drawing are saved for CAD creation
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: February 16, 2025
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import numpy as np
-
 import matplotlib.patches as patches
+
+import logging
+logger = logging.getLogger(__name__)
 
 ZEROS_ARR = [0, -0, 0.0, -0.0] #cover the different ways zeros can be represented (also deals w weird user input)
 
@@ -248,7 +250,7 @@ class CalculateAndDraw():
             zlims = [-1.2*l, 1.2*l] 
 
         else:
-            print("unrecognized antenna type in graphics helper funcs: " + str(aType))
+            logger.error("unrecognized antenna type in graphics helper funcs: " + str(aType))
 
 
         #adjust limits for 3D canvas
@@ -266,7 +268,7 @@ class CalculateAndDraw():
         # this shape can be applied to many other features.
         # eventually, there will be a 'parse coords' function that will write the conductor cords to memory to be applied to other
         # configurations without needing to be recalcuated
-        print("parsing imported conductor pts in calculate_and_draw")
+        logger.info("parsing imported conductor pts in calculate_and_draw")
 
 
         pass
@@ -314,7 +316,7 @@ class CalculateAndDraw():
             pts = self.drawCircularPoint(ax, w/2+y0, 1.5*l-x0, h, color="orange")
             self.conductorCoords.append(pts)
         else:
-            print("unrecognized feed type for rectangular_patch")
+            logger.error("unrecognized feed type for rectangular_patch")
         return l, w
 
     def generateMonopole(self, ax, features, params, color = "b"):
@@ -762,7 +764,7 @@ class CalculateAndDraw():
         a = gapDist / (2 * innerRad)
         if (a < -1) or (a > 1): 
             a = np.clip(a, -1, 1) #arcsin cannot have vals below -1 or above 1
-            print("calc_and_draw.py. The gap distance is too large for the inner radius. increase the radius")
+            logger.error("calculate_and_draw.py. The gap distance is too large for the inner radius. increase the radius")
         thetaInner = 2 * np.arcsin(a)
         thetaListInner = np.linspace(-0.5 * np.pi + thetaInner / 2, 1.5 * np.pi - thetaInner / 2, 200)
         xInner = innerRad * np.cos(thetaListInner) + centerX
@@ -774,7 +776,7 @@ class CalculateAndDraw():
         a = (gapDist + 2 * feedWidth) / (2 * outerRad)
         if (a < -1) or (a > 1): 
             a = np.clip(a, -1, 1) #arcsin cannot have vals below -1 or above 1
-            print("calc_and_draw.py. The gap distance is too large for the outer radius. increase the radius")
+            logger.error("calculate_and_draw.py. The gap distance is too large for the outer radius. increase the radius")
         thetaOuter = 2 * np.arcsin(a)
         thetaListOuter = np.linspace(-0.5 * np.pi + thetaOuter / 2, 1.5 * np.pi - thetaOuter / 2, 200)
         xOuter = outerRad * np.cos(thetaListOuter) + centerX
@@ -836,7 +838,7 @@ class CalculateAndDraw():
         a = gapDist / (2 * innerRad)
         if (a < -1) or (a > 1): 
             a = np.clip(a, -1, 1) #arcsin cannot have vals below -1 or above 1
-            print("calc_and_draw.py. The gap distance is too large for the inner radius of the loop. increase the radius")
+            logger.error("calculate_and_draw.py. The gap distance is too large for the inner radius of the loop. increase the radius")
         thetaInner = 2 * np.arcsin(a)
         thetaListInner = np.linspace(-0.5 * np.pi + thetaInner / 2, 1.5 * np.pi - thetaInner / 2, 200)
         xInner = innerRad * np.cos(thetaListInner) + centerX
@@ -848,7 +850,7 @@ class CalculateAndDraw():
         a = (gapDist + 2 * feedWidth) / (2 * outerRad)
         if (a < -1) or (a > 1): 
             a = np.clip(a, -1, 1) #arcsin cannot have vals below -1 or above 1
-            print("calc_and_draw.py. The gap distance is too large for the outer radius of the loop. increase the radius")
+            logger.error("calculate_and_draw.py. The gap distance is too large for the outer radius of the loop. increase the radius")
         thetaOuter = 2 * np.arcsin(a)
         thetaListOuter = np.linspace(-0.5 * np.pi + thetaOuter / 2, 1.5 * np.pi - thetaOuter / 2, 200)
         xOuter = outerRad * np.cos(thetaListOuter) + centerX
@@ -889,7 +891,7 @@ class CalculateAndDraw():
         a = feedWidth / (2 * keyInnerRad)
         if (a < -1) or (a > 1): 
             a = np.clip(a, -1, 1) #arcsin cannot have vals below -1 or above 1
-            print("calc_and_draw.py. The gap distance is too large for the outer radius of the loop. increase the radius")
+            logger.error("calculate_and_draw.py. The gap distance is too large for the outer radius of the loop. increase the radius")
         thetaInner = 2 * np.arcsin(a)
         thetaListInner = np.linspace(-0.5 * np.pi + thetaInner / 2, 1.5 * np.pi - thetaInner / 2, 200)
         xInner = keyInnerRad * np.cos(thetaListInner) + centerX
