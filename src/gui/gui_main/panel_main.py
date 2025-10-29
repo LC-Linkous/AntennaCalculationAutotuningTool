@@ -64,19 +64,23 @@ class MainPanel(wx.Panel):
         # load recent projects on the home page - TODO
         ne = self.panel_project.applyLoadedProjectSettings(self.PC) 
         if ne == False:
+            logger.error("error occured when applying load project settings to the project page")
             return ne # error
         
         # load user settings and comments
         self.panel_settings.applyLoadedProjectSettings(self.PC)
         if ne == False:
+            logger.error("error occured when applying load project settings to the settings page")
             return ne # error
         
         self.panel_simulation.applyLoadedProjectSettings(self.PC) 
         if ne == False:
+            logger.error("error occured when applying load project settings to the simulation page")
             return ne # error
         
         self.panel_batch.applyLoadedProjectSettings(self.PC)
         if ne == False:
+            logger.error("error occured when applying load project settings to the batch page")
             return ne # error
         return True # noError
 
