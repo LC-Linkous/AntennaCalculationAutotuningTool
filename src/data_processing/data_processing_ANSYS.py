@@ -5,12 +5,16 @@
 #       class-based for managing changing EM software
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: October 29, 2025
 ##--------------------------------------------------------------------\
 
 import os
 import pandas as pd
 import numpy as np
+
+import logging
+logger = logging.getLogger(__name__)
+
 ##################################################
 # optimizer data processing using default files
 ##################################################
@@ -125,8 +129,12 @@ class DataProcessing_ANSYS():
         noError = True
         data = None
         if os.path.isfile(file) == False:
-            print("ERROR: data_processing_ANSYS.py. path error to exported data file. check simulation for error")
-            print("attempted filepath: ", file)
+            msg = "ERROR: data_processing_ANSYS.py. path error to exported data file. check simulation for error"
+            logger.error(msg)
+            # print(msg)
+            msg = "attempted filepath: " + str(file)
+            # print(msg)
+            logger.error(msg)
             noError = False
             return data, noError
 
