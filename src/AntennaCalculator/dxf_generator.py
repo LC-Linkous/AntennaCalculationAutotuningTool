@@ -5,7 +5,7 @@
 #   This is an imported project with several edits to work with 
 #       AntennaCAT. The original project can be found at:
 #       https://github.com/Dollarhyde/AntennaCalculator
-#   Last update: October 29, 2025
+#   Last update: November 1, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -75,7 +75,8 @@ class DXFGenerator:
             doc2.saveas(filename.split(".")[0] + "_substrate.dxf")
 
         # Print message
-        logger.info("[*] DXF file generated: " + filename)
+        logger.info(f"[*] DXF file generated: {filename}")
         if separate_layers:
-            logger.info("[*] Top Layer DXF file generated: " + filename.split(".")[0] + "_top.dxf")
-            logger.info("[*] Substrate DXF file generated: " + filename.split(".")[0] + "_substrate.dxf")
+            base_name = filename.split(".")[0]
+            logger.info(f"[*] Top Layer DXF file generated: {base_name}_top.dxf")
+            logger.info(f"[*] Substrate DXF file generated: {base_name}_substrate.dxf")
