@@ -5,7 +5,7 @@
 #   Scripts are NOT written or read to file in this class
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu), Jonathan Lundquist
-#   Last update: Novmber 29, 2024
+#   Last update: Novmber 1, 2025
 ##--------------------------------------------------------------------\
 
 import os
@@ -692,6 +692,7 @@ class OptimizerIntegrator():
             self.stopLooping() #only event not triggered from UI
             self.updateSolutionValues()
             self.postSimulationCleanup()
+
             return
 
         #check if simulation is still running
@@ -1154,9 +1155,22 @@ class OptimizerIntegrator():
         with open(pathname, "a") as f:
             f.write(line)
 
-    def updateSolutionValues(self):
+    def updateSolutionValues(self, printFinal=True):
         self.soln_x_vals = self.OO.get_optimized_soln()
         self.soln_y_vals = self.OO.get_optimized_outs()
+
+        # print final convergence
+        if printFinal == True:
+            msg = "Final convergence:"
+            self.updateStatusText(msg)
+            msg = "\tOptimized Parameter solution values:"
+            self.updateStatusText(msg)
+            self.updateStatusText(str(self.soln_x_vals))
+            msg = "\tOptimized output values:"
+            self.updateStatusText(msg)
+            self.updateStatusText(str(self.soln_y_vals))
+
+
 ######################################################
 # optimizer data collection
 ######################################################
