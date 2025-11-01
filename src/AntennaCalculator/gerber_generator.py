@@ -5,7 +5,7 @@
 #   This is an imported project with several edits to work with 
 #       AntennaCAT. The original project can be found at:
 #       https://github.com/Dollarhyde/AntennaCalculator
-#   Last update: October 29, 2025
+#   Last update: November 1, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -26,18 +26,19 @@ class GerberGenerator:
         return load_gerber
 
     def generate_gerber(self, filename):
-
+        base_name = filename.rsplit(".", 1)[0]
+        
         # Generate the top layer gerber file
-        tl_dxf = self.read(filename.split(".")[0] + '_top.dxf')
+        tl_dxf = self.read(f'{base_name}_top.dxf')
         tl_ctx = gerberex.GerberComposition()
         tl_dxf.draw_mode = tl_dxf.DM_FILL
         tl_ctx.merge(tl_dxf)
-        tl_ctx.dump(filename.split(".")[0] + '_top.gtl')
-        logger.info("[*] Top layer gerber file generated: " + filename.split(".")[0] + "_top.gtl")
-
+        tl_ctx.dump(f'{base_name}_top.gtl')
+        logger.info(f"[*] Top layer gerber file generated: {base_name}_top.gtl")
+        
         # Generate the substrate gerber file
-        s_dxf = self.read(filename.split(".")[0] + '_substrate.dxf')
+        s_dxf = self.read(f'{base_name}_substrate.dxf')
         s_ctx = gerberex.GerberComposition()
         s_ctx.merge(s_dxf)
-        s_ctx.dump(filename.split(".")[0] + '_substrate.gml')
-        logger.info("[*] Substrate gerber file generated: " + filename.split(".")[0] + "_substrate.gml")
+        s_ctx.dump(f'{base_name}_substrate.gml')
+        logger.info(f"[*] Substrate gerber file generated: {base_name}_substrate.gml")
