@@ -5,7 +5,7 @@
 #   This is an imported project with several edits to work with 
 #       AntennaCAT. The original project can be found at:
 #       https://github.com/Dollarhyde/AntennaCalculator
-#   Last update: October 29, 2025
+#   Last update: November 1, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -23,10 +23,10 @@ class Monopole:
         return(3e8 / (4 * f))
 
     def unit_print(self, name, value, unit=None):
-        if unit != None:
-            logger.info("[*]", name, "= {:.2f}".format((value*ureg.meter).to(self.args.unit)))
+        if unit is not None:
+            logger.info(f"[*] {name} = {(value * ureg.meter).to(self.args.unit):.2f}")
         else:
-            logger.info("[*]", name, "= {:.2f}".format((value*ureg.meter).to_compact()))
+            logger.info(f"[*] {name} = {(value * ureg.meter).to_compact():.2f}")
 
     def quarter_wave_monopole_calculator(self):
         f = self.args.frequency
