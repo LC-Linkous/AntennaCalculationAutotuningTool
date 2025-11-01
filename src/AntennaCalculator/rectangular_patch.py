@@ -5,7 +5,7 @@
 #   This is an imported project with several edits to work with 
 #       AntennaCAT. The original project can be found at:
 #       https://github.com/Dollarhyde/AntennaCalculator
-#   Last update: October 29, 2025
+#   Last update: November 1, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -53,10 +53,10 @@ class RectangularPatch():
     def A_check(self, Z0, er):
         A = self.A_calculation(Z0, er)
         if self.args.verbose:
-            logger.info("[*] A =", A)
+            logger.info("[*] A = {A}")
         wsd = (8 * e**(A))/(e**(2*A) - 2)
         if self.args.verbose:
-            logger.info("[*] A Ws/d =", wsd)
+            logger.info("[*] A Ws/d = {wsd}")
         if wsd < 2:
             if self.args.verbose:
                 logger.info("[*] A is valid")
@@ -72,10 +72,10 @@ class RectangularPatch():
     def B_check(self, Z0, er):
         B = self.B_calculation(Z0, er)
         if self.args.verbose:
-            logger.info("[*] B =", B)
+            logger.info("[*] B = {B}")
         wsd = (2/math.pi)*(B - 1 - math.ln(2*B-1) + (er-1)/(2*er) * (math.ln(B-1) + 0.39 - 0.61/(er)))
         if self.args.verbose:
-            logger.info("[*] B Ws/d =", wsd)
+            logger.info("[*] B Ws/d = {wsd}")
         if wsd > 2:
             if self.args.verbose:
                 logger.info("[*] B is valid")
@@ -102,20 +102,20 @@ class RectangularPatch():
     def x0_calculation(self, L, W, er, Z0):
         Zin_0 = (90 * (er**2))/(er-1) * (L/W)
         if self.args.verbose:
-            logger.info("[*] Zin_0 =", Zin_0)
+            logger.info("[*] Zin_0 = {Zin_0}")
         Zin_x0 = Z0
         if self.args.verbose:
-            logger.info("[*] Zin_x0 =", Zin_x0)
+            logger.info("[*] Zin_x0 = {Zin_x0}")
         x0 = math.acos(math.sqrt(Zin_x0/Zin_0)) * (L/math.pi)
         if self.args.verbose:
-            logger.info("[*] x0 =", x0)
+            logger.info("[*] x0 = {x0}")
         return x0
 
     def unit_print(self, name, value, unit=None):
         if unit != None:
-            logger.info("[*]", name, "= {:.2f}".format((value*ureg.meter).to(self.args.unit)))
+            logger.info(f"[*] {name} = {(value * ureg.meter).to(self.args.unit):.2f}")
         else:
-            logger.info("[*]", name, "= {:.2f}".format((value*ureg.meter).to_compact()))
+           logger.info(f"[*] {name} = {(value * ureg.meter).to_compact():.2f}")
 
     def export_png(self, filename, W, L, x0, y0, ws):
         if self.args.pngoutput:
@@ -180,7 +180,7 @@ class RectangularPatch():
 
         ereff = self.effective_relative_permittivity(self.args.frequency, self.args.relative_permittivity, self.args.height, W)
         if self.args.verbose:
-            logger.info("[*] Ereff = {:.2f}".format(ereff))
+            logger.info(f"[*] Ereff = {ereff:.2f}")
 
         dL = self.delta_length(self.args.height, ereff, W)
         if self.args.verbose:
