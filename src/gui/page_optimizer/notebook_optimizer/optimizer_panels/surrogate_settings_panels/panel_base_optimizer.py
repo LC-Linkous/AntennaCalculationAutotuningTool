@@ -5,10 +5,12 @@
 #       Contains widgets for optimizer settings and exports
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: June 10, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import wx
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 
@@ -145,7 +147,7 @@ class BaseOptimizerPage(wx.Panel):
         elif boxText == 'Invisible':
             self.boundary = 4
         else:
-            print("Error: No boundary selected!")
+            logger.error("ERROR: No boundary selected!")
 
     def getBoundarySelection(self):
         self.boundarySelection(None)
@@ -190,10 +192,8 @@ class BaseOptimizerPage(wx.Panel):
             optimizerName = OPT_CHICKEN_QUANTUM
 
         else:
-            print("ERROR in panel_surrogate.py unknown optimizer selected")
+            logger.error("ERROR in panel_surrogate.py unknown optimizer selected")
 
-        # print("PANEL_SWARM.PY self.optimizerName set based on dropdown selection")
-        # print(optimizerName)
         return optimizerName
     
     def getOptimizerInputs(self, optimizerName, is_surrogate=False):
@@ -220,11 +220,11 @@ class BaseOptimizerPage(wx.Panel):
         elif optimizerName == OPT_CHICKEN_QUANTUM:
             df, noError = self.chicken_quantum_panel.getOptimizerInputs(is_surrogate)
         else:
-            print("ERROR: optimizer name not recognized in panel_base_optimizer. Select an option from the dropdown menu to continue!")
-            print("selected optimizer: " + str(optimizerName))
+            logger.error("ERROR: optimizer name not recognized in panel_base_optimizer. Select an option from the dropdown menu to continue!")
+            logger.error("selected optimizer: {optimizerName}")
 
         if noError == False:
-            print("ERROR: error in optimizer input values. check inputs.")    
+            logger.error("ERROR: error in optimizer input values. check inputs.")    
 
 
         return df, noError

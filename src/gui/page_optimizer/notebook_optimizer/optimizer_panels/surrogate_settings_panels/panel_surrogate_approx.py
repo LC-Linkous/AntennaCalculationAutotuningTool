@@ -5,14 +5,15 @@
 #       Contains widgets for optimizer settings and exports
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: June 10, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import wx
 import os
 import numpy as np
 import pandas as pd
-
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 
@@ -148,7 +149,7 @@ class SurrogateApproxPage(wx.Panel):
             self.hideEverythingAndShowSinglePanel(self.DTR_panel)
             surrogateAproxName = SM_DECISION_TREE_REGRESSION
         else:
-            print("ERROR in panel_surrogate.py unknown surrogate approx selected")
+            logger.error("ERROR in panel_surrogate.py unknown surrogate approx selected")
 
         return surrogateAproxName
 
@@ -175,12 +176,12 @@ class SurrogateApproxPage(wx.Panel):
         elif modelApproximatorName == SM_DECISION_TREE_REGRESSION:
             df, noError = self.DTR_panel.getOptimizerInputs(is_surrogate)
         else:
-            print("SURROGATE MODEL APPROXIMATOR NAME")
-            print(modelApproximatorName)
-            print("ERROR: name not recognized in panel_surrogate_approx.py. Select an option from the dropdown menu to continue!")
+            logger.error("SURROGATE MODEL APPROXIMATOR NAME")
+            logger.error(modelApproximatorName)
+            logger.error("ERROR: name not recognized in panel_surrogate_approx.py. Select an option from the dropdown menu to continue!")
 
         if noError == False:
-            print("ERROR: error in optimizer input values. check inputs.")    
+            logger.error("ERROR: error in optimizer input values. check inputs.")    
 
         return df, noError
 
