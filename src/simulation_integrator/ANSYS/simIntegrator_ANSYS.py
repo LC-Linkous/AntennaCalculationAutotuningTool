@@ -543,6 +543,17 @@ class SimIntegrator_ANSYS():
                     # 2 seconds was not enough in all cases, but 10 is too much
         self.p = -1
 
+        # try:
+        #     self.p.terminate() 
+        # except Exception as e:
+        #     print("exception when attempting to kill thread. no thread to terminate")
+        #     print(e)
+
+        # time.sleep(5) # make sure the process is fully shut down. 
+        # # 2 seconds was not enough in all cases, but 10 is too much
+        # self.p = -1
+
+
 
 if __name__ == "__main__":
     pass
