@@ -5,13 +5,16 @@
 #       Contains widgets for optimizer settings and exports
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 27, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import wx
 import os
 import pandas as pd
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 import project.config.antennaCAT_config as c
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_parameterSummary import ParameterSummaryPanel
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_optimizationMetric import OptimizationMetricPanel
@@ -130,18 +133,10 @@ class GLODSPage(wx.Panel):
         # merge the data frames
         df = pd.concat([df1, df2], axis=1)
 
-
-        #print(df)
         #assign
-
         self.DC.setOptimizerParameters(df)
         self.parent.btnSelectClicked(self.optimizerName, noError) 
 
-
-        # df, noError = self.getOptimizerInputs()
-        # self.DC.setOptimizerParameters(df)
-        # self.parent.btnSelectClicked(self.optimizerName, noError) 
-        # print(df)
 
     def btnExportClicked(self, evt=None):
         self.parent.btnExportClicked()
@@ -302,7 +297,7 @@ class TuningPage(wx.Panel):
         if txt == "MultiGLODS":
             optimizerName = OPT_MULTI_GLODS
         else:
-            print("ERROR in panel_glods.py unknown optimizer selected")
+            logger.error("ERROR in panel_glods.py unknown optimizer selected")
 
         return optimizerName
     
@@ -316,11 +311,11 @@ class TuningPage(wx.Panel):
         if optimizerName == OPT_MULTI_GLODS:
             df, noError = self.multiglods_panel.getOptimizerInputs()
         else:
-            print("ERROR: optimizer name not recognized in panel_GLODS. Select an option from the dropdown menu to continue!")
+            logger.error("ERROR: optimizer name not recognized in panel_GLODS. Select an option from the dropdown menu to continue!")
 
 
         if noError == False:
-            print("ERROR: error in optimizer input values. check inputs.")    
+            logger.error("ERROR: error in optimizer input values. check inputs.")    
 
 
         return df, noError

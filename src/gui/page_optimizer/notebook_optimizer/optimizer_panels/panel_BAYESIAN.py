@@ -5,13 +5,15 @@
 #       Contains widgets for optimizer settings and exports
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: June 10, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import wx
 import os
 import numpy as np
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_parameterSummary import ParameterSummaryPanel
@@ -157,18 +159,10 @@ class BAYESIANPage(wx.Panel):
         # merge the data frames
         df = pd.concat([df1, df2], axis=1)
 
-
-        #print(df)
         #assign
-
         self.DC.setOptimizerParameters(df)
         self.parent.btnSelectClicked(self.optimizerName, noError) 
 
-
-        # df, noError = self.getOptimizerInputs()
-        # self.DC.setOptimizerParameters(df)
-        # self.parent.btnSelectClicked(self.optimizerName, noError) 
-        # print(df)
 
     def btnExportClicked(self, evt=None):
         self.parent.btnExportClicked()
@@ -190,7 +184,7 @@ class BAYESIANPage(wx.Panel):
         elif boxText == 'Invisible':
             self.boundary = 4
         else:
-            print("Error: No boundary selected!")
+            logger.error("Error: No boundary selected!")
 
 #######################################################
 # Status update to main page
@@ -252,7 +246,7 @@ class BAYESIANPage(wx.Panel):
         elif boxText == 'Invisible':
             self.boundary = 4
         else:
-            print("Error: No boundary selected!")
+            logger.error("Error: No boundary selected!")
            
         if (self.upperBoundsArr == None):
             msg = "ERROR: apply parameter configuration to continue"
@@ -394,7 +388,7 @@ class TuningPage(wx.Panel):
             self.hideEverythingAndShowSinglePanel(self.DTR_panel)
             modelApproximatorName = SM_DECISION_TREE_REGRESSION
         else:
-            print("ERROR in panel_bayesian.py unknown model approximator selected")
+            logger.error("ERROR in panel_bayesian.py unknown model approximator selected")
             optimizerName = OPT_BAYESIAN
             modelApproximatorName = None
 
@@ -423,13 +417,13 @@ class TuningPage(wx.Panel):
         elif modelApproximatorName == SM_DECISION_TREE_REGRESSION:
             df, noError = self.DTR_panel.getOptimizerInputs()
         else:
-            print("SURROGATE MODEL APPROXIMATOR NAME")
-            print(modelApproximatorName)
-            print("ERROR: name not recognized in panel_BAYESIAN. Select an option from the dropdown menu to continue!")
+            logger.error("SURROGATE MODEL APPROXIMATOR NAME")
+            logger.error(modelApproximatorName)
+            logger.error("ERROR: name not recognized in panel_BAYESIAN. Select an option from the dropdown menu to continue!")
 
 
         if noError == False:
-            print("ERROR: error in optimizer input values. check inputs.")    
+            logger.error("ERROR: error in optimizer input values. check inputs.")    
 
 
         return df, noError

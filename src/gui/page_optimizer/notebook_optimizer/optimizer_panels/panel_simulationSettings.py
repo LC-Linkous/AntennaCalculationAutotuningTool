@@ -4,7 +4,7 @@
 #   Class opimizer simulation settings notebook page
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: December 3, 2023
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import wx
@@ -205,14 +205,10 @@ class SolutionSettingsPanel(wx.Panel):
         self.ckbxMultipleFrequencies.SetValue(multiFreqBool)
         self.fieldStart.SetValue(str(self.minFreq))
         self.fieldStop.SetValue(str(self.maxFreq))
-        #update DC 
-        # noErrors = self.updateDCValsFromUI()
-        # return noErrors
+
 
     def updateDCValsFromUI(self):
         noError, numFreqVals = self.checkFrequencyCompatability()
-        # print("num freq vals in panel_simulationSettings.py")
-        # print(numFreqVals)
         
         if noError == False:
             return False

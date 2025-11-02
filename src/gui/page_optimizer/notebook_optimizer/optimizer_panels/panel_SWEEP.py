@@ -5,13 +5,16 @@
 #       Contains widgets for optimizer settings and exports
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 27, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import wx
 import os
 import pandas as pd
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 import project.config.antennaCAT_config as c
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_parameterSummary import ParameterSummaryPanel
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_optimizationMetric import OptimizationMetricPanel
@@ -308,7 +311,7 @@ class TuningPage(wx.Panel):
             optimizerName = OPT_RANDOM_SWEEP
 
         else:
-            print("ERROR in panel_SWEEP.py unknown optimizer selected")
+            logger.error("ERROR in panel_SWEEP.py unknown optimizer selected")
 
         return optimizerName
     
@@ -321,11 +324,11 @@ class TuningPage(wx.Panel):
         elif optimizerName == OPT_RANDOM_SWEEP:
             df, noError = self.random_sweep_panel.getOptimizerInputs()
         else:
-            print("ERROR: optimizer name not recognized in panel_SWEEP. Select an option from the dropdown menu to continue!")
+            logger.error("ERROR: optimizer name not recognized in panel_SWEEP. Select an option from the dropdown menu to continue!")
 
 
         if noError == False:
-            print("ERROR: error in optimizer input values. check inputs.")    
+            logger.error("ERROR: error in optimizer input values. check inputs.")    
 
 
         return df, noError

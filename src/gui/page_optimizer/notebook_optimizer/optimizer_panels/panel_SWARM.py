@@ -5,13 +5,15 @@
 #       Contains widgets for optimizer settings and exports
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 17, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import wx
 import os
 import numpy as np
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 from gui.page_optimizer.notebook_optimizer.optimizer_panels.panel_parameterSummary import ParameterSummaryPanel
@@ -155,17 +157,10 @@ class SWARMPage(wx.Panel):
         df = pd.concat([df1, df2], axis=1)
 
 
-        #print(df)
         #assign
-
         self.DC.setOptimizerParameters(df)
         self.parent.btnSelectClicked(self.optimizerName, noError) 
 
-
-        # df, noError = self.getOptimizerInputs()
-        # self.DC.setOptimizerParameters(df)
-        # self.parent.btnSelectClicked(self.optimizerName, noError) 
-        # print(df)
 
     def btnExportClicked(self, evt=None):
         self.parent.btnExportClicked()
@@ -187,7 +182,7 @@ class SWARMPage(wx.Panel):
         elif boxText == 'Invisible':
             self.boundary = 4
         else:
-            print("Error: No boundary selected!")
+            logger.error("Error: No boundary selected!")
 
 #######################################################
 # Status update to main page
@@ -249,7 +244,7 @@ class SWARMPage(wx.Panel):
         elif boxText == 'Invisible':
             self.boundary = 4
         else:
-            print("Error: No boundary selected!")
+            logger.error("Error: No boundary selected!")
            
         if (self.upperBoundsArr == None):
             msg = "ERROR: apply parameter configuration to continue"
@@ -376,10 +371,9 @@ class TuningPage(wx.Panel):
             self.hideEverythingAndShowSinglePanel(self.chicken_swarm_2015_panel)
             optimizerName = OPT_CHICKEN_2015
         else:
-            print("ERROR in panel_swarm.py unknown optimizer selected")
-
-        # print("PANEL_SWARM.PY self.optimizerName set based on dropdown selection")
-        # print(optimizerName)
+            logger.error("ERROR in panel_swarm.py unknown optimizer selected")
+            logger.error(optimizerName)
+      
         return optimizerName
     
     def getOptimizerInputs(self, optimizerName):
@@ -400,11 +394,11 @@ class TuningPage(wx.Panel):
         elif optimizerName == OPT_CHICKEN_2015:
             df, noError = self.chicken_swarm_2015_panel.getOptimizerInputs()
         else:
-            print("ERROR: optimizer name not recognized in panel_SWARM. Select an option from the dropdown menu to continue!")
+            logger.error("ERROR: optimizer name not recognized in panel_SWARM. Select an option from the dropdown menu to continue!")
 
 
         if noError == False:
-            print("ERROR: error in optimizer input values. check inputs.")    
+            logger.error("ERROR: error in optimizer input values. check inputs.")    
 
 
         return df, noError
