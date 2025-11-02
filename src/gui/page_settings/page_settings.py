@@ -4,7 +4,7 @@
 #   Class for user settings and config inputs
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: July 6, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 # system level imports
@@ -13,6 +13,8 @@ import sys
 import wx #pip install wxpython
 import wx.aui
 import wx.lib.newevent
+import logging
+logger = logging.getLogger(__name__)
 
 # local imports
 import project.config.antennaCAT_config as c
@@ -124,8 +126,8 @@ class SettingsPage(wx.Panel):
                     acp = AntennaCATProject(self.DC, self.PC, self.SO)
                     acp.saveProject(pathname) #createNewProject(pathname)
                 except Exception as e:
-                    print("ERROR saving in page_settings.py")
-                    print(e)
+                    logger.error("ERROR saving in page_settings.py")
+                    logger.error(e)
 
         #get the EM software choices
         ems = self.notebook_softwareSettings.getDefaultEMSoftware()
@@ -158,7 +160,7 @@ class SettingsPage(wx.Panel):
         acp.saveProject()
 
         if DEBUG == True:
-            print("EM software saved in page_settings.py")    
+            logger.info("EM software saved in page_settings.py")    
 
 
     def updateSettingsInformation(self):
