@@ -4,7 +4,7 @@
 #   Class for batch data collection page
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: June 10, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 # system level imports
 import os
@@ -13,6 +13,8 @@ import wx
 import wx.aui
 import wx.lib.newevent
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 
 # local imports
 import project.config.antennaCAT_config as c
@@ -103,11 +105,13 @@ class OptimizerPage(wx.Panel):
         if t is None:
             return
         self.notebook_summary.updateStatusText(t)
+        logger.info(t)
 
     def updateDetailsText(self, t):
         if t is None:
             return
         self.notebook_summary.updateDetailsText(t)
+        logger.info(t)
 
     def clearTextWindows(self):
         self.notebook_summary.clearStatus()
@@ -134,6 +138,7 @@ class OptimizerPage(wx.Panel):
 
     def btnRunClicked(self, evt=None):        
         # called from panels in optimizer notebook, calls OI function
+        logger.info("run button clicked")
 
         # check if design was set
         if self.PC.getDesignScriptCreatedBool() == False:
@@ -143,18 +148,23 @@ class OptimizerPage(wx.Panel):
     
         # check if optimizer has been selected
         if self.checkIfOptimizerSelected() == False:
+            logger.info("UI error: run button clicked, but no optimizer has been selected yet")
             return
         self.OI.run()
 
     def btnPauseClicked(self, evt=None):
         # check if optimizer has been selected
+        logger.info("pause button clicked")
         if self.checkIfOptimizerSelected() == False:
+            logger.info("UI error: pause button clicked, but no optimizer has been selected yet")
             return
         self.OI.pause()
 
     def btnKillSimulationClicked(self, evt=None):
         # force kill simulation if process is hung
+        logger.info("kill simulation button clicked")
         if self.checkIfOptimizerSelected() == False:
+            logger.info("UI error: kill simulation button clicked, but no optimizer has been selected yet")
             return
                
         self.OI.killSimulation()
@@ -168,13 +178,16 @@ class OptimizerPage(wx.Panel):
     def btnStopClicked(self, evt=None):
         #called from panels in optimizer notebook, calls OI function        
         # check if optimizer has been selected
+        logger.info("stop button clicked")
         if self.checkIfOptimizerSelected() == False:
+            logger.info("UI error: stop button clicked, but no optimizer has been selected yet")
             return
         
         self.OI.stop()
 
     def checkIfOptimizerSelected(self):        
         # check if optimizer has been selected and print warning
+        logger.info("checking if optimizer has been selected")
         if self.optimizerSelected == False:
             msg = "an optimizer must be selected before running"
             self.updateStatusText(msg)
@@ -186,6 +199,7 @@ class OptimizerPage(wx.Panel):
         self.OI.openSaved()
     
     def btnSelectClicked(self, optimizerName, noError):
+        logger.info("select button clicked")
         # TODO This should probably be pulled out one level higher or to a different file, 
         # but that needs to be hashed out with the balance between 
         # UI driven controls & segmentation vs. pulling commands out of the GUI state machine
@@ -194,6 +208,7 @@ class OptimizerPage(wx.Panel):
 
        
     def btnExportClicked(self, evt=None):
+        logger.info("export button clicked")
         if self.optimizerSelected == False:
             msg = "an optimizer must be selected before state can be exported"
             self.updateStatusText(msg)
@@ -353,7 +368,7 @@ class OptimizerPage(wx.Panel):
                     acp = AntennaCATProject(self.DC, self.PC, self.SO)
                     acp.createNewProject(pathname)
                 except Exception as e:
-                    print(e)
+                    logger.error(e)
 
         #use the optimizer name to select which optimizer is now being used     
         optimizerParams = self.DC.getOptimizerParameters()
@@ -370,7 +385,7 @@ class OptimizerPage(wx.Panel):
             targetValTmp = []
             ctr = 0
             for op in optimizerParams["target_metrics"][0]:
-                print(optimizerParams["target_values"][0])
+                logger.info(optimizerParams["target_values"][0])
                 targVals = optimizerParams["target_values"][0][ctr].split(",")
                 for idx in range(0, int(numFreqs)):
                     targetMetricsTmp.append(op)
@@ -382,25 +397,18 @@ class OptimizerPage(wx.Panel):
             optimizerParams["target_values"] = pd.Series([targetValTmp])
             optimizerParams['num_output'] = pd.Series(len(targetValTmp))
 
-            # print("optimizerParams2 in page_optimizer")
-            # print(optimizerParams)
-            # print(optimizerParams["target_metrics"])
-            # print(optimizerParams["target_values"])
 
         else: # do a quick str to float conversion
             targetValTmp = []
-            # print("****************************************************")
-            # print("optimizerParams[target_values][0] in page_optimizer")
-            # print(optimizerParams)
-            # print("****************^^^^^^^^^^^^^^^********************")
 
-            # print(optimizerParams["target_values"][0])
             try:
                 for op in optimizerParams["target_values"][0]:
                     targetValTmp.append(float(op))
                 optimizerParams["target_values"] = pd.Series([targetValTmp])
             except:
                 noError = False
+                logger.error("exception when attempting to append target values as floats")
+                logger.info(optimizerParams["target_values"])
                 
                 # this is usually triggered when the controllable parameters aren't set
                 # error messages are displayed in the parent classes, but it's still
