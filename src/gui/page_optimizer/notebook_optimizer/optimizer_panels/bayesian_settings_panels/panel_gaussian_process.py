@@ -4,7 +4,7 @@
 #   Class for inputs for Bayesian optimizer
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: December 5, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -12,6 +12,8 @@
 import wx
 import numpy as np
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 
@@ -122,8 +124,8 @@ class GaussianProcess_Panel(wx.Panel):
             self.GP_length_scale = self.fieldLengthScale.GetValue()
 
         except Exception as e:
-            print("ERROR in panel_rbf_network getting user input")
-            print(e)
+            logger.error("ERROR in panel_rbf_network getting user input")
+            logger.error(e)
             noError = False   
         
         return noError

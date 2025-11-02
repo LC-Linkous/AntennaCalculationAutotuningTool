@@ -4,13 +4,15 @@
 #   Class for inputs for Bayesian optimizer
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: December 5, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
 import wx
 import numpy as np
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 
@@ -112,8 +114,8 @@ class DecisionTreeRegression_Panel(wx.Panel):
             self.maxIter = self.fieldMaxIter.GetValue()
             self.DTR_max_depth = self.fieldMaxDepth.GetValue()
         except Exception as e:
-            print("ERROR in panel_decision_tree_regression getting user input")
-            print(e)
+            logger.error("ERROR in panel_decision_tree_regression getting user input")
+            logger.error(e)
             noError = False   
         
         return noError
