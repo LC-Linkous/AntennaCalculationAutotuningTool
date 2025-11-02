@@ -10,7 +10,7 @@
 import wx
 
 import project.config.antennaCAT_config as c
-from gui.page_batch.notebook_summary.panel_messageDisplay import MessageDisplay
+from gui.page_optimizer.notebook_summary.panel_messageDisplay import MessageDisplay
 
 
 MAIN_BACKGROUND_COLOR = c.MAIN_BACKGROUND_COLOR
