@@ -6,11 +6,13 @@
 #   NOTE: add hooks back in for the other EM sim softwares here post 2024.0
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: July 6, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import os
 import wx
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 
@@ -142,7 +144,7 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
         return self.EMSoftwareID, self.fullExePath, numLicenses, useSingle, defaultSoftware, useStudent
 
     def applyLoadedProjectSettings(self, PC):
-        # print("apply loaded settings - panel from panel_EMSoftwareConfig.py")
+        logger.info("apply loaded settings - panel from panel_EMSoftwareConfig.py")
         if PC.getSimulationSoftware() == self.EMSoftwareID:
 
             pth = str(PC.getSimulationSoftwarePath())
@@ -155,14 +157,14 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
                 msg = "Invalid EM Simulation Software Executable. Make sure EM Simulation software is installed"
                 self.fieldExecutableDir.SetValue(str("no//executable//path//set"))
                 wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
-                print("PATH WITH ISSUE in panel_EMSoftwareConfig")
-                print(pth)
+                logger.error("PATH WITH ISSUE in panel_EMSoftwareConfig")
+                logger.error(pth)
 
             try:
                 self.fieldNumLicenses.SetValue(str(int(PC.getNumSimulationLicenses())))
             except Exception as e:
                 self.fieldNumLicenses.SetValue(str("1"))
-                print("invalid number of licenses on Settings import")
+                logger.error("invalid number of licenses on Settings import")
 
 
             try:
@@ -171,7 +173,7 @@ class EMSoftwareConfigNotebookPage(wx.Panel):
                 self.ckbxUseAsDefaultSoftware.SetValue(PC.getDefaultEMSoftware())
             except Exception as e:
                 self.fieldNumLicenses.SetValue(str("1"))
-                print("ERROR with emsoftware checkboxes. defaults used")
+                logger.error("ERROR with emsoftware checkboxes. defaults used")
 
     def ckbxUseStudentVersionChecked(self, evt):
         # TODO:
