@@ -96,6 +96,10 @@ class OptimizerIntegrator():
         self.OO = None #optimizer object. to be selcted 
         self.DP = None # data processing obj. to be selected
 
+        # default constants that will be worked into configs later
+        self.numSigFigs  = 8
+
+
         # directories
         self.optimizerDir = None #optimizer directory
         self.dataDir = None #default loc for saving generated data
@@ -632,8 +636,6 @@ class OptimizerIntegrator():
             dlg = wx.MessageDialog(None, "Do you want to start a new run?",'Optimizer',wx.YES_NO | wx.ICON_QUESTION)
             result = dlg.ShowModal()
             if result == wx.ID_YES:
-                # self.stopBool = False
-                # self.pauseBool = False
                 self.resetVariables() # this sets stopBool and pauseBool to false
                 self.stopLooping() # this is partially an artifact now, but is hanging around until the state machine is fully stress tested
                 msg = "optimizer process stopped"
@@ -689,15 +691,14 @@ class OptimizerIntegrator():
         if DEBUG == True:
             self.updateStatusText("checking lockfilePath in optimizer_integrator:")
             self.updateStatusText(str(lockFilepath))
-            # print("checking lockfilePath in optimizer_integrator:")
-            # print(lockFilepath)
+
         if os.path.isfile(lockFilepath) == True:
-            #print("attempting to remove lockfile")
             self.updateStatusText(str(lockFilepath))
             self.updateStatusText("attempting to remove lockfile")
             os.remove(lockFilepath)
             if os.path.isfile(lockFilepath) == False:
                 self.updateStatusText("lockfile removed")
+
         # Leave this commented out - otherwise it's going to print every time MulitGLODS steps without running a simulation
         # else:  
         #     self.updateStatusText("there are no lockfiles to remove")
@@ -732,21 +733,8 @@ class OptimizerIntegrator():
             return
         
         ##optimizer
-        completeBool = self.OO.checkOptimizerComplete() # check number 1
+        completeBool = self.checkIfComplete()# check number 1
         if completeBool == True:
-            msg = "optimizer converged"
-            self.updateStatusText(msg)
-            self.stopBool = True # this is the only time the LOOP should force a stop
-            self.stopLooping() #only event not triggered from UI
-            msg = "optimizer process stopped"
-            self.updateStatusText(msg)
-            self.updateSolutionValues()
-            self.postSimulationCleanup()
-            # any other file clean up will be triggered from here
-            #
-            msg = "optimization done"
-            self.updateStatusText(msg)
-            
             return
 
         #check if simulation is still running
@@ -754,7 +742,8 @@ class OptimizerIntegrator():
         self.simRunningBool, noError = self.checkIfSimulationIsRunning()
 
         if noError == False:
-            self.postSimulationCleanup(False) #delete lock file
+            self.postSimulationCleanup(False) #delete lock file if it exists
+            # this lingers sometimes and is not an error
         
         #decide if process and enable step, or pass
         if self.simRunningBool == True:   
@@ -764,37 +753,71 @@ class OptimizerIntegrator():
                 self.SO.terminateRunningProcess() # force kill simulation thread
                 self.resetVarsSimError()
                 self.simRunningBool, noError = self.checkIfSimulationIsRunning() # check status
-            wx.CallLater(3000, self.loop) #call 3 seconds later
+            wx.CallLater(3000, self.loop) #call 2 seconds later
 
         else: #simulation not running
             self.postSimulationCleanup(False)
             if self.dataProcessingDone == False:
+                msg = "processing simulation data"
+                self.updateStatusText(msg)
                 self.processDataFromFiles()
+
+                # check if optimizer is complete
+                completeBool = self.checkIfComplete()
+                self.updateStatusText("after data process complete bool")
+                self.updateStatusText(completeBool)
+                if completeBool == True:
+                    return # done
+
+                # AT THIS POINT, IT HAS BEEN CONFIRMED THE THE OPTIMIZER HAS CONVERGED, 
+                # but the program doesnt recognize this
+
                 # dataProcessingDone is now True
                 # Schedule next loop to run optimizer step
+                self.updateStatusText("hitting CallLater")
+
                 wx.CallLater(50, self.loop)
             else:
                 # ADDING THE ELSE HAS BEEN AN EDIT TO HELP WITH THE DOUBLE SIM PROBLEM
                 # Data is processed, run optimizer step
                 # This will start a NEW simulation and set simRunningBool = True
-                self.optimizerStep()
+                # completeBool = self.optimizerStep()
 
+                # optimizer step process
+                # step through optimizer processing
+                self.stepCounter = self.stepCounter + 1
+                msg = "optimizer running step " + str(self.stepCounter)
+                self.updateStatusText(msg)
+                
 
-                # check after step if the optimizer has converged here. 
-                # this is the SAME code as what's above. 
-                # if converged, NO callback
-                completeBool = self.OO.checkOptimizerComplete()
+                # the way the optimizers work, 
+                # this will EVALUATE the last optimizer input if it's done,
+                # AND THEN setup the NEXT input to be evaluated 
+                self.OO.step()
+
+                # check if optimizer is complete
+                completeBool = self.checkIfComplete()
+                self.updateStatusText("after step complete bool")
+                self.updateStatusText(completeBool)
                 if completeBool == True:
-                    msg = "optimizer converged"
-                    self.updateStatusText(msg)
-                    self.stopBool = True
-                    self.stopLooping()
-                    msg = "optimizer process stopped"
-                    self.updateStatusText(msg)
-                    self.updateSolutionValues()
-                    self.postSimulationCleanup()
-                    return
+                    return # done
+                
+                
+                # call the objective function, control 
+                # when it is allowed to update and return 
+                # control to optimizer
+                self.OO.callObjective()
 
+                # check if optimizer is complete
+                completeBool = self.checkIfComplete()
+                self.updateStatusText("after objective complete bool")
+                self.updateStatusText(completeBool)
+                if completeBool == True:
+                    return # done
+
+
+                
+                self.updateStatusText("hitting CallLater")
                 # if it's multiGLODS, we might step 200+ times before running another simulation
                 # other optimizers will immediately start a new simulation instance if NEEDED
                 wx.CallLater(50, self.loop) 
@@ -807,18 +830,59 @@ class OptimizerIntegrator():
 # Optimizer step
 #######################################################
 
-    def optimizerStep(self): 
-        # step through optimizer processing
-        self.stepCounter = self.stepCounter + 1
-        msg = "optimizer running step " + str(self.stepCounter)
-        self.updateStatusText(msg)
-        
-        self.OO.step()
 
-        # call the objective function, control 
-        # when it is allowed to update and return 
-        # control to optimizer
-        self.OO.callObjective()
+    def checkIfComplete(self):
+        # when replacing the 'while optimizer not complete' loop logic from the normal optimizer of the operators, 
+        # this has to be called after step and after the objective function call to get the potential cases where
+        # the optimizer could have converged
+
+        # check if optimizer is complete
+        # check before step if the optimizer has converged here. 
+        # this is the SAME code as what's above. 
+        # if converged, NO callback
+        completeBool = self.OO.checkOptimizerComplete()
+        if completeBool == True:
+            msg = "optimizer converged"
+            self.updateStatusText(msg)
+            self.stopBool = True # this is the only time the LOOP should force a stop
+            self.simRunningBool = False
+            self.stopLooping()  #only event not triggered from UI
+            msg = "optimizer process stopped"
+            self.updateStatusText(msg)
+            self.updateSolutionValues()
+            self.postSimulationCleanup()
+            # any other file clean up will be triggered from here
+            #
+            msg = "optimization done"
+            self.updateStatusText(msg)
+
+        return completeBool
+
+
+
+    # def optimizerStep(self): 
+    #     # step through optimizer processing
+    #     self.stepCounter = self.stepCounter + 1
+    #     msg = "optimizer running step " + str(self.stepCounter)
+    #     self.updateStatusText(msg)
+        
+
+    #     # the way the optimizers work, 
+    #     # this will EVALUATE the last optimizer input if it's done,
+    #     # AND THEN setup the NEXT input to be evaluated 
+    #     self.OO.step()
+
+    #     # check if optimizer is complete
+    #     completeBool = self.checkIfComplete()
+
+    #     if completeBool == True:
+    #         return completeBool
+
+    #     # call the objective function, control 
+    #     # when it is allowed to update and return 
+    #     # control to optimizer
+    #     self.OO.callObjective()
+    #     return False # potentially not done
 
 
 #######################################################
@@ -858,6 +922,8 @@ class OptimizerIntegrator():
             print(e)
             noError = False
         return self.F, noError
+    
+
 
     def processDataFromFiles(self):
         
@@ -872,14 +938,19 @@ class OptimizerIntegrator():
         # first run has no data to process
         # return the zeros as a default
         if self.simulationCounter < 1:
-            # self.OO.setAllowUpdate(True) #????
+            # self.OO.setAllowUpdate(True) #???? had some issue with this as error checking. do NOT set/toggle it here
             return
         
-        msg = "processing simulation data"
-        self.updateStatusText(msg)
-
         # # call data processing funcs
         df = self.getDefaultOptimizerSimulationData()
+        # this reads in the values AS EXPORTED from the EM simulation software
+        # since AntennaCAT doesn't change the settings of the software, the rounding for 
+        # sig figs has to happen here.
+
+
+        msg = "pattern matching targets"
+        self.updateStatusText(msg)
+
 
         #HERE: all vals are now in an array
         #set vals to F(in order)
@@ -904,14 +975,18 @@ class OptimizerIntegrator():
                 elif tm == "Efficiency":
                     valArr = float(df['efficiency'][0][ctr%numVals])
                 ctr = ctr +1
-                self.F.append([valArr])
+                self.F.append([np.round(valArr, self.numSigFigs)])
         except:
             print("ERROR: file not exported from EM simulation software correctly. attempting to force re-run simulation")
             print("if issue continues, you may need to restart the program.")
             print("A fix to this is in progress!")
+            #TODO
 
 
         self.dataProcessingDone = True
+        msg = "done processing data"
+        self.updateStatusText(msg)
+
             
           
 
@@ -1236,8 +1311,8 @@ class OptimizerIntegrator():
             self.updateStatusText(msg)
             msg = "\tOptimized Parameter solution values:"
             self.updateStatusText(msg)
-            self.updateStatusText(str(self.soln_x_vals.reshape(-1, 1))) #print horizontal to make it easier to read
+            self.updateStatusText(str(self.soln_x_vals.reshape(1, -1))) #print horizontal to make it easier to read
             msg = "\tOptimized output values:"
             self.updateStatusText(msg)
-            self.updateStatusText(str(self.soln_y_vals.reshape(-1, 1)))
+            self.updateStatusText(str(self.soln_y_vals.reshape(1, -1)))
 
