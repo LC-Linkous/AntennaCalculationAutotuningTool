@@ -4,7 +4,7 @@
 #   Class for inputs for chicken swarm optimizer
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -13,6 +13,8 @@ import wx
 import os
 import numpy as np
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 
@@ -116,8 +118,8 @@ class Chicken_Swarm_Panel(wx.Panel):
             self.G = self.fieldnumGenerations.GetValue()
         
         except Exception as e:
-            print("ERROR in panel_chicke_swarm getting user input")
-            print(e)
+            logger.error("ERROR in panel_chicke_swarm getting user input")
+            logger.error(e)
             noError = False   
         
         return noError

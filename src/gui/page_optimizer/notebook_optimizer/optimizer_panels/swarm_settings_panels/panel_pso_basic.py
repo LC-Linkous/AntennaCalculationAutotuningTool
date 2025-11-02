@@ -4,7 +4,7 @@
 #   Class for inputs for traditional PSO
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -12,6 +12,8 @@ import wx
 import os
 import numpy as np
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 
@@ -114,8 +116,8 @@ class PSO_Basic_Panel(wx.Panel):
             self.toleranceVal = self.fieldTolerance.GetValue()
             self.maxIter = self.fieldMaxIter.GetValue()
         except Exception as e:
-            print("ERROR in panel_pso_basic getting user input")
-            print(e)
+            logger.error("ERROR in panel_pso_basic getting user input")
+            logger.error(e)
             noError = False   
         
         return noError
