@@ -4,12 +4,14 @@
 #   Class for showing linkable antennaCAT project files
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: December 30, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import wx
 import wx.lib.scrolledpanel as scrolled
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 import project.config.antennaCAT_config as c
 
@@ -140,7 +142,8 @@ class CustomButton(wx.Panel):
     
     def on_click(self, event):
         # You can handle the button click here, for example:
-        print(f"Button clicked: {self.GetChildren()[0].GetLabel()}")
+        msg = (f"Button clicked: {self.GetChildren()[0].GetLabel()}")
+        logger.info(msg)
         self.SetBackgroundColour(wx.Colour(150, 150, 150))  # Darker grey on click
         self.Refresh()  # Refresh the button to update the background color
 
