@@ -195,7 +195,7 @@ class OptimizerIntegrator():
 
     # full reset
     def resetVariables(self):
-        msg = "resetting simulation"
+        msg = "initializing optimizer statemachine"
         self.updateStatusText(msg)
 
         self.simRunningBool = False
@@ -213,7 +213,7 @@ class OptimizerIntegrator():
         self.simulationCounter = 0
 
     def resetVarsSimError(self):
-        msg = "resetting simulation for error recovery"
+        msg = "resetting optimizer for error recovery"
         self.updateStatusText(msg)
 
         self.simRunningBool = False
@@ -233,11 +233,27 @@ class OptimizerIntegrator():
     
 
     def selectOptimizerIntegrator(self,optimizerSelection):
-        #reset the bools
-        self.enableRunBool = False
-        self.firstRunBool = True
-        self.pauseBool = False
-        self.stopBool = False
+
+        # if any of the vars aren't in their "default", then an optimizer config has been run before.
+        # reset the bools
+        if (self.firstRunBool == False) or (self.pauseBool==True) or (self.stopBool==True) or (self.enableRunBool==True):
+                self.resetVariables()
+                msg = "resetting AntennaCAT optimizer"
+                self.updateStatusText(msg)
+                self.firstRunBool = True
+                # this probably needs to also trigger some file deletions
+                # TODO LATER, when cleaning up file paths
+                # attempt to delete lock files
+                # delete simulation file
+
+
+        else:
+            # reset anyways just to clear any configs
+            self.resetVariables()
+
+
+
+
 
         # set up optimizer integrator
         self.OO = self.setOptimizer(optimizerSelection)
@@ -545,7 +561,7 @@ class OptimizerIntegrator():
 
     def killSimulation(self):
         self.pauseBool = True
-        msg = "pausing optimizer..."
+        msg = "interrupting optimizer..."
         self.updateStatusText(msg)
 
         self.simRunningBool, noError = self.checkIfSimulationIsRunning()
@@ -558,55 +574,80 @@ class OptimizerIntegrator():
         self.updateStatusText(msg)
         # kill simulation
         self.SO.terminateRunningProcess()
-        msg = "simulation terminated"
+        msg = "simulation terminated. optimizer paused"
         self.updateStatusText(msg)
         self.postSimulationCleanup()
+
+
+# buttons now control multiple conditions in order to resolve conflicing button events.
+# start/stop/run can still be toggled in the statemachine while it is running, but this
+# stops a condition where start/pause need to be clicked twice to restart a new run
+
+# Tip: a run can be moved from 'stop' to 'pause' by clicking the pause button. 
+# That way you don't have to start a new run if the stop button was clicked by accident
 
     def pause(self):
         msg = "pause button hit"
         self.updateStatusText(msg)
         self.pauseBool = True
+        self.stopBool = False
 
         
     def stop(self): 
         msg = "stop button hit"
         self.updateStatusText(msg)
         self.stopBool = True
+        self.pauseBool = False 
         self.stopLooping()
 
 
     def stopLooping(self):
         msg = "initiating stop process"
         self.updateStatusText(msg)
+        # todo - if there's system level process that has to happen for some configs
+
 
     def run(self):
         msg = "run button hit"
         self.updateStatusText(msg)
 
+        # check if optimizer can even run first
         if self.enableRunBool == False:
             msg = "running is not enabled until after optimizer is configured"
             self.updateStatusText(msg)
             return
         
+        # check if resuming from pause.
+        # this takes priority over stop in case a run was 'stopped' by accident
+        if self.pauseBool == True:
+            self.pauseBool = False # LAST EDIT. 
+            msg = "resuming previous run"
+            self.updateStatusText(msg)
+            self.loop()
+            return
+            
+
+        # handle the stop state
         if self.stopBool == True:
             dlg = wx.MessageDialog(None, "Do you want to start a new run?",'Optimizer',wx.YES_NO | wx.ICON_QUESTION)
             result = dlg.ShowModal()
             if result == wx.ID_YES:
                 # self.stopBool = False
                 # self.pauseBool = False
-                self.resetVariables()
+                self.resetVariables() # this sets stopBool and pauseBool to false
+                self.stopLooping() # this is partially an artifact now, but is hanging around until the state machine is fully stress tested
+                msg = "optimizer process stopped"
+                self.updateStatusText(msg)
                 msg = "begining new run"
                 self.updateStatusText(msg)
-                self.stopLooping()
                 self.firstRunBool = True
+            elif result == wx.ID_NO:
+                msg = "optimizer is stopped.\n select 'pause' to switch state to paused and then resume, \n or 'run' to start a new run."
+                self.updateStatusText(msg)
+                return #looping is paused.
 
-        if self.pauseBool == True:
-            self.stopBool = False
-            self.pauseBool = False
-            msg = "resuming previous run"
-            self.updateStatusText(msg)
         
-        self.loop()
+        self.loop() # loop by default if none of the above conditions are hit
 
 
 ######################################################
@@ -652,10 +693,16 @@ class OptimizerIntegrator():
             # print(lockFilepath)
         if os.path.isfile(lockFilepath) == True:
             #print("attempting to remove lockfile")
+            self.updateStatusText(str(lockFilepath))
             self.updateStatusText("attempting to remove lockfile")
             os.remove(lockFilepath)
             if os.path.isfile(lockFilepath) == False:
                 self.updateStatusText("lockfile removed")
+        # Leave this commented out - otherwise it's going to print every time MulitGLODS steps without running a simulation
+        # else:  
+        #     self.updateStatusText("there are no lockfiles to remove")
+
+    
             
         # reset bools here if unusual behavior is noticed
         # but resetting bools will restart the simulation
@@ -673,9 +720,9 @@ class OptimizerIntegrator():
             self.updateStatusText(msg)
 
         #check for stop conditions
-        #user
+        ##user
         if self.pauseBool == True:
-            msg = "optimizer paused"
+            msg = "optimizer paused. press 'start' to resume"
             self.updateStatusText(msg)
             return
         if self.stopBool == True:
@@ -683,54 +730,78 @@ class OptimizerIntegrator():
             self.updateStatusText(msg)
             self.postSimulationCleanup()
             return
-        #optimizer
-        completeBool = self.OO.checkOptimizerComplete()
+        
+        ##optimizer
+        completeBool = self.OO.checkOptimizerComplete() # check number 1
         if completeBool == True:
             msg = "optimizer converged"
             self.updateStatusText(msg)
-            self.stopBool = True
+            self.stopBool = True # this is the only time the LOOP should force a stop
             self.stopLooping() #only event not triggered from UI
+            msg = "optimizer process stopped"
+            self.updateStatusText(msg)
             self.updateSolutionValues()
             self.postSimulationCleanup()
-
+            # any other file clean up will be triggered from here
+            #
+            msg = "optimization done"
+            self.updateStatusText(msg)
+            
             return
 
         #check if simulation is still running
-        # TODO: more specific error recovery from abnormal termination to reset bools
+        # TODO later: more specific error recovery from abnormal termination to reset bools
         self.simRunningBool, noError = self.checkIfSimulationIsRunning()
+
         if noError == False:
             self.postSimulationCleanup(False) #delete lock file
         
         #decide if process and enable step, or pass
         if self.simRunningBool == True:   
-            if noError == False:            
+            if noError == False: # attempt error recovery           
+                msg = "error in last simulation run. attempting recovery"
+                self.updateStatusText(msg)
                 self.SO.terminateRunningProcess() # force kill simulation thread
                 self.resetVarsSimError()
                 self.simRunningBool, noError = self.checkIfSimulationIsRunning() # check status
-            #call SO and check for lock file (or whatever the EMsoftware might have)
-            #if the lock file exists, sim is still running and things are fine
-            
-            ## The code below has been commented out because it always returns true and prevents the optimizers from running
-            #  ansys 
-
-            # if no lock file, there was probably an error                              
-            # lockFilepath = self.SO.getLockFile()
-            # if os.path.isfile(lockFilepath) == False:
-
-                # self.SO.terminateRunningProcess() # force kill simulation thread
-                # self.resetVarsSimError()
-
             wx.CallLater(3000, self.loop) #call 3 seconds later
-        else:
+
+        else: #simulation not running
             self.postSimulationCleanup(False)
             if self.dataProcessingDone == False:
                 self.processDataFromFiles()
-                # self.OO.setAllowUpdate(True)
+                # dataProcessingDone is now True
+                # Schedule next loop to run optimizer step
+                wx.CallLater(50, self.loop)
             else:
                 # ADDING THE ELSE HAS BEEN AN EDIT TO HELP WITH THE DOUBLE SIM PROBLEM
+                # Data is processed, run optimizer step
+                # This will start a NEW simulation and set simRunningBool = True
                 self.optimizerStep()
-            wx.CallLater(10, self.loop)
-      
+
+
+                # check after step if the optimizer has converged here. 
+                # this is the SAME code as what's above. 
+                # if converged, NO callback
+                completeBool = self.OO.checkOptimizerComplete()
+                if completeBool == True:
+                    msg = "optimizer converged"
+                    self.updateStatusText(msg)
+                    self.stopBool = True
+                    self.stopLooping()
+                    msg = "optimizer process stopped"
+                    self.updateStatusText(msg)
+                    self.updateSolutionValues()
+                    self.postSimulationCleanup()
+                    return
+
+                # if it's multiGLODS, we might step 200+ times before running another simulation
+                # other optimizers will immediately start a new simulation instance if NEEDED
+                wx.CallLater(50, self.loop) 
+
+
+
+
         
 ######################################################
 # Optimizer step
@@ -1165,29 +1236,8 @@ class OptimizerIntegrator():
             self.updateStatusText(msg)
             msg = "\tOptimized Parameter solution values:"
             self.updateStatusText(msg)
-            self.updateStatusText(str(self.soln_x_vals))
+            self.updateStatusText(str(self.soln_x_vals.reshape(-1, 1))) #print horizontal to make it easier to read
             msg = "\tOptimized output values:"
             self.updateStatusText(msg)
-            self.updateStatusText(str(self.soln_y_vals))
+            self.updateStatusText(str(self.soln_y_vals.reshape(-1, 1)))
 
-
-######################################################
-# optimizer data collection
-######################################################
-
-    # def updateConvergenceData(self):
-    #     iter, eval = self.OO.get_convergence_data()
-    #     if (eval < self.best_eval) and (eval != 0):
-    #         self.best_eval = eval
-    #     self.iteration = iter
-
-    # def saveConvergenceData(self):
-    #     filename = "convergence-log.csv"
-    #     pathname = os.path.join(self.dataDir, filename)
-    #     line = str(self.iteration) + "," + str(self.best_eval) + "\n"
-    #     with open(pathname, "a") as f:
-    #         f.write(line)
-
-    # def updateSolutionValues(self):
-    #     self.soln_x_vals = self.OO.get_optimized_soln()
-    #     self.soln_y_vals = self.OO.get_optimized_outs()
