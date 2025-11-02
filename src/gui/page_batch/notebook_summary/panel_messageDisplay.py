@@ -4,7 +4,7 @@
 #   Class for displaying detail text on notebook page 
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: October 29, 2025
+#   Last update: November 1, 2025
 ##--------------------------------------------------------------------\
 
 import wx
@@ -22,7 +22,7 @@ class MessageDisplay(wx.Panel):
         self.parent = parent
         self.SetBackgroundColour(MAIN_BACKGROUND_COLOR)
 
-        self.summaryTxt = wx.TextCtrl(self, style=wx.TE_MULTILINE|wx.TE_RICH|wx.BORDER_SUNKEN)
+        self.summaryTxt = wx.TextCtrl(self, style=wx.TE_MULTILINE|wx.TE_RICH|wx.BORDER_SUNKEN|wx.TE_READONLY)
         self.pageSizer = wx.BoxSizer(wx.VERTICAL)
         self.pageSizer.Add(self.summaryTxt, 1, wx.ALL|wx.EXPAND, border=5)
         self.SetSizer(self.pageSizer)
