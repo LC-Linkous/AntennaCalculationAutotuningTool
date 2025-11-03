@@ -8,7 +8,7 @@
 #   NOTE: Redoing with the updated ANSYS template to bring everything up to date
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -18,6 +18,8 @@ from wx import MessageDialog, YES_NO, ID_YES, ICON_QUESTION
 
 import pandas as pd
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 import sys
 sys.path.insert(0, './src/simulation_integrator')
@@ -95,7 +97,7 @@ class SimIntegrator_COMSOL:
                 try:
                    self.p.terminate() 
                 except Exception as e:
-                    print("EXCEPTION raised when attempting to terminate process. " + str(e))
+                    logger.error(f"EXCEPTION raised when attempting to terminate process. {e}")
                 
                 self.p = None
                 self.p = subprocess.Popen(cmds, start_new_session=newSession)
@@ -154,8 +156,8 @@ class SimIntegrator_COMSOL:
 
 
     def getFrequencyParameters(self, targetFreq, file=FREQ_PARAM_DATA):
-        print("loading freq parameter file")
-        print("targetFreq:", targetFreq)
+        logger.info("loading freq parameter file")
+        logger.info(f"targetFreq: {targetFreq}")
 
 
         data = self.readInCSV(file) 
@@ -171,7 +173,7 @@ class SimIntegrator_COMSOL:
         #go through the list to get the val that's closest to the target frequency
         idx = np.argmin(abs((potenitalResFreqs - targetFreq)))
         simS11ResFreq = potenitalResFreqs[0]
-        print("closest resonant freq: ", simS11ResFreq)
+        logger.info(f"closest resonant freq: {simS11ResFreq}")
         # index of resonant freq
         simS11ResIdx = localMinima[idx]
         #value of the resonant freq in dB
@@ -182,7 +184,7 @@ class SimIntegrator_COMSOL:
         getDistanceFromTarget = (data.iloc[:,0] - targetFreq/1e9).abs().argmin()
         nearestTargetFreqVal = data._get_value(getDistanceFromTarget, 0, takeable=True)
         nearestTargetFreqValdB = data._get_value(getDistanceFromTarget, 1, takeable=True)
-        print("found nearest target value")
+        logger.info("found nearest target value")
 
         pltData = data
         return simS11ResFreq, simS11ResFreqs11dB, nearestTargetFreqVal, nearestTargetFreqValdB, pltData

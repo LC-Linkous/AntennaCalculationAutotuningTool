@@ -6,11 +6,13 @@
 #   NOTE: Redoing with the updated ANSYS template to bring everything up to date
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 from datetime import datetime
 import os.path
+import logging
+logger = logging.getLogger(__name__)
 
 
 import project.config.antennaCAT_config as c
@@ -56,7 +58,6 @@ class SimulationTemplate:
 
     def setProjectPath(self, p):
         self.projectPath = p
-        print(self.projectPath)
     
     def getProjectPath(self):
         return self.projectPath
@@ -159,7 +160,7 @@ class SimulationTemplate:
         elif os.path.isfile( "./src/simulation_integrator/COMSOL/code_templates/"+ str(f)):
             filepath = "./src/simulation_integrator/COMSOL/code_templates/"+ str(f)
         else:
-            print("ERROR: templateGen_Simulation.py. path error to template. check relative paths")
+            logger.error("ERROR: templateGen_Simulation.py. path error to template. check relative paths")
 
         return filepath
 
@@ -170,7 +171,7 @@ class SimulationTemplate:
         elif os.path.isfile(self.reportTemplateDir + str(f)):
             filepath = self.reportTemplateDir + str(f)
         else:
-            print("ERROR: templateGen_Simulation.py. path error to report template. check relative paths")
+            logger.error("ERROR: templateGen_Simulation.py. path error to report template. check relative paths")
         return filepath
 
     def addReportToTemplate(self, filepath, filename, plotname, f=0):
@@ -183,7 +184,6 @@ class SimulationTemplate:
             for line in f.readlines():
                 tmpArr = ""
                 for l in (line.split()):  # remove newline at end, split individual words
-                    #print(l)
                     if l == "[INSERT_FREQUENCY],":
                         l = "[" + freq + "],"
                     elif l == "INSERT_SAVE_PATH,":
@@ -650,7 +650,7 @@ class SimulationTemplate:
             elif l=="Smith Contour Plot":
                 self.addTSSmithContourPlot()
             else:
-                print("ERROR: Terminal Report Data graph type not recognized")
+                logger.error("ERROR: Terminal Report Data graph type not recognized")
 
     def generateFarFieldReportsFromList(self, lst, f):
         for l in lst:
@@ -673,7 +673,7 @@ class SimulationTemplate:
             elif l=="Rectangular Contour Plot":
                 self.addFFRectangularContourPlot(f)
             else:
-                print("ERROR: Terminal Report Data graph type not recognized")
+                logger.error("ERROR: Terminal Report Data graph type not recognized")
 
 #######################################################################
 # Add code to export reports to file from user input
@@ -704,7 +704,7 @@ class SimulationTemplate:
             elif l=="Smith Contour Plot":
                 self.exportTSSmithContourPlot()
             else:
-                print("ERROR: Terminal Report Data graph type not recognized")
+                logger.error("ERROR: Terminal Report Data graph type not recognized")
 
     def exportFarFieldReportData(self, lst):
         for l in lst:
@@ -727,7 +727,7 @@ class SimulationTemplate:
             elif l=="Rectangular Contour Plot":
                 self.exportFFRectangularContourPlot()
             else:
-                print("ERROR: Far Field Report Data graph type not recognized")
+                logger.error("ERROR: Far Field Report Data graph type not recognized")
 
 if __name__ == "__main__":
     # import sys
