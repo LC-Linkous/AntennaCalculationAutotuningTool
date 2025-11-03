@@ -108,9 +108,6 @@ class CONTROLLER_PSO_BASIC():
         else: #Evaulate at least one value in the TARGET list as a THRESHOLD
             self.evaluate_threshold = True 
 
-        # print("VALUE OF DF")
-        # print(optimizerParams.to_string())
-
 
         ## This class is the base optimizer. It can have an internal optimizer solving a surrogate model approximation.
         if self.useSurrogateModel == True: # panel_SURROGATE has been used

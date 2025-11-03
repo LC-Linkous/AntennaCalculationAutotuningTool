@@ -10,12 +10,14 @@
 #       
 #
 #   Author(s):  Lauren Linkous, Jonathan Lundquist
-#   Last update: June 26, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import numpy as np
 from numpy.random import Generator, MT19937
 import sys
+import logging
+logger = logging.getLogger(__name__)
 np.seterr(all='raise')
 
 class swarm:
@@ -203,7 +205,7 @@ class swarm:
             # call up to the parent function to define and fit the surrogate func, 
             # and set up the surrogate optimizer 
             surrogateOptimizer = self.parent.fit_and_create_surogate(self.M, self.F_Pb,self.surrogateOptimizer)
-            print(surrogateOptimizer)
+            logger.info(surrogateOptimizer)
             
 
             best_eval = 10 # set high for testing
@@ -227,9 +229,8 @@ class swarm:
                 if iter > last_iter:
                     last_iter = iter
 
-            print("************************************************")
-            print("Internal Objective Function Iterations: " + str (iter))
-            print("Internal Best Eval: " + str(best_eval))
+            logger.info(f"Internal Objective Function Iterations: {iter}")
+            logger.info(f"Internal Best Eval: {best_eval}")
 
             # check if G_best of surrogate optimizer is better than what the main optimizer is finding
             potential_Gb =  np.array(surrogateOptimizer.get_optimized_soln()).reshape(1 ,-1)
@@ -237,16 +238,11 @@ class swarm:
             if np.linalg.norm(potential_F_Gb) < np.linalg.norm(self.F_Gb):
                 self.F_Gb = np.array(potential_F_Gb)
                 self.Gb = np.array(potential_Gb[0])
-                print("NEW BEST!!!!!!")      
-                print("self.F_Gb")
-                print(self.F_Gb)
-                print("self.Gb")
-                print(self.Gb)
             
             canUseSurrogate = True
                 
         except Exception as e:
-            print(e)
+            logger.error(e)
             self.debug_message_printout("ERROR: failed to set up and minimize surrogate model")
 
         return canUseSurrogate
@@ -255,16 +251,7 @@ class swarm:
     def call_objective(self, allow_update):
         if self.Active[self.current_particle]:
             # call the objective function. If there's an issue with the function execution, 'noError' returns False
-            # print("M INPUT TO OBJECTIVE FUNC")
-            # print("self.M[self.current_particle]")
-            # print(self.M[self.current_particle])
             newFVals, noError = self.obj_func(self.M[self.current_particle], self.output_size)
-            # print("SELF.OUTPUTSIZE")
-            # print(self.output_size)
-            # print("NEW FVALS FROM OBJECTIVE FUNC")
-            # print(newFVals)
-
-
 
             if noError == True:
                 self.Fvals = np.array(newFVals).reshape(-1, 1)
@@ -340,11 +327,6 @@ class swarm:
         else: #TARGET as default
             # arrays are already the same dimensions. 
             # no need to loop and compare to anything
-            # print("TARGETS")
-            # print(targets)
-            # print("Fvals")
-            # print(Fvals)
-
             Flist = abs(targets - Fvals)
 
         return Flist
@@ -474,7 +456,7 @@ class swarm:
 
             if self.current_particle == self.number_of_particles:
                 if self.useSurrogateModel == True:
-                    print("MINIMIZING SURROGATE MODEL")
+                    logger.info("MINIMIZING SURROGATE MODEL")
                     self.minimize_surrogate_model()
                 self.current_particle = 0
 
@@ -632,7 +614,8 @@ class swarm:
 
     def debug_message_printout(self, msg):
         if self.parent == None:
-            print(msg)
+            pass
+            #print(msg)
         else:
             self.parent.debug_message_printout(msg)
 
