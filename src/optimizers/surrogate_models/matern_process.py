@@ -6,10 +6,13 @@
 #   Matern Process surrogate model for optimization. RBF generalization
 #
 #   Author(s): Lauren Linkous
-#   Last update: March 12, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 
 class MaternProcess:
     def __init__(self, length_scale=1.1, noise=1e-10, nu=3/2):
@@ -66,7 +69,7 @@ class MaternProcess:
     def predict(self, X, out_vars=None):
         noErrors = True
         if not self.is_fitted:
-            print("ERROR: MaternProcess model is not fitted yet")
+            logger.error("ERROR: MaternProcess model is not fitted yet")
             noErrors = False
 
         X = np.atleast_2d(X)

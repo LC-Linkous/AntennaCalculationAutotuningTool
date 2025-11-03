@@ -6,10 +6,13 @@
 #   Guassian Process surrogate model for optimization. 
 #
 #   Author(s): Lauren Linkous 
-#   Last update: December 2, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 
 class GaussianProcess:
     def __init__(self, length_scale=1.1, noise=1e-10):
@@ -54,7 +57,7 @@ class GaussianProcess:
     def predict(self, X, out_dims=2):
         noErrors = True
         if not self.is_fitted:
-            print("ERROR: GaussianProcess model is not fitted yet")
+            logger.error("ERROR: GaussianProcess model is not fitted yet")
             noErrors = False
         X = np.atleast_2d(X)
         try:

@@ -6,11 +6,14 @@
 #    Lagrangian penalty linear regression.
 #
 #   Author(s): Lauren Linkous
-#   Last update: March 12, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 
 class LagrangianLinearRegression:
     def __init__(self, noise=1e-10, constraint_degree=1):
@@ -39,8 +42,8 @@ class LagrangianLinearRegression:
         self.Y_sample = np.atleast_2d(Y_sample).reshape(X_sample.shape[0], -1)  # Flatten Y_sample to 2D
 
         if len(self.X_sample) < 2:
-            print("ERROR: lagrangian_surrogate.fit()")
-            print("Use 2 or more initial samples for this kernel")
+            logger.error("ERROR: lagrangian_surrogate.fit()")
+            logger.error("Use 2 or more initial samples for this kernel")
             return
 
         # Add a column of ones for the intercept term (bias)
@@ -53,13 +56,13 @@ class LagrangianLinearRegression:
             self.weights = self.weights[1:]  # The rest are the regression weights
             self.is_fitted = True
         except Exception as e:
-            print("ERROR in lagrangian_surrogate.fit()")
-            print(e)
+            logger.error("ERROR in lagrangian_surrogate.fit()")
+            logger.error(e)
 
     def predict(self, X, out_dims=1):
         noErrors = True
         if not self.is_fitted:
-            print("ERROR: Lagrangian surrogate model is not fitted yet")
+            logger.error("ERROR: Lagrangian surrogate model is not fitted yet")
             noErrors = False
             predictions = []
 
@@ -76,7 +79,7 @@ class LagrangianLinearRegression:
             except Exception as e:
                 predictions = []
                 noErrors = False
-                print(f"Prediction error: {e}")
+                logger.error(f"Prediction error: {e}")
         
         return predictions, noErrors
 

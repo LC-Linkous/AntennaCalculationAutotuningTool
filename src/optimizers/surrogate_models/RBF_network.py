@@ -10,11 +10,14 @@
 #
 #
 #   Author(s): Lauren Linkous 
-#   Last update: December 3, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 
 class RBFNetwork:
     def __init__(self, kernel='gaussian', epsilon=1.0):
@@ -64,7 +67,7 @@ class RBFNetwork:
             return np.sqrt(1 + self.epsilon * np.linalg.norm(x - c) ** 2)
         else:
             
-            print("ERROR: Unsupported kernel type in RBFNetwork: " + str(self.kernel))
+            logger.error(f"ERROR: Unsupported kernel type in RBFNetwork: {self.kernel}")
             
 
     def _compute_design_matrix(self, X):
@@ -78,7 +81,7 @@ class RBFNetwork:
 
     def fit(self, X, y):
         if len(X) < 1:
-            print("ERROR: at least one initial point needed for this kernel")
+            logger.error("ERROR: at least one initial point needed for this kernel")
             return
         y = y.reshape(y.shape[0], -1)
 
@@ -90,7 +93,7 @@ class RBFNetwork:
     def predict(self, X, out_vars=None):
         noErrors = True
         if not self.is_fitted:
-            print("ERROR: RBFNetwork model is not fitted yet")
+            logger.error("ERROR: RBFNetwork model is not fitted yet")
             noErrors = False
         
         try:

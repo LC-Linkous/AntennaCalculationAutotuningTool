@@ -6,10 +6,13 @@
 #   Polynomial Regression surrogate model for optimization. 
 #
 #   Author(s): Lauren Linkous 
-#   Last update: December 2, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 
 class PolynomialRegression:
     def __init__(self, degree=2):
@@ -66,7 +69,7 @@ class PolynomialRegression:
     def predict(self, X, out_vars=None):
         noErrors = True
         if not self.is_fitted:
-            print("PolynomialRegression model is not fitted yet")
+            logger.info("PolynomialRegression model is not fitted yet")
             noErrors = False
         X = np.atleast_2d(X)
 

@@ -7,11 +7,14 @@
 #       #https://en.wikipedia.org/wiki/Polynomial_chaos
 #
 #   Author(s): Lauren Linkous 
-#   Last update: December 2, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 
 class PolynomialChaosExpansion:
     def __init__(self, degree=2):
@@ -69,13 +72,13 @@ class PolynomialChaosExpansion:
     def predict(self, X, out_vars=None):
         noErrors = True
         if not self.is_fitted:
-            print("ERROR: PolynomialChaosExpansion model is not fitted yet")
+            logger.error("ERROR: PolynomialChaosExpansion model is not fitted yet")
             noErrors = False
 
         X = np.atleast_2d(X)
         try: 
             if X.shape[1] != self.X_sample.shape[1]:
-                print("ERROR: Number of features in X does not match the training data in predict")
+                logger.error("ERROR: Number of features in X does not match the training data in predict")
 
             H_poly = self._hermite_polynomials(X)
 

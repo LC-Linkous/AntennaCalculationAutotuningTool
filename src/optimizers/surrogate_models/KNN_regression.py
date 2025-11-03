@@ -6,10 +6,12 @@
 #   K-Nearest Neighbors surrogate model for optimization. 
 #
 #   Author(s): Lauren Linkous 
-#   Last update: December 2, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 class KNNRegression:
     def __init__(self, n_neighbors=5, weights='uniform'):
@@ -45,7 +47,7 @@ class KNNRegression:
     def predict(self, X, out_vars=None):
         noErrors = True
         if not self.is_fitted:
-            print("ERROR: KNNRegression model is not fitted yet")
+            logger.error("ERROR: KNNRegression model is not fitted yet")
             noErrors = False
             
         X = np.atleast_2d(X)
@@ -53,7 +55,7 @@ class KNNRegression:
 
         try:
             if np.any(np.isnan(X)) or np.any(np.isnan(self.X_sample)):
-                print("WARNING: Input data contains NaN values")
+                logger.info("WARNING: Input data contains NaN values")
 
             # Compute distances
             distances = np.sqrt(np.sum((X[:, np.newaxis, :] - self.X_sample[np.newaxis, :, :]) ** 2, axis=-1))
@@ -68,7 +70,7 @@ class KNNRegression:
             elif self.weights == 'distance':
                 weights = 1.0 / distances[np.arange(distances.shape[0])[:, None], nearest_indices]
             else:
-                print("ERROR: Unsupported weight type in KNNRegression")
+                logger.error("ERROR: Unsupported weight type in KNNRegression")
 
             # Normalize weights
             weights_sum = np.sum(weights, axis=1, keepdims=True)

@@ -6,11 +6,13 @@
 #   Decision Tree Regression surrogate model for optimization. 
 #
 #   Author(s): Lauren Linkous 
-#   Last update: December 2, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 class DecisionTreeRegression:
     def __init__(self, max_depth=None):
@@ -88,7 +90,7 @@ class DecisionTreeRegression:
         noErrors = True
         # this is applying the objective function for the surrogate model
         if not self.is_fitted:
-            print("ERROR: DecisionTreeRegression model is not fitted yet")
+            logger.error("ERROR: DecisionTreeRegression model is not fitted yet")
             noErrors = False
         X = np.atleast_2d(X)  # Ensure X is 2D
         try:        

@@ -6,10 +6,13 @@
 #   Kriging (Gaussian process regression) surrogate model for optimization. 
 #
 #   Author(s): Lauren Linkous 
-#   Last update: December 2, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 
 class Kriging:
     def __init__(self, length_scale=1.1, noise=1e-10):
@@ -51,8 +54,8 @@ class Kriging:
         self.Y_sample = np.atleast_2d(Y_sample).reshape(X_sample.shape[0], -1)  # Flatten Y_sample to 2D
 
         if len(self.X_sample) < 2:
-            print("ERROR: kriging_regression.fit()")
-            print("Use 2 or more initial samples for this kernel")
+            logger.error("ERROR: kriging_regression.fit()")
+            logger.error("Use 2 or more initial samples for this kernel")
             return 
 
         # Calculate empirical variogram
@@ -69,15 +72,15 @@ class Kriging:
 
             self.is_fitted = True
         except Exception as e:
-            print("ERROR in kriging_regression.fit()")
-            print(e)
-            print("Tip: use more than one initial sample point")
+            logger.error("ERROR in kriging_regression.fit()")
+            logger.error(e)
+            logger.error("Tip: use more than one initial sample point")
             
 
     def predict(self, X, out_dims=1):
         noErrors = True
         if not self.is_fitted:
-            print("ERROR: Kriging model is not fitted yet")
+            logger.info("ERROR: Kriging model is not fitted yet")
             noErrors = False
             predictions = []
 
