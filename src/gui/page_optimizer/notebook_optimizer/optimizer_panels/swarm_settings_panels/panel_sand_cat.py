@@ -88,7 +88,7 @@ class Sand_Cat_Panel(wx.Panel):
             self.toleranceVal = self.fieldTolerance.GetValue()
             self.maxIter = self.fieldMaxIter.GetValue()
         except Exception as e:
-            logger.error("ERROR in panel_pso_python getting user input")
+            logger.error("ERROR in panel_sand_cat getting user input")
             logger.error(e)
             noError = False   
         
