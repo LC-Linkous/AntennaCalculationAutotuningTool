@@ -6,7 +6,7 @@
 #   Class interfacing with the bayesian  optimizer
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu), Jonathan Lundquist
-#   Last update: May 20, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -83,8 +83,6 @@ class CONTROLLER_BAYESIAN():
 
     def unpackOptimizerParameters(self, optimizerParams, func_F):
         # Bayesian optimizer tuning params
-        # print("optimizer params in controller_Bayesian")
-        # print(optimizerParams)
 
         # values that apply to all surrogate models (the kernel for the bayesian model)
         self.LB = [list(optimizerParams['lower_bounds'][0])]              # Lower boundaries

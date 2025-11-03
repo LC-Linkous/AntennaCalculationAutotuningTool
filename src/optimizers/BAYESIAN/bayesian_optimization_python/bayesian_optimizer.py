@@ -9,7 +9,7 @@
 #      
 #
 #   Author(s): Lauren Linkous
-#   Last update: July 23, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -529,7 +529,8 @@ class BayesianOptimization:
     def debug_message_printout(self, msg):
         # for error messages, but also repurposed for general updates
         if self.parent == None:
-            print(msg)
+            pass
+            # print(msg)
         else:
             self.parent.debug_message_printout(msg)
 
