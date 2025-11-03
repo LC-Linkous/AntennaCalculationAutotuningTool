@@ -408,7 +408,7 @@ class OptimizerPage(wx.Panel):
             except:
                 noError = False
                 logger.error("exception when attempting to append target values as floats")
-                logger.info(optimizerParams["target_values"])
+                logger.info("likely no values in optimizerParams[\"target_values\"]")
                 
                 # this is usually triggered when the controllable parameters aren't set
                 # error messages are displayed in the parent classes, but it's still
