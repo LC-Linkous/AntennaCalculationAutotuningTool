@@ -149,7 +149,7 @@ class SurrogateApproxPage(wx.Panel):
             self.hideEverythingAndShowSinglePanel(self.DTR_panel)
             surrogateAproxName = SM_DECISION_TREE_REGRESSION
         else:
-            logger.error("ERROR in panel_surrogate.py unknown surrogate approx selected")
+            logger.error("ERROR in panel_surrogate_approx.py unknown surrogate approx selected")
 
         return surrogateAproxName
 
