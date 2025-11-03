@@ -17,6 +17,8 @@ To those who have reached out about features (current, planned, and a few bugs),
 **What's in the Queue:**
 * Re-test of all optimizers with the new logging format
   * While stable, we are confirming that all optimizers are still converging properly after the changes.
+* Preparation for executable bundle
+  * format fixes, import checks, version lineups, etc.
 * Save & read for the 'Help Me Choose' fix to match the optimizer updates.
   * This needs the hooks updated to handle the new (full) dataframe structure update for saving and data pass through. 
   * Corrected parameter count after the dataframe change has started the re-integration
