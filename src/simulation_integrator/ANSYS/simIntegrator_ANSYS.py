@@ -6,7 +6,7 @@
 #   and template creation/editing
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 import sys
 import os
@@ -16,6 +16,8 @@ from wx import MessageDialog, YES_NO, ID_YES, ICON_QUESTION
 from wx import CallLater
 from queue import Queue
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 sys.path.insert(0, './src/simulation_integrator')
 from simulation_integrator.ANSYS.templateGen_Design import DesignTemplate
@@ -70,8 +72,8 @@ class SimIntegrator_ANSYS():
     #     return 
 
     def getEMSoftwareProjectName(self): 
-        # print("GETTING EMSOFTWARE PROJECT NAME FROM simIntegrator_ANSYS.py")
-        # print(self.fullProjectPath) 
+        logger.info("GETTING EMSOFTWARE PROJECT NAME FROM simIntegrator_ANSYS.py")
+        logger.info(self.fullProjectPath) 
         return self.fullProjectPath
 
     def createDesignTemplate(self, fullPath, needsFilename=False):#, fullPath): #projName="generatedProject.aedt", projDir=None):
@@ -443,14 +445,14 @@ class SimIntegrator_ANSYS():
         if (self.fileQueue.empty() ==False):
             CallLater(5000, self.runBatchLoopAndExit) #1000 = 1 second 
         else:
-            #print("done looping")
+            logger.info("done looping")
             pass
         #check if sim running
         if self.checkRunningProcess() == -1:
                 sim = self.fileQueue.get() #first sim
                 cmds = [self.simulationSoftwarePath, "-RunScriptAndExit", sim]
                 self.runProcess(cmds, newSession=True)
-                # print(self.fileQueue)        
+                logger.info(self.fileQueue)        
 
     def runBatchAndWait(self, files, numLicenses, newSession=True):
         #TODO: add in the multi threading 
@@ -465,14 +467,14 @@ class SimIntegrator_ANSYS():
         if (self.fileQueue.empty() ==False):
             CallLater(5000, self.runBatchLoopAndWait) #1000 = 1 second 
         else:
-            # print("done looping")
+            logger.info("done looping")
             pass
         #check if sim running
         if self.checkRunningProcess() == -1:
                 sim = self.fileQueue.get() #first sim
                 cmds = [self.simulationSoftwarePath, "-RunScript", sim]
                 self.runProcess(cmds, newSession=True)
-                # print(self.fileQueue)
+                logger.info(self.fileQueue)
 
     def runProcess(self, cmds, newSession):
         # time.sleep(3) # wait 3 seconds because in some instances the pipe closes too fast for the program
@@ -501,7 +503,7 @@ class SimIntegrator_ANSYS():
             #        self.p.terminate() 
             #        time.sleep(2) # make sure the process is fully shut down
             #     except Exception as e:
-            #         print("EXCEPTION raised when attempting to terminate process. " + str(e))
+            #         logger.error("EXCEPTION raised when attempting to terminate process. " + str(e))
                 
             #     self.p = None
             #     self.p = subprocess.Popen(cmds, start_new_session=newSession)
@@ -530,7 +532,7 @@ class SimIntegrator_ANSYS():
         elif (val == 1) or (val == None) or (val == 0):
             return True, noError
         else:
-            print("Abnormal termination in simIntegrator_ANSYS.py")
+            logger.error("Abnormal termination in simIntegrator_ANSYS.py")
             return False, False
              
         
@@ -538,20 +540,20 @@ class SimIntegrator_ANSYS():
         self.p = -1
         
     def terminateRunningProcess(self):
-        self.p.terminate() 
-        time.sleep(5) # make sure the process is fully shut down. 
-                    # 2 seconds was not enough in all cases, but 10 is too much
-        self.p = -1
-
-        # try:
-        #     self.p.terminate() 
-        # except Exception as e:
-        #     print("exception when attempting to kill thread. no thread to terminate")
-        #     print(e)
-
+        # self.p.terminate() 
         # time.sleep(5) # make sure the process is fully shut down. 
-        # # 2 seconds was not enough in all cases, but 10 is too much
+        #             # 2 seconds was not enough in all cases, but 10 is too much
         # self.p = -1
+
+        try:
+            self.p.terminate() 
+        except Exception as e:
+            logger.error("exception when attempting to kill thread. no thread to terminate")
+            logger.error(e)
+
+        time.sleep(5) # make sure the process is fully shut down. 
+        # 2 seconds was not enough in all cases, but 10 is too much
+        self.p = -1
 
 
 

@@ -5,12 +5,15 @@
 #   Complements TG_ReportExport
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 from datetime import datetime
 import re
 import os.path
+import logging
+logger = logging.getLogger(__name__)
+
 
 class SimulationTemplate:
     def __init__(self):
@@ -152,8 +155,8 @@ class SimulationTemplate:
                 # src\simulation_integrator\ANSYS\code_templates\open-file\simulation\simulation-single-freq-base.txt
         filepath = os.path.join(self.simulateBaseDir, "simulation-single-freq-base.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Simulation.py. path error to simulation-single-freq-base.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: templateGen_Simulation.py. path error to simulation-single-freq-base.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return       
         
         atnF = str(f) + " " + str(units)
@@ -197,8 +200,8 @@ class SimulationTemplate:
         #src\simulation_integrator\ANSYS\code_templates\simulation\simulation-multi-freq-base.txt
         filepath = os.path.join(self.templateBaseDir, 'simulation', 'simulation-multi-freq-base.txt')
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Simulation.py. path error to simulation-multi-freq-base.txt template. check relative paths")
-            print("attempted filepath: ", filepath)   
+            logger.error("ERROR: templateGen_Simulation.py. path error to simulation-multi-freq-base.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")   
             return
 
         simMaxNumPass = str(numPass)
@@ -250,13 +253,13 @@ class SimulationTemplate:
         #src\simulation_integrator\ANSYS\code_templates\simulation\simulation-multi-middle.txt 
         endFile = os.path.join(self.templateBaseDir, 'simulation', 'simulation-multi-end.txt')
         if os.path.isfile(endFile) == False:
-            print("ERROR: templateGen_Simulation.py. path error to simulation-multi-end.txt template. check relative paths")
-            print("attempted filepath: ", endFile)
+            logger.error("ERROR: templateGen_Simulation.py. path error to simulation-multi-end.txt template. check relative paths")
+            logger.error(f"attempted filepath: {endFile}")
             return
         startFile = os.path.join(self.templateBaseDir, 'simulation', 'simulation-multi-middle.txt')
         if os.path.isfile(startFile) == False:
-            print("ERROR: templateGen_Simulation.py. path error to simulation-multi-middle.txt template. check relative paths")
-            print("attempted filepath: ", startFile)
+            logger.error("ERROR: templateGen_Simulation.py. path error to simulation-multi-middle.txt template. check relative paths")
+            logger.error(f"attempted filepath: {startFile}")
             return
 
         paramTemplate = []
@@ -303,7 +306,7 @@ class SimulationTemplate:
         elif os.path.isdir(fullPath):
             dirPath = fullPath
         else:
-            print("ERROR: templateGen_Simulation.py. path error to report template. check relative paths")
+            logger.error("ERROR: templateGen_Simulation.py. path error to report template. check relative paths")
             noError = False
         return dirPath, noError
     
@@ -357,8 +360,8 @@ class SimulationTemplate:
             reportTemplateFile = os.path.join(templateDir, 'report.txt')
 
         if os.path.isfile(reportTemplateFile) == False:
-            print("ERROR: templateGen_Simulation.py. path error to report template. check relative paths")
-            print("attempted filepath: ", reportTemplateFile)
+            logger.error("ERROR: templateGen_Simulation.py. path error to report template. check relative paths")
+            logger.error(f"attempted filepath: {reportTemplateFile}")
             return              
 
         multiFreq = False
@@ -412,8 +415,8 @@ class SimulationTemplate:
         reportTemplateFile = os.path.join(templateDir, 'report.txt')
 
         if os.path.isfile(reportTemplateFile) == False:
-            print("ERROR: templateGen_Simulation.py. path error to report template. check relative paths")
-            print("attempted filepath: ", reportTemplateFile)
+            logger.error("ERROR: templateGen_Simulation.py. path error to report template. check relative paths")
+            logger.error(f"attempted filepath: {reportTemplateFile}")
             return              
 
         for freq in freqList:
@@ -454,8 +457,8 @@ class SimulationTemplate:
         templateTraceFile = os.path.join(templateDir, 'add-trace.txt')
 
         if os.path.isfile(templateTraceFile) == False:
-            print("ERROR: templateGen_Simulation.py. path error to report template. check relative paths")
-            print("attempted filepath: ", templateTraceFile)
+            logger.error("ERROR: templateGen_Simulation.py. path error to report template. check relative paths")
+            logger.error(f"attempted filepath: {templateTraceFile}")
             return              
 
         for freq in freqList:
@@ -815,12 +818,12 @@ class SimulationTemplate:
 
     def generateParameterBase(self, startFile, endFile, paramNames):
         if os.path.isfile(startFile) == False:
-            print("ERROR: templateGen_Simulation.py. path error to parameter base start template. check relative paths")
-            print("attempted filepath: ", startFile)     
+            logger.error("ERROR: templateGen_Simulation.py. path error to parameter base start template. check relative paths")
+            logger.error(f"attempted filepath: {startFile}")     
             return None
         if os.path.isfile(endFile) == False:
-            print("ERROR: templateGen_Simulation.py. path error to parameter base end template. check relative paths")
-            print("attempted filepath: ", endFile)     
+            logger.error("ERROR: templateGen_Simulation.py. path error to parameter base end template. check relative paths")
+            logger.error(f"attempted filepath: {startFile}")     
             return None
         
         paramTemplate = []
@@ -873,8 +876,8 @@ class SimulationTemplate:
                 self.addMSSmithContourPlot(paramTemplateArr, paramNames, fts)
             else:
                 pass
-                # print("ERROR: Modal Report Data graph type not recognized")
-                # print(str(l))
+                logger.error("ERROR: Modal Report Data graph type not recognized")
+                logger.error(str(l))
                 
 
     def generateTerminalReportsFromList(self, lst, fts, paramNames):
@@ -910,8 +913,8 @@ class SimulationTemplate:
                 self.addTSSmithContourPlot(paramTemplateArr, paramNames, fts)
             else:
                 pass
-                # print("ERROR: Terminal Report Data graph type not recognized")
-                # print(str(l))
+                logger.error("ERROR: Terminal Report Data graph type not recognized")
+                logger.error(str(l))
                 
 
     def generateFarFieldReportsFromList(self, lst, fts, paramNames, f, unit='Hz'):
@@ -943,8 +946,8 @@ class SimulationTemplate:
                 self.addFFRectangularContourPlot(paramTemplateArr, paramNames, fts, f, unit)
             else:
                 pass
-                # print("ERROR: Terminal Report Data graph type not recognized")
-                # print(str(l))
+                logger.error("ERROR: Terminal Report Data graph type not recognized")
+                logger.error(str(l))
 
     def generateDataTableReportsFromList(self, modalFts, terminalFts, farfieldFts, paramNames, f, unit='Hz'):
         #generates just the tables from the custom configs

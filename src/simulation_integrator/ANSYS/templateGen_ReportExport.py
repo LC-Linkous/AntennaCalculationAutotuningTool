@@ -7,10 +7,12 @@
 #   This is the complementary file from TG_simulation.py
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import os.path
+import logging
+logger = logging.getLogger(__name__)
 
 class ReportExportTemplate:
     def __init__(self, dataDir):
@@ -404,7 +406,7 @@ class ReportExportTemplate:
                 self.exportMSSmithContourPlot(ctr=ctr)
             else:
                 pass
-                # print("ERROR: Terminal Report Data graph type not recognized")
+                logger.error("ERROR: Terminal Report Data graph type not recognized")
 
     def exportTerminalReportData(self, lst, ctr=False):
         for l in lst:
@@ -432,7 +434,7 @@ class ReportExportTemplate:
                 self.exportTSSmithContourPlot(ctr=ctr)
             else:
                 pass
-                # print("ERROR: Terminal Report Data graph type not recognized")
+                logger.error("ERROR: Terminal Report Data graph type not recognized")
 
     def exportFarFieldReportData(self, lst, ctr=False):
         for l in lst:
@@ -456,7 +458,7 @@ class ReportExportTemplate:
                 self.exportFFRectangularContourPlot(ctr=ctr)
             else:
                 pass
-                # print("ERROR: Far Field Report Data graph type not recognized")
+                logger.error("ERROR: Far Field Report Data graph type not recognized")
 
 
     def exportReportsByName(self, nameList, ctr=False):

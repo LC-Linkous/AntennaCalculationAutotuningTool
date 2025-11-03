@@ -4,7 +4,7 @@
 #   Class for HFSS antenna template generator.
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: December 1, 2023
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 from datetime import datetime 
@@ -12,6 +12,8 @@ import os.path
 from pathlib import Path
 import re
 import sys 
+import logging
+logger = logging.getLogger(__name__)
 
 sys.path.insert(0, './src/simulation_integrator/ANSYS/')
 
@@ -86,8 +88,8 @@ class DesignTemplate:
         if os.path.isfile(fullpath) == True:
             fileExists = True
         else:
-            print("ERROR: ANSYS/templateGen_Design.py. check relative paths")
-            print("attempted filepath: ", fullpath)
+            logger.error("ERROR: ANSYS/templateGen_Design.py. check relative paths")
+            logger.error(f"attempted filepath: {fullpath}")
 
         return fileExists
 
@@ -98,8 +100,8 @@ class DesignTemplate:
         now = datetime.now()
         filepath = os.path.join(self.templateBaseDir, 'comments', 'add-comments.txt')
         if os.path.isfile(filepath) == False:
-            print("ERROR: ANSYS/templateGen_design.py. path error to comments.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: ANSYS/templateGen_design.py. path error to comments.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return
 
         tmpTemplate = []
@@ -117,8 +119,8 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.solutionTypeDir, "modal_insertDesign.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: ANSYS/templateGen_Design.py. path error to modal_insertDesign.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: ANSYS/templateGen_Design.py. path error to modal_insertDesign.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return               
         with open(filepath) as f:
             # go line by line and search for key words
@@ -130,8 +132,8 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.solutionTypeDir, "terminal_insertDesign.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: ANSYS/templateGen_Design.py. path error to terminal_insertDesign.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: ANSYS/templateGen_Design.py. path error to terminal_insertDesign.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return               
         with open(filepath) as f:
             # go line by line and search for key words
@@ -144,8 +146,8 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.solutionTypeDir, "modal_solution.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: ANSYS/templateGen_Design.py. path error to modal_solution.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: ANSYS/templateGen_Design.py. path error to modal_solution.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return               
         with open(filepath) as f:
             # go line by line and search for key words
@@ -157,8 +159,8 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.solutionTypeDir, "terminal_solution.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: ANSYS/templateGen_Design.py. path error to terminal_solution.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: ANSYS/templateGen_Design.py. path error to terminal_solution.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return               
         with open(filepath) as f:
             # go line by line and search for key words
@@ -171,8 +173,8 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.calculatorTemplatesDir,'ports', "modal_port.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: ANSYS/templateGen_Design.py. path error to modal_port.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: ANSYS/templateGen_Design.py. path error to modal_port.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return               
         with open(filepath) as f:
             # go line by line and search for key words
@@ -206,8 +208,8 @@ class DesignTemplate:
         tmpStr=""
         filepath = os.path.join(self.calculatorTemplatesDir, 'ports',"auto_port.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: ANSYS/templateGen_Design.py. path error to auto_port.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: ANSYS/templateGen_Design.py. path error to auto_port.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return               
         with open(filepath) as f:
             for line in f.readlines():
@@ -223,12 +225,9 @@ class DesignTemplate:
         
         filepath = os.path.join(self.templateBaseDir, 'open-file', 'open-existing-project-base.txt')
         if os.path.isfile(filepath) == False:
-            print("ERROR: ANSYS/templateGen_Design. path error to open-existing-project-base.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: ANSYS/templateGen_Design. path error to open-existing-project-base.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return
-
-        # print("PROJECT PATH!!!!!! in templateGen_Design")
-        # print(fullPath) # this is correct at this point
 
 
         with open(filepath) as f:
@@ -251,18 +250,18 @@ class DesignTemplate:
         #src\simulation_integrator\ANSYS\code_templates\parameter\parameter-edit-middle.txt        
         filepath = os.path.join(self.templateBaseDir, 'parameter', 'parameter-base.txt')
         if os.path.isfile(filepath) == False:
-            print("ERROR: ANSYS/templateGen_Design.py. path error to parameter-base.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: ANSYS/templateGen_Design.py. path error to parameter-base.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return        
         endFile = os.path.join(self.templateBaseDir, 'parameter', 'parameter-edit-end.txt')
         if os.path.isfile(endFile) == False:
-            print("ERROR: ANSYS/templateGen_Design.py. path error to parameter-edit-end.txt template. check relative paths")
-            print("attempted filepath: ", endFile)
+            logger.error("ERROR: ANSYS/templateGen_Design.py. path error to parameter-edit-end.txt template. check relative paths")
+            logger.error(f"attempted filepath: {endFile}")
             return
         startFile = os.path.join(self.templateBaseDir, 'parameter', 'parameter-edit-middle.txt')
         if os.path.isfile(startFile) == False:
-            print("ERROR: ANSYS/templateGen_Design.py. path error to parameter-edit-middle.txt template. check relative paths")
-            print("attempted filepath: ", startFile)
+            logger.error("ERROR: ANSYS/templateGen_Design.py. path error to parameter-edit-middle.txt template. check relative paths")
+            logger.error(f"attempted filepath: {startFile}")
             return
 
 
@@ -310,8 +309,8 @@ class DesignTemplate:
         #src\simulation_integrator\ANSYS\code_templates\parameter\parameter-edit-single.txt
         filepath = os.path.join(self.templateBaseDir, 'parameter', 'parameter-edit-single.txt')
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Design.py. path error to parameter-edit-single.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: templateGen_Design.py. path error to parameter-edit-single.txt template. check relative paths")
+            logger.error("attempted filepath: {filepath}")
             return      
         
         with open(filepath) as f:

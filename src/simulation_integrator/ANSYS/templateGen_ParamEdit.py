@@ -4,11 +4,13 @@
 #   Class for ANSYS HFSS parameter manipuation template generator.
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import os.path
 import re
+import logging
+logger = logging.getLogger(__name__)
 
 class ParamEditTemplate:
     def __init__(self):
@@ -51,16 +53,16 @@ class ParamEditTemplate:
         #src\simulation_integrator\ANSYS\code_templates\parameter\parameter-edit-middle.txt        
         filepath = os.path.join(self.templateBaseDir, 'parameter', 'parameter-base.txt')
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_ParamEdit.py. path error to parameter-base.txt template. check relative paths")
-            print("attempted filepath: ", filepath)        
+            logger.error("ERROR: templateGen_ParamEdit.py. path error to parameter-base.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")        
         endFile = os.path.join(self.templateBaseDir, 'parameter', 'parameter-edit-end.txt')
         if os.path.isfile(endFile) == False:
-            print("ERROR: templateGen_ParamEdit.py. path error to parameter-edit-end.txt template. check relative paths")
-            print("attempted filepath: ", endFile)
+            logger.error("ERROR: templateGen_ParamEdit.py. path error to parameter-edit-end.txt template. check relative paths")
+            logger.error(f"attempted filepath: {endFile}")
         startFile = os.path.join(self.templateBaseDir, 'parameter', 'parameter-edit-middle.txt')
         if os.path.isfile(startFile) == False:
-            print("ERROR: templateGen_ParamEdit.py. path error to parameter-edit-middle.txt template. check relative paths")
-            print("attempted filepath: ", startFile)
+            logger.error("ERROR: templateGen_ParamEdit.py. path error to parameter-edit-middle.txt template. check relative paths")
+            logger.error(f"attempted filepath: {startFile}")
 
 
         paramTemplate = []
@@ -122,8 +124,8 @@ class ParamEditTemplate:
         tmpStr=""
         filepath = os.path.join(self.calculatorTemplatesDir,'ports', "modal_port.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Simulation.py. path error to modal_port.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: templateGen_Simulation.py. path error to modal_port.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return               
         with open(filepath) as f:
             # go line by line and search for key words
@@ -156,8 +158,8 @@ class ParamEditTemplate:
         tmpStr=""
         filepath = os.path.join(self.calculatorTemplatesDir, 'ports',"auto_port.txt")
         if os.path.isfile(filepath) == False:
-            print("ERROR: templateGen_Simulation.py. path error to auto_port.txt template. check relative paths")
-            print("attempted filepath: ", filepath)
+            logger.error("ERROR: templateGen_Simulation.py. path error to auto_port.txt template. check relative paths")
+            logger.error(f"attempted filepath: {filepath}")
             return               
         with open(filepath) as f:
             for line in f.readlines():
