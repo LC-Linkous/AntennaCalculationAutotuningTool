@@ -11,7 +11,7 @@
 #       literature.     
 #
 #   Author(s): Lauren Linkous
-#   Last update: May 18, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 #! /usr/bin/python3
 
@@ -19,6 +19,8 @@
 import numpy as np
 from numpy.random import Generator, MT19937
 import sys
+import logging
+logger = logging.getLogger(__name__)
 np.seterr(all='raise')
 
 
@@ -230,10 +232,6 @@ class swarm:
                     # select a random hen to be the 'mother' and assign to group
                     groupAssigned = False
 
-                    # print("chicken info")
-                    # print(np.shape(self.chicken_info))
-                    # print(self.chicken_info)
-                    # print(self.chicken_info[0][chicken_idx])
                     while (groupAssigned == False):
                         chicken_idx = self.rng.integers(0, i-1)# index after a chick will always be the chick
                         if self.chicken_info[chicken_idx][0] == 2: #is mother hen
@@ -346,9 +344,8 @@ class swarm:
                 if iter > last_iter:
                     last_iter = iter
 
-            print("************************************************")
-            print("Internal Objective Function Iterations: " + str (iter))
-            print("Internal Best Eval: " + str(best_eval))
+            logger.info(f"Internal Objective Function Iterations: {iter}")
+            logger.info(f"Internal Best Eval: {best_eval}")
 
             # check if G_best of surrogate optimizer is better than what the main optimizer is finding
             potential_Gb =  np.array(surrogateOptimizer.get_optimized_soln()).reshape(1 ,-1)
@@ -356,16 +353,11 @@ class swarm:
             if np.linalg.norm(potential_F_Gb) < np.linalg.norm(self.F_Gb):
                 self.F_Gb = np.array(potential_F_Gb)
                 self.Gb = np.array(potential_Gb[0])
-                print("NEW BEST!!!!!!")      
-                print("self.F_Gb")
-                print(self.F_Gb)
-                print("self.Gb")
-                print(self.Gb)
             
             canUseSurrogate = True
             
         except Exception as e:
-            print(e)
+            logger.error(e)
             self.debug_message_printout("ERROR: failed to set up and minimize surrogate model")
 
         return canUseSurrogate
@@ -753,7 +745,7 @@ class swarm:
             self.current_particle = self.current_particle + 1
             if self.current_particle == self.number_of_particles:
                 if self.useSurrogateModel == True:
-                    print("MINIMIZING SURROGATE MODEL")
+                    logger.info("MINIMIZING SURROGATE MODEL")
                     self.minimize_surrogate_model()
                 self.current_particle = 0
 
@@ -888,7 +880,8 @@ class swarm:
 
     def debug_message_printout(self, msg):
         if self.parent == None:
-            print(msg)
+            pass
+            #print(msg)
         else:
             self.parent.debug_message_printout(msg)
 
