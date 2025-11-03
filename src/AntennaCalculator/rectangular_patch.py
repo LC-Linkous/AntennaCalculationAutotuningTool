@@ -53,10 +53,10 @@ class RectangularPatch():
     def A_check(self, Z0, er):
         A = self.A_calculation(Z0, er)
         if self.args.verbose:
-            logger.info("[*] A = {A}")
+            logger.info(f"[*] A = {A}")
         wsd = (8 * e**(A))/(e**(2*A) - 2)
         if self.args.verbose:
-            logger.info("[*] A Ws/d = {wsd}")
+            logger.info(f"[*] A Ws/d = {wsd}")
         if wsd < 2:
             if self.args.verbose:
                 logger.info("[*] A is valid")
@@ -72,10 +72,10 @@ class RectangularPatch():
     def B_check(self, Z0, er):
         B = self.B_calculation(Z0, er)
         if self.args.verbose:
-            logger.info("[*] B = {B}")
+            logger.info(f"[*] B = {B}")
         wsd = (2/math.pi)*(B - 1 - math.ln(2*B-1) + (er-1)/(2*er) * (math.ln(B-1) + 0.39 - 0.61/(er)))
         if self.args.verbose:
-            logger.info("[*] B Ws/d = {wsd}")
+            logger.info(f"[*] B Ws/d = {wsd}")
         if wsd > 2:
             if self.args.verbose:
                 logger.info("[*] B is valid")
@@ -96,19 +96,19 @@ class RectangularPatch():
 
     def y0_calculation(self, W):
         if self.args.verbose:
-            logger.info("[*] y0 =", W/2)
+            logger.info(f"[*] y0 =", W/2)
         return W/2
 
     def x0_calculation(self, L, W, er, Z0):
         Zin_0 = (90 * (er**2))/(er-1) * (L/W)
         if self.args.verbose:
-            logger.info("[*] Zin_0 = {Zin_0}")
+            logger.info(f"[*] Zin_0 = {Zin_0}")
         Zin_x0 = Z0
         if self.args.verbose:
-            logger.info("[*] Zin_x0 = {Zin_x0}")
+            logger.info(f"[*] Zin_x0 = {Zin_x0}")
         x0 = math.acos(math.sqrt(Zin_x0/Zin_0)) * (L/math.pi)
         if self.args.verbose:
-            logger.info("[*] x0 = {x0}")
+            logger.info(f"[*] x0 = {x0}")
         return x0
 
     def unit_print(self, name, value, unit=None):
