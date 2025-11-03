@@ -1,6 +1,6 @@
 ##--------------------------------------------------------------------\
 #   Antenna Calculation and Autotuning Tool
-#   '.src/gui/page_optimizer/notebook_optimizer/optimizer_panels/sweep_settings_panels/panel_sweep_random.py'
+#   '.src/gui/page_optimizer/notebook_optimizer/optimizer_panels/sweep_settings_panels/panel_sweep_grid.py'
 #   Class for inputs for the sweep optimizer, using the grid sampling method
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
@@ -104,7 +104,7 @@ class Grid_Sweep_Panel(wx.Panel):
             self.toleranceVal = self.fieldTolerance.GetValue()
             self.maxIter = self.fieldMaxIter.GetValue()
         except Exception as e:
-            logger.error("ERROR in panel_multiglods getting user input")
+            logger.error("ERROR in panel_sweep_grid getting user input")
             logger.error(e)
             noError = False   
         

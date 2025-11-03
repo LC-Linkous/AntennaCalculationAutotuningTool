@@ -92,7 +92,7 @@ class Random_Sweep_Panel(wx.Panel):
             self.toleranceVal = self.fieldTolerance.GetValue()
             self.maxIter = self.fieldMaxIter.GetValue()
         except Exception as e:
-            logger.error("ERROR in panel_multiglods getting user input")
+            logger.error("ERROR in panel_sweep_random getting user input")
             logger.error(e)
             noError = False   
         
