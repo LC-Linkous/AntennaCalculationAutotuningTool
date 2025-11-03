@@ -250,7 +250,7 @@ class CalculateAndDraw():
             zlims = [-1.2*l, 1.2*l] 
 
         else:
-            logger.error("unrecognized antenna type in graphics helper funcs: " + str(aType))
+            logger.error(f"unrecognized antenna type in graphics helper funcs: {aType}")
 
 
         #adjust limits for 3D canvas
