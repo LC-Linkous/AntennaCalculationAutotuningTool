@@ -5,10 +5,12 @@
 #   This class contains values that will change between iterations
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: July 16, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 
 class DesignConfiguration:
     def __init__(self):
@@ -606,8 +608,8 @@ class DesignConfiguration:
 
             noError = True
         except Exception as e:
-             print(e)
-             print("Error in design_config.py importing information from saved file")
+             logger.error(e)
+             logger.error("Error in design_config.py importing information from saved file")
 
         return noError
 

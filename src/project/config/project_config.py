@@ -6,10 +6,12 @@
 #   at the topmost levels
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: July 6, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 import os
 import pandas as pd
+import logging
+logger = logging.getLogger(__name__)
 import project.config.antennaCAT_config as c
 
 OUTPUT_DIR = c.OUTPUT_DIR
@@ -549,7 +551,7 @@ class ProjectConfiguration:
 
             noError = True
         except:
-            print("Error in project_config.py importing information from saved file")
+            logger.error("Error in project_config.py importing information from saved file")
 
         return noError
 
