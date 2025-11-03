@@ -11,21 +11,39 @@ To those who have reached out about features (current, planned, and a few bugs),
 ## Current Features Being Implemented
 
 **Current updates completed:**
-* AntennaCAT 2021.1.1 pushed Jul 2025, new dev branch started for daily updates for next revision
+* AntennaCAT 2021.1.2 prep for next push in progress, new dev branch started for updates for next revision
 
 
 **What's in the Queue:**
+* Re-test of all optimizers with the new logging format
+  * While stable, we are confirming that all optimizers are still converging properly after the changes.
 * Save & read for the 'Help Me Choose' fix to match the optimizer updates.
   * This needs the hooks updated to handle the new (full) dataframe structure update for saving and data pass through. 
   * Corrected parameter count after the dataframe change has started the re-integration
+* Ansys features
+  * IF/ELSE logic to the templates for importing custom sim setups
 * Core 2025.2 features
   * Layers (needs to be re-tested with the new Ansys 2025 update)
   * DXF import (needs to be re-tested with new Ansys 2025 update + 3rd party DXF library change)
-* Logging
-  * To help with bug reporting, actual logging is being implemented to collect helpful reporting information
 
 
-**2025.1.1 fixed bugs:**
+**2025.1.2 change log:**
+(October&November 2025)
+* Logging added to all files that previously printed out any kind of message
+  * Classes that were pass through only do not log in order to cut down on duplicate messages in log file
+* Improved status and detail messages in UI
+  * This includes instructions for how to pause, stop, and run optimizers
+  * Optimizer messages have been shortened and include new formatting
+  * Status and Detail scroll windows are now READ ONLY to prevent accidental deleting of progress log (AntennaCAT does not read in text, so this is for user benefit only)
+* Improved statemachine for IU driven optimization
+  * Logging added to the state machine controlling the optimizer&simulation process as driven by the UI (start, stop, pause, etc.) now reports more accurately where in the process the user input and automation process crossover.
+  * Likewise, extra checks added to the state machine now make it more resistant to error states caused by toggling run/stop/pause in previously unhandled combinations
+* Clearer messages for optimizer status
+  * Some messages that were duplicated by the additional states were removed to declutter the status scroll window
+  * It is now more clear when the optimizer has converged, with explicit printouts after converging of the parameters and the optimized targets.  
+
+**2025.1.1 change log:**
+(July&August 2025)
 * Fixed core bugs with Windows 10 & Windows 11, and compatibility with HFSS 2021, 2022, 2023, 2024, 2025. Combinations of the 2 OS versions, and 5 Ansys versions were causing issues with raw strings, paths, and text merging in files with newline (Maybe. Might have been co-bug).
 * Save features now have values properly recorded & data types are preserved. Switch to dataframe helped with 95% of this for raw strings and paths. (but not the interpretation, as expected) 
 * AntennaCAT now saves primary configuration data structures
