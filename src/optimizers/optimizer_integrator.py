@@ -5,14 +5,15 @@
 #   Scripts are NOT written or read to file in this class
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu), Jonathan Lundquist
-#   Last update: Novmber 1, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 import os
 import wx
 import pandas as pd
 import numpy as np
-
+import logging
+logger = logging.getLogger(__name__)
 import time
 
 
@@ -257,8 +258,6 @@ class OptimizerIntegrator():
 
 
 
-
-
         # set up optimizer integrator
         self.OO = self.setOptimizer(optimizerSelection)
         self.setupOptimizerIntegration(optimizerSelection) #setup save directories + SO dirs
@@ -318,8 +317,8 @@ class OptimizerIntegrator():
         elif optimizerSelection == OPT_RANDOM_SWEEP:
            OO = CONTROLLER_SWEEP(self)
         else:
-            print("ERROR: unrecognized optimizer object: " + str(optimizerSelection))
-            print("check selection in optimizer_integrator.py")
+            logger.error(f"ERROR: unrecognized optimizer object: {optimizerSelection}")
+            logger.info("check selection in optimizer_integrator.py")
           
         # NOTE: SURROGATE panel doesn't have it's own selection because it's using other optimizers
         # 
@@ -538,14 +537,16 @@ class OptimizerIntegrator():
                 data_df = pd.DataFrame(data)
                 with wx.FileDialog(self, "Export optimizer state", wildcard="PKL (*.pkl)|*.pkl",
                         style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+                    logger.info("user prompt: export optimizer state as pkl file")
                     if fileDialog.ShowModal() == wx.ID_CANCEL:
+                        logger.info("user action: cancel")
                         return     # user cancelled
+                    logger.info("user action: export confirmed")
                     pathname = fileDialog.GetPath()
-                    print(data_df)
                     data_df.to_pickle(pathname)
             except Exception as e:
-                print("ERROR: optimizer_integrator.py export error")
-                print(e)
+                logger.error("ERROR: optimizer_integrator.py export error")
+                logger.error(e)
 
         else:
             msg = "WARNING: Cannot export optimizer state before optimizer runs. \n" \
@@ -905,9 +906,9 @@ class OptimizerIntegrator():
             # update script tempate
             self.updateOptimizerTemplate(x)
         except Exception as e:
-            print("problem with root in optimizer_integrator.py, processDataAndRunSimulation()")
-            print("unable to update optimizer template")
-            print(e)
+            logger.error("problem with root in optimizer_integrator.py, processDataAndRunSimulation()")
+            logger.error("unable to update optimizer template")
+            logger.error(e)
             noError = False
             #return self.F, noError
 
@@ -917,9 +918,9 @@ class OptimizerIntegrator():
             #run simulation - this starts the simulation and disowns the thread
             self.runSimulation()  
         except Exception as e:
-            print("problem with root in optimizer_integrator.py, processDataAndRunSimulation()")
-            print("unable to run simulation")
-            print(e)
+            logger.error("problem with root in optimizer_integrator.py, processDataAndRunSimulation()")
+            logger.error("unable to run simulation")
+            logger.error(e)
             noError = False
         return self.F, noError
     
@@ -977,9 +978,9 @@ class OptimizerIntegrator():
                 ctr = ctr +1
                 self.F.append([np.round(valArr, self.numSigFigs)])
         except:
-            print("ERROR: file not exported from EM simulation software correctly. attempting to force re-run simulation")
-            print("if issue continues, you may need to restart the program.")
-            print("A fix to this is in progress!")
+            logger.error("ERROR: file not exported from EM simulation software correctly. attempting to force re-run simulation")
+            logger.error("if issue continues, you may need to restart the program.")
+            logger.error("A fix to this is in progress!")
             #TODO
 
 
@@ -995,9 +996,6 @@ class OptimizerIntegrator():
         #       x vals are in the format [[x1], [x2], [x3]...]
         #outputs: none. saves script to template. uses default paths, etc
 
-        # print("x in optimizer_integrator.updateOptimizerTemplate ")
-        # print(x)
-
         ctr = 0
         lst = [] #array of format [[param, val, unit],[param, val, unit],[param, val, unit]....]
         for p in self.controllableParams:
@@ -1009,7 +1007,7 @@ class OptimizerIntegrator():
                 ctr = ctr + 1
 
         # update parameters by passing in list of vals to change
-        #print("update script template")
+        logger.info("update script template")
         self.updateScriptTemplate(lst, self.simulationCounter)
         self.x = x # for the log file
 
@@ -1043,8 +1041,6 @@ class OptimizerIntegrator():
 #######################################################
 
     def updateScriptTemplate(self, lst, stpCtr):
-        # print("STEP COUNTER!!!!!")
-        # print(stpCtr)
 
         if stpCtr < 1: 
             # the first step includes design and simulation scripts
@@ -1054,8 +1050,6 @@ class OptimizerIntegrator():
             designScript = self.DC.getDesignScript()
             # COMMENTED OUT JUST FOR THE RFID RUN
             simulationScript = self.DC.getSimulationScript() #simulation setup
-            # print("STEP CTR 0")
-            # print(simulationScript)
 
             # # change the paramters by list 
             # self.SO.clearParamEditTemplateScript() #clear previous script
@@ -1098,8 +1092,6 @@ class OptimizerIntegrator():
         else:
             #change the design script to be an 'open project' script. (this works for all options, new and imported)
             projectPath = self.SO.getEMSoftwareProjectName()
-            # print("project path in optimizer_integrator.py")
-            # print(projectPath)
             self.SO.useOpenProjectDesignScript(projectPath) #resets design template object
             designScript = self.DC.getDesignScript()
             # no sim setup
@@ -1165,32 +1157,9 @@ class OptimizerIntegrator():
         # get report export script
         reportExportScript = self.SO.getReportEditTemplateScript()
 
-
-        # #write all of them out to file to read the 
-
-        # with open("designScript_"+str(stpCtr)+".txt", "w") as file:
-        #     file.writelines(designScript)
-
-        # with open("simulationScript_"+str(stpCtr)+".txt", "w") as file:
-        #     file.writelines(simulationScript)
-
-        # with open("paramEditScript_"+str(stpCtr)+".txt", "w") as file:
-        #     file.writelines(paramEditScript)
-
-        # with open("reportScript_"+str(stpCtr)+".txt", "w") as file:
-        #     file.writelines(reportScript)
-
-        # with open("reportExportScript.txt", "w") as file:
-        #     file.writelines(reportExportScript)
-
-        # time.sleep(25)
-
         # combine scripts
         #use the spacer to see where each script ends - debug only. 
         script = designScript + simulationScript + paramEditScript + reportScript + reportExportScript
-
-        # print("SCRIPT")
-        # print(script)
 
         # export script to file
         self.saveScriptFile(script, self.optimizerScriptPath)
@@ -1217,13 +1186,13 @@ class OptimizerIntegrator():
         self.updateStatusText(msg)
 
         if os.path.isfile(self.optimizerScriptPath) == False:
-            print("ERROR: optimizer_integrator.py. optimizer script does not exist")
-            print("attempted filepath: ", self.optimizerScriptPath)
+            logger.error("ERROR: optimizer_integrator.py. optimizer script does not exist")
+            logger.error(f"attempted filepath: {self.optimizerScriptPath}")
             return       
         
         # call the simulation through SO
         self.SO.runWithScriptAndExit(pth=self.optimizerScriptPath)
-        #print("run simulation call disabled in optimizer_integrator.py for debug")
+
 
 
     def checkIfSimulationIsRunning(self):
