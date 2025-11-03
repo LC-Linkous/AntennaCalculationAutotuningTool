@@ -118,7 +118,7 @@ class Chicken_Swarm_Panel(wx.Panel):
             self.G = self.fieldnumGenerations.GetValue()
         
         except Exception as e:
-            logger.error("ERROR in panel_chicke_swarm getting user input")
+            logger.error("ERROR in panel_chicken_swarm getting user input")
             logger.error(e)
             noError = False   
         
