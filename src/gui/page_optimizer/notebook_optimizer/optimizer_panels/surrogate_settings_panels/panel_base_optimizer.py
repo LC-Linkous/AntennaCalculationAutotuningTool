@@ -192,7 +192,7 @@ class BaseOptimizerPage(wx.Panel):
             optimizerName = OPT_CHICKEN_QUANTUM
 
         else:
-            logger.error("ERROR in panel_surrogate.py unknown optimizer selected")
+            logger.error("ERROR in panel_base_optimizer.py unknown optimizer selected")
 
         return optimizerName
     
@@ -221,7 +221,7 @@ class BaseOptimizerPage(wx.Panel):
             df, noError = self.chicken_quantum_panel.getOptimizerInputs(is_surrogate)
         else:
             logger.error("ERROR: optimizer name not recognized in panel_base_optimizer. Select an option from the dropdown menu to continue!")
-            logger.error("selected optimizer: {optimizerName}")
+            logger.error(f"selected optimizer: {optimizerName}")
 
         if noError == False:
             logger.error("ERROR: error in optimizer input values. check inputs.")    
