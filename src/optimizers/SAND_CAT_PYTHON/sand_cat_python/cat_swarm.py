@@ -227,7 +227,7 @@ class swarm:
             canUseSurrogate = True
             
         except Exception as e:
-            loger.error(e)
+            logger.error(e)
             self.debug_message_printout("ERROR: failed to set up and minimize surrogate model")
 
         return canUseSurrogate
