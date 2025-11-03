@@ -7,7 +7,7 @@
 #   to find the optimial solution based on target values.
 #
 #   Author(s): Lauren Linkous 
-#   Last update: March 13, 2025
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -15,6 +15,8 @@ import numpy as np
 import pandas as pd
 from numpy.random import Generator, MT19937
 import sys
+import logging
+logger = logging.getLogger(__name__)
 np.seterr(all='raise')
 
 
@@ -173,7 +175,8 @@ class sweep:
     def error_message_generator(self, msg):
         # for error messages, but also repurposed for general updates
         if self.parent == None:
-            print(msg)
+            pass
+            #print(msg)
         else:
             self.parent.debug_message_printout(msg)
             
@@ -426,7 +429,8 @@ class sweep:
 
     def error_message_generator(self, msg):
         if self.parent == None:
-            print(msg)
+            pass
+            #print(msg)
         else:
             self.parent.debug_message_printout(msg)
 
