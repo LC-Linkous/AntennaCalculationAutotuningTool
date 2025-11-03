@@ -582,6 +582,8 @@ class OptimizerIntegrator():
         msg = "simulation terminated. optimizer paused"
         self.updateStatusText(msg)
         self.postSimulationCleanup()
+        msg = "simulation clean up finished. A new process can be started now"
+        self.updateStatusText(msg)
 
 
 # buttons now control multiple conditions in order to resolve conflicing button events.
@@ -765,8 +767,8 @@ class OptimizerIntegrator():
 
                 # check if optimizer is complete
                 completeBool = self.checkIfComplete()
-                self.updateStatusText("after data process complete bool")
-                self.updateStatusText(completeBool)
+                # self.updateStatusText("after data process complete bool")
+                # self.updateStatusText(completeBool)
                 if completeBool == True:
                     return # done
 
@@ -775,7 +777,7 @@ class OptimizerIntegrator():
 
                 # dataProcessingDone is now True
                 # Schedule next loop to run optimizer step
-                self.updateStatusText("hitting CallLater")
+                # self.updateStatusText("hitting CallLater")
 
                 wx.CallLater(50, self.loop)
             else:
@@ -798,8 +800,8 @@ class OptimizerIntegrator():
 
                 # check if optimizer is complete
                 completeBool = self.checkIfComplete()
-                self.updateStatusText("after step complete bool")
-                self.updateStatusText(completeBool)
+                # self.updateStatusText("after step complete bool")
+                # self.updateStatusText(completeBool)
                 if completeBool == True:
                     return # done
                 
@@ -811,14 +813,14 @@ class OptimizerIntegrator():
 
                 # check if optimizer is complete
                 completeBool = self.checkIfComplete()
-                self.updateStatusText("after objective complete bool")
-                self.updateStatusText(completeBool)
+                # self.updateStatusText("after objective complete bool")
+                # self.updateStatusText(completeBool)
                 if completeBool == True:
                     return # done
 
 
                 
-                self.updateStatusText("hitting CallLater")
+                # self.updateStatusText("hitting CallLater")
                 # if it's multiGLODS, we might step 200+ times before running another simulation
                 # other optimizers will immediately start a new simulation instance if NEEDED
                 wx.CallLater(50, self.loop) 
@@ -976,7 +978,10 @@ class OptimizerIntegrator():
                 elif tm == "Efficiency":
                     valArr = float(df['efficiency'][0][ctr%numVals])
                 ctr = ctr +1
-                self.F.append([np.round(valArr, self.numSigFigs)])
+                #self.F.append([np.round(valArr, self.numSigFigs)])
+                # the above prints out in the format: Gain:	[np.float64(1.57798301)]
+                # convert to float after rounding
+                self.F.append([float(np.round(valArr, self.numSigFigs))])
         except:
             logger.error("ERROR: file not exported from EM simulation software correctly. attempting to force re-run simulation")
             logger.error("if issue continues, you may need to restart the program.")
