@@ -15,7 +15,7 @@
 #
 #
 #   Author: Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: November 21, 2024
+#   Last update: November 2, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -23,6 +23,8 @@
 import sys
 import os
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 ## sim integrator imports
 sys.path.insert(0, './simulation_integrator/ANSYS')
@@ -856,6 +858,6 @@ class SimulationIntegrator():
 
             noError = True
         except:
-            print("Error in simulation_integrator.py importing information from saved file")
+            logger.error("Error in simulation_integrator.py importing information from saved file")
 
         return noError
