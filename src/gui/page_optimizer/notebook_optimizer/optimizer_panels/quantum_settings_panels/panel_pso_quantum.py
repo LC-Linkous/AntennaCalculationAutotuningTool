@@ -117,7 +117,7 @@ class PSO_Quantum_Panel(wx.Panel):
             self.maxIter = self.fieldMaxIter.GetValue()
             self.betaVal = self.fieldBetaVal.GetValue()
         except Exception as e:
-            logger.error("ERROR in panel_pso_basic getting user input")
+            logger.error("ERROR in panel_pso_quantum getting user input")
             logger.error(e)
             noError = False   
         

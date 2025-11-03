@@ -143,7 +143,7 @@ class Cat_Quantum_Panel(wx.Panel):
             self.betaVal = self.fieldBetaVal.GetValue()
 
         except Exception as e:
-            logger.error("ERROR in panel_cat_swarm getting user input")
+            logger.error("ERROR in panel_cat_quantum getting user input")
             logger.error(e)
             noError = False   
         
