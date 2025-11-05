@@ -43,6 +43,9 @@ To those who have reached out about features (current, planned, and a few bugs),
 * Clearer messages for optimizer status
   * Some messages that were duplicated by the additional states were removed to declutter the status scroll window
   * It is now more clear when the optimizer has converged, with explicit printouts after converging of the parameters and the optimized targets.  
+* Sometime in the last update, a bug where MultiGLODS ran an extra 2 simulations after the simulation results showed convergence appeared
+  * State machine in multiglods.py was corrected to remove 1 of the extra simulations. 
+  * However, due to the original algorithm involving a couple between the next simulation run/previous data read in the objective function, to remove the remaining 1 'overshoot' simulation, several convergence checks were added. This included a convergence check in the integrator where the overshoot simulation thread is killed if it's running. That way we can retain modularity add other optimizers later that might show the same kind of behavior. 
 
 **2025.1.1 change log:**
 (July&August 2025)
