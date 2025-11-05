@@ -794,8 +794,6 @@ class OptimizerIntegrator():
 
                 # check if optimizer is complete
                 completeBool = self.checkIfComplete()
-                print("COMPLETE BOOL BEFORE OPTIMIZER CALL")
-                print(completeBool)
                 if completeBool == True:
                     return # done
                 
