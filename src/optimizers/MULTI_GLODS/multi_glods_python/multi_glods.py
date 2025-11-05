@@ -209,6 +209,13 @@ class multi_glods:
         # so I want to keep that the same across the set. HOWEVER, there is the interesting issue
         # where FValtemp is more accurate with some versions of the state machine we're testing.
         
+        '''
+        self.ctl['Flist']" the list of distances from the target for EACH particle in play
+        self.prob['FValtemp']  the returned values from the last processed simulation
+        self.prob['Ftemp'] last objective function evaluation
+        '''
+
+
 
         #If we have unprocessed FValtemp, process it now for convergence check
         # This uses the new bypass for the objective function evaluation f_eval_return(...), which calls objective_function_evaluation(...) 
@@ -217,20 +224,16 @@ class multi_glods:
         #if len(self.prob['FValtemp']) > 0 and self.state['eval_return']: 
         # check every time as long as there's something in the value
         if len(self.prob['Ftemp']) > 0: 
-            print("USING THE BYPASS")
             # Process the latest evaluation results
             self.state, self.prob = f_eval_return(self.state, self.prob, self.alg, 
                                                 self.state['location'], bypass=True)
-            print("converged() check")
-            print("self.ctl['Flist']") #the list of distances from the target for EACH particle in play
-            print(self.ctl['Flist'])
-            print("self.prob['FValtemp']") # the returned values from the last processed simulation
-            print(self.prob['FValtemp'])
-        print("self.prob['Ftemp']") #last objective function evaluation
-        print(self.prob['Ftemp'])
 
         # while this IS updated sooner than FList, it doesn't actually solve the issue where the data isn't
-        # READ IN FROM FILE until the NEXT objective function is called
+        # READ IN FROM FILE until the NEXT objective function is called.
+
+        # HOWEVER, this does return the convergence value early enough to end the extra simulation before it
+        # starts.
+
         if np.shape(self.prob['Ftemp'])[0] == 0:
             # early on, it's possible that there are no evaluated fitness values/active particles
             # if that is the case, ctl['Flist'] = []
@@ -252,9 +255,6 @@ class multi_glods:
         #     best_eval = np.linalg.norm(self.ctl['Flist'])
 
         convergence = best_eval <= self.alg['err_tol_stop'] #E_TOL comparison. returns bool
-        logger.info(f"best eval: {best_eval}")
-        logger.info(f"convergence: {convergence}")
-
 
         return convergence
     
@@ -267,10 +267,5 @@ class multi_glods:
     def complete(self):
         # includes  self.done from this optimizer, and the standardized  'self.converged() or self.maxed()'
         done = bool(self.done) or self.maxed() or self.converged() 
-        logger.info("CHECK IF OPTIMIZER COMPLETE complete()")
-        logger.info(self.done)
-        logger.info(self.maxed())
-        logger.info(self.converged())
-        
 
         return done

@@ -160,6 +160,8 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
 
 
         # NEW: PREEMPTIVE CONVERGENCE CHECK BEFORE SEARCH STEP
+        # CHANGE 8: part of the pass for the convergence. 
+        # Not fully sure this one actually triggers properly.
         # Check if we're already converged before marking new evaluation
         if state['main_loop']['run'] and not (ctl['poll_loop']) and run_ctl['search']:
             if np.shape(ctl['Flist'])[0] > 0:
@@ -175,6 +177,7 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
                     if not suppress_output:
                         end_processing(prob, ctl, run_ctl)
                     return 1, init, run_ctl, alg, prob, ctl, state
+
 
 
         # search step objective function call
@@ -193,9 +196,18 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
 
             # CHANGE 4 pt1: Separated marking from processing - only mark for evaluation here
             # update (I think I understand where this matches up now. No promises)
+            # if not state['evaluate'] and not state['eval_return']:   
+            #     # MARK for evaluation
+            #     state, prob = f_eval(state, prob['xtemp'], prob, 2)
             if not state['evaluate'] and not state['eval_return']:   
-                # MARK for evaluation
-                state, prob = f_eval(state, prob['xtemp'], prob, 2)
+                # ADD THIS: Check convergence before marking for evaluation
+                # Check if already at tolerance or max iterations
+                if state['main_loop']['run'] and ctl['objective_iter'] < ctl['maxit']:
+                    # Only mark for evaluation if still running and under max iterations
+                    state, prob = f_eval(state, prob['xtemp'], prob, 2)
+
+
+
 
         # Process search step return if data is ready
         #CHANGE 4 pt2: Separated marking from processing.
@@ -225,6 +237,8 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
 
 
         # NEW: PREEMPTIVE CONVERGENCE CHECK BEFORE POLL STEP
+        # CHANGE 9: part of the pass for the convergence. 
+        # Not fully sure this one actually triggers properly.
         # Check if we're already converged before marking new evaluation
         if state['main_loop']['run'] and ctl['sel_level'] and run_ctl['poll']:
             if np.shape(ctl['Flist'])[0] > 0:
@@ -240,6 +254,8 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
                     if not suppress_output:
                         end_processing(prob, ctl, run_ctl)
                     return 1, init, run_ctl, alg, prob, ctl, state
+
+
 
 
         # poll step objective function call
@@ -258,10 +274,15 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
 
             # CHANGE 6pt1: Separated marking from processing - only mark for evaluation here
             # # this helped get from 2 extra simulations down to 1 extra
+            # if not state['evaluate'] and not state['eval_return']:
+            #     # MARK for evaluation
+            #     state, prob = f_eval(state, prob['xtemp'], prob, 3)
             if not state['evaluate'] and not state['eval_return']:
-                # MARK for evaluation
-                state, prob = f_eval(state, prob['xtemp'], prob, 3)
-                
+                # ADD THIS: Check convergence before marking for evaluation
+                # Check if already at tolerance or max iterations
+                if state['main_loop']['run'] and ctl['objective_iter'] < ctl['maxit']:
+                    # Only mark for evaluation if still running and under max iterations
+                    state, prob = f_eval(state, prob['xtemp'], prob, 3)                
 
 
         # CHANGE 6pt2: Added separate block to process poll step returns when data is ready
@@ -299,3 +320,4 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
 
         if state['init'] or state['post_init'] or state['main_loop']['run']:
             return 0, init, run_ctl, alg, prob, ctl, state
+

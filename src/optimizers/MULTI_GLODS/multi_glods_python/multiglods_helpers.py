@@ -245,7 +245,6 @@ def f_eval_return(state, prob, alg, location, bypass=False):
         ## We can either use the distance to target, 
         ## or include a threshold evaulation. 
 
-
         # The values for 'Ftemp' will 
         # be set to ctl['Flist'] in post_objective_init_loop
 
@@ -262,35 +261,16 @@ def f_eval_objective_call(state, prob, ctl, allow_update):
     noErrorBool = True #this is pretty stable, 
                         # so default of true when NOT evaluating 
                         # has not shown issues in testing. 
-    # logger.info("f_eval_objective_call in multiglods_helpers.py")
-    # logger.info("EVALUATING OBJECTIVE FUNCTION")
-    # logger.info("ctl['Flist']")
-    # logger.info(ctl['Flist'])
-    # logger.info("prob['FValtemp']")
-    # logger.info(prob['FValtemp'])
-    # logger.info("prob['Ftemp']")
-    # logger.info(prob['Ftemp'])
-    # logger.info("prob['xtemp']")
-    # logger.info(prob['xtemp'])
-
 
     # logger.info(f"State before eval: evaluate={state['evaluate']}, eval_return={state['eval_return']}")
     # logger.info(f"allow_update={allow_update}")
     # logger.info(f"FValtemp after assignment: {prob['FValtemp']}")
 
-
-    # print("state['evaluate']")
-    # print(state['evaluate'])
     if state['evaluate']:
         # NOTE: this is a change from the original multiglods_helpers.py
         # the new objective function configuration takes a horizontal array.
         # prob['FValtemp'], noErrorBool = ctl['obj_func'](prob['parent'], prob['xtemp'])
         FVals, noErrorBool = ctl['obj_func'](np.hstack(prob['xtemp']))
-        logger.info("objective functionc all has been triggered and ended")
-        # problem STARTS here because it's returning the default vals on the first run, 
-        # and then it appears to be 1 step (at least) behind
-
-
 
         # NOTE: multiGLODS needs a vertically stacked array
         # logger.info("SHAPE FVALS after return")
@@ -298,7 +278,6 @@ def f_eval_objective_call(state, prob, ctl, allow_update):
         # logger.info(np.shape(FVals))
         # logger.info("noErrorBool")
         # logger.info(noErrorBool)
-
 
         if noErrorBool == True:
             # this is the standard setup/shape for the AntennaCAT optimizer set. 
@@ -310,23 +289,13 @@ def f_eval_objective_call(state, prob, ctl, allow_update):
             # adjust the fitness values output to be vertical to match multiGLODS expectations
             prob['FValtemp'] = np.vstack(prob['FValtemp'])  
 
-
-
             if allow_update:
                 state['evaluate'] = 0
                 state['eval_return'] = 1 # this means that the next go around will be possible to get data from
                 ctl['objective_iter'] = ctl['objective_iter']  + 1
 
-
-
         else:
             logger.info("ERROR: error in evaluation of the objective function. Check evaluation")
-
-
-        # if allow_update:
-        #     state['evaluate'] = 0
-        #     state['eval_return'] = 1
-        #     ctl['objective_iter'] = ctl['objective_iter']  + 1
 
     return state, prob, noErrorBool
  
@@ -338,10 +307,6 @@ def objective_function_evaluation(Fvals, targets, evaluate_threshold, obj_thresh
 
         # this function evaluates the distance to threshold or target. 
         # it DOES NOT calculate convergence. that happens elsewhere
-
-
-        logger.info("objective_function_evaluation in multiglods_helper.py")
-
 
         # this uses the fitness values and target (or threshold) to determine the Flist values
         # Option #1: TARGET
@@ -363,29 +328,18 @@ def objective_function_evaluation(Fvals, targets, evaluate_threshold, obj_thresh
         Flist = np.zeros_like(Fvals)
 
 
-        # print("***************************************************************************************************")
-        # print("objective_function_evaluation in multiglods_helper.py")
-        # print("FVALS current value")
-        # print(Fvals)
-        # print(np.shape(Fvals))
-
-
         if evaluate_threshold == True: #THRESHOLD
             ctr = 0
             for i in targets:
-                #print("ITERATING THRU TARGETS")
-                #print(i)
                 o_thres = int(obj_threshold[ctr]) #force type as err check
                 t = targets[ctr]
                 fv = Fvals[ctr]
 
                 if o_thres == 0: #TARGET. default
-                    #print("TARGET")
                     # sets Flist[ctr] as abs distance of  Fvals[ctr] from target
                     Flist[ctr] = abs(t - fv)
 
                 elif o_thres == 1: #LESS THAN OR EQUAL 
-                    #print("LESS THAN OR EQUAL")
                     # checks if the Fvals[ctr] is LESS THAN OR EQUAL to target
                     # if yes, then distance is 0 (considered 'on target)
                     # if no, then Flist is abs distance of  Fvals[ctr] from target
@@ -395,7 +349,6 @@ def objective_function_evaluation(Fvals, targets, evaluate_threshold, obj_thresh
                         Flist[ctr] = abs(t - fv)
 
                 elif o_thres == 2: #GREATER THAN OR EQUAL
-                    #print("GREATER THAN OR EQUAL")
                     # checks if the Fvals[ctr] is GREATER THAN OR EQUAL to target
                     # if yes, then distance is 0 (considered 'on target')
                     # if no, then Flist is abs distance of  Fvals[ctr] from target
@@ -411,13 +364,8 @@ def objective_function_evaluation(Fvals, targets, evaluate_threshold, obj_thresh
                 ctr = ctr + 1
 
         else: #TARGET as default
-            #print("TARGETS AS DEFAULT")
             # arrays are already the same dimensions. 
             # no need to loop and compare to anything
             Flist = abs(targets - Fvals)
-
-        # print("FLIST return from evaluation")
-        # print(Flist)
-
 
         return Flist
