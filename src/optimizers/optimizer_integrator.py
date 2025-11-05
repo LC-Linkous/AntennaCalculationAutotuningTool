@@ -771,14 +771,8 @@ class OptimizerIntegrator():
                 # self.updateStatusText(completeBool)
                 if completeBool == True:
                     return # done
-
-                # AT THIS POINT, IT HAS BEEN CONFIRMED THE THE OPTIMIZER HAS CONVERGED, 
-                # but the program doesnt recognize this
-
-                # dataProcessingDone is now True
+                
                 # Schedule next loop to run optimizer step
-                # self.updateStatusText("hitting CallLater")
-
                 wx.CallLater(50, self.loop)
             else:
                 # ADDING THE ELSE HAS BEEN AN EDIT TO HELP WITH THE DOUBLE SIM PROBLEM
@@ -800,8 +794,8 @@ class OptimizerIntegrator():
 
                 # check if optimizer is complete
                 completeBool = self.checkIfComplete()
-                # self.updateStatusText("after step complete bool")
-                # self.updateStatusText(completeBool)
+                print("COMPLETE BOOL BEFORE OPTIMIZER CALL")
+                print(completeBool)
                 if completeBool == True:
                     return # done
                 
@@ -855,7 +849,23 @@ class OptimizerIntegrator():
             self.updateSolutionValues()
             self.postSimulationCleanup()
             # any other file clean up will be triggered from here
-            #
+            # this is situationally rare, but some of the optimizer state machines are out of sync by the nature of how 
+            # their original authors coupled the algorithm with the return (typically for mathematical models that didn't require a new thread simulation)
+            # if this is the case, kill that simulation thread because the optimization is done
+            self.simRunningBool, noError = self.checkIfSimulationIsRunning()
+            if self.simRunningBool == False:
+                pass
+            else:
+                msg = "The optimizer has converged, but the optimizer state machine is out of sync. \n this is not a problem! " \
+                "Some authors have coupled the data processing and the objective function evaluation in a way we haven't decoupled yet. The results are still accurate!"
+                self.updateStatusText(msg)
+                msg = "terminating overshoot simulation thread..."
+                self.updateStatusText(msg)
+                # kill simulation
+                self.SO.terminateRunningProcess()
+                msg = "overshoot simulation terminated."
+                self.updateStatusText(msg)
+
             msg = "optimization done"
             self.updateStatusText(msg)
 
@@ -1187,7 +1197,7 @@ class OptimizerIntegrator():
         self.formatOptimizerDataForDisplay(self.F, self.targetMetrics[0])
 
 
-        msg = "now running simulation #" + str(self.simulationCounter)
+        msg = "now calling objective function #" + str(self.simulationCounter)
         self.updateStatusText(msg)
 
         if os.path.isfile(self.optimizerScriptPath) == False:
