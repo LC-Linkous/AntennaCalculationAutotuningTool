@@ -8,12 +8,14 @@
 #       and multiglods_ctl.py is the controller
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: March 13, 2025
+#   Last update: November 5, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
 import sys
+import logging
+logger = logging.getLogger(__name__)
 
 try: # for outside func calls, program calls
     sys.path.insert(0, './multi_glods_python/src/')
@@ -25,6 +27,7 @@ except:# for local, unit testing
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_ctl import one_time_init
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods_helpers import f_eval_objective_call
     from optimizers.MULTI_GLODS.multi_glods_python.multiglods import multiglods
+    from optimizers.MULTI_GLODS.multi_glods_python.multiglods_helpers import f_eval_return
 
 class multi_glods:
     # arguments should take the form: 
@@ -89,7 +92,7 @@ class multi_glods:
 
         else:
             if not(len(obj_threshold) == len(TARGETS)):
-                print("WARNING: THRESHOLD option selected.  +\
+                logger.info("WARNING: THRESHOLD option selected.  +\
                 Dimensions for THRESHOLD do not match TARGET array. Defaulting to TARGET search.")
                 evaluate_threshold = False
                 THRESHOLD = None
@@ -115,6 +118,7 @@ class multi_glods:
         
    
     def call_objective(self, allow_update):
+        # this is called from outside by the optimizer controller.\
         self.state, self.prob, noErrorBool = f_eval_objective_call(self.state, 
                                                       self.prob, 
                                                       self.ctl,
@@ -147,27 +151,34 @@ class multi_glods:
             return self.prob['xtemp']
         
     def get_convergence_data(self):
-        # used the L2 norm to get the distance from target
+        # used the L2 norm to get the distance magnitude from target
         # distance from target at each metric (Flist) has already been handled 
+
+        # Note: this is used by the outer controller for logging progress, NOT the optimizer
 
         if len(np.shape(self.ctl['Flist'])) > 1:
             best_eval = np.linalg.norm(self.ctl['Flist'][:,0])
         else:
             best_eval = np.linalg.norm(self.ctl['Flist'])
 
-        # return iteration for objective function call.
-        #  There's several 'iter' counters.
-        #  self.run_ctl['iter'] : 
-        #  self.ctl['objective_iter'] : objective func call counter   
-    
         iteration = 1*self.ctl['objective_iter']
         return iteration, best_eval 
+    
 
     def get_optimized_soln(self):
+        # this is the list of points
         soln = np.vstack(self.prob['Plist'][:,0])
         return soln
     
+    
     def get_optimized_outs(self):
+        # this is the results of running the simulation/math model
+        soln = np.vstack(self.prob['FValtemp'])
+        return soln
+    
+    
+    def get_dist_from_target(self):
+        # this is the convergence distance. Total COST of the current location
         soln = np.vstack(self.ctl['Flist'][:,0])
         return soln
     
@@ -177,33 +188,89 @@ class multi_glods:
         x_locations = self.prob['Plist'] 
         return x_locations
 
+
     def get_fitness_values(self):
+        # this list of ALL of the active points, where each of the values
+        # is the DISTANCE from target, not the actual evaluated values.
+        # think of these like COST values
         x_locations = self.ctl['Flist']
         return x_locations
 
+
     # funcs from other optimizers in the AntennaCAT set for stop conditions
     def converged(self):
-       
-        if np.shape(self.ctl['Flist'])[0] == 0:
-            return False
-        elif len(np.shape(self.ctl['Flist'])) > 1:
-            best_eval = np.linalg.norm(self.ctl['Flist'][:,0])
-        else:
-            best_eval = np.linalg.norm(self.ctl['Flist'])
+        # the convergence looks at the L2 norm in terms of the convergence to the TARGET, 
+        # not the radii tolerance. The MultiGLODS optimizer can terminate early based on that condition
+        # but this is specific for the state machine
 
-        convergence = best_eval < self.alg['err_tol_stop'] #E_TOL comparison. returns bool
+
+        # LEAVE THE COMMENTS FOR THE STRESS TEST DURATION
+        # This should be fine, since we use the Flist across optimizers to check for convergence,
+        # so I want to keep that the same across the set. HOWEVER, there is the interesting issue
+        # where FValtemp is more accurate with some versions of the state machine we're testing.
+        
+
+        #If we have unprocessed FValtemp, process it now for convergence check
+        # This uses the new bypass for the objective function evaluation f_eval_return(...), which calls objective_function_evaluation(...) 
+        # (both occur in multiglods_helpers.py). This bypass does NOT update the state of change ANY info (it passes the inputs right back out), 
+        # but it does do the cost function evaluation
+        #if len(self.prob['FValtemp']) > 0 and self.state['eval_return']: 
+        # check every time as long as there's something in the value
+        if len(self.prob['Ftemp']) > 0: 
+            print("USING THE BYPASS")
+            # Process the latest evaluation results
+            self.state, self.prob = f_eval_return(self.state, self.prob, self.alg, 
+                                                self.state['location'], bypass=True)
+            print("converged() check")
+            print("self.ctl['Flist']") #the list of distances from the target for EACH particle in play
+            print(self.ctl['Flist'])
+            print("self.prob['FValtemp']") # the returned values from the last processed simulation
+            print(self.prob['FValtemp'])
+        print("self.prob['Ftemp']") #last objective function evaluation
+        print(self.prob['Ftemp'])
+
+        # while this IS updated sooner than FList, it doesn't actually solve the issue where the data isn't
+        # READ IN FROM FILE until the NEXT objective function is called
+        if np.shape(self.prob['Ftemp'])[0] == 0:
+            # early on, it's possible that there are no evaluated fitness values/active particles
+            # if that is the case, ctl['Flist'] = []
+            return False
+        elif len(np.shape(self.prob['Ftemp'])) > 1:
+            best_eval = np.linalg.norm(self.prob['Ftemp'][:,0])
+        else:
+            best_eval = np.linalg.norm(self.prob['Ftemp'])
+
+
+        # # original just used the best/top Flist value
+        # if np.shape(self.ctl['Flist'])[0] == 0:
+        #     # early on, it's possible that there are no evaluated fitness values/active particles
+        #     # if that is the case, ctl['Flist'] = []
+        #     return False
+        # elif len(np.shape(self.ctl['Flist'])) > 1:
+        #     best_eval = np.linalg.norm(self.ctl['Flist'][:,0])
+        # else:
+        #     best_eval = np.linalg.norm(self.ctl['Flist'])
+
+        convergence = best_eval <= self.alg['err_tol_stop'] #E_TOL comparison. returns bool
+        logger.info(f"best eval: {best_eval}")
+        logger.info(f"convergence: {convergence}")
+
+
         return convergence
     
+
     def maxed(self):
         max_iter = self.ctl['objective_iter'] >= self.ctl['maxit']
         return max_iter
     
+
     def complete(self):
         # includes  self.done from this optimizer, and the standardized  'self.converged() or self.maxed()'
-        done = self.done or self.maxed() or self.converged() 
-        # print("CHECK COMPLETE")
-        # print(self.done)
-        # print(self.maxed())
-        # print(self.converged())
+        done = bool(self.done) or self.maxed() or self.converged() 
+        logger.info("CHECK IF OPTIMIZER COMPLETE complete()")
+        logger.info(self.done)
+        logger.info(self.maxed())
+        logger.info(self.converged())
+        
 
         return done

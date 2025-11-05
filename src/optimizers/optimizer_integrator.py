@@ -852,7 +852,10 @@ class OptimizerIntegrator():
             # if this is the case, kill that simulation thread because the optimization is done
             self.simRunningBool, noError = self.checkIfSimulationIsRunning()
             if self.simRunningBool == False:
-                pass
+                # msg = "optimization done"
+                # self.updateStatusText(msg)
+                #return completeBool
+                pass # this way SOMETHING is always returned
             else:
                 msg = "The optimizer has converged, but the optimizer state machine is out of sync. \n this is not a problem! " \
                 "Some authors have coupled the data processing and the objective function evaluation in a way we haven't decoupled yet. The results are still accurate!"

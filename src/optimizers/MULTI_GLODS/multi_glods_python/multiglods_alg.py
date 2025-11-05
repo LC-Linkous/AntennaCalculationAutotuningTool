@@ -9,7 +9,7 @@
 #
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: March 13, 2025
+#   Last update: November 5, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -218,11 +218,6 @@ def select_pollcenter(Plist, Flist, alfa, radius, active, tol_active_points, num
                        Plist[:, 0:int(index)],
                        Plist[:, (int(index)+1):(mlist)]])
     
-    # can round here to make sure to get everything, but there might be a better place for the math
-    # Plist = np.round(np.hstack([np.vstack(Plist[:, int(index)]),
-    #                Plist[:, 0:int(index)],
-    #                Plist[:, (int(index)+1):(mlist)]]), num_decimals)
-
     Flist = np.hstack([np.vstack(Flist[:, int(index)]),
                        Flist[:, 0:int(index)],
                        Flist[:, (int(index)+1):(mlist)]])

@@ -8,13 +8,16 @@
 #
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: May 18, 2025
+#   Last update: November 5, 2025
 ##--------------------------------------------------------------------\
 
 
 import numpy as np
 from numpy.random import default_rng
 import time
+import logging
+logger = logging.getLogger(__name__)
+
 
 import sys
 try: # for outside func calls, program calls
@@ -112,9 +115,9 @@ def post_objective_init_loop(state, ctl, prob, init, alg):
 
                 # check here for reshape errors first 
                 # - likely caused by obj func return in multiglods_helpers.py
-                # print("Ftemp in multiglods_ctl")
-                # print(Ftemp)
-                # print(np.shape(Ftemp))
+                # logger.info("Ftemp in multiglods_ctl")
+                # logger.info(Ftemp)
+                # logger.info(np.shape(Ftemp))
 
                 if np.sum(np.isfinite(Ftemp), axis=0) == np.shape(Ftemp)[0]:
                     if not np.shape(ctl['Flist'])[0]:
@@ -123,6 +126,7 @@ def post_objective_init_loop(state, ctl, prob, init, alg):
                         prob['alfa'] = prob['alfa_ini']
                         prob['radius'] = prob['radius_ini']
                         prob['active'] = 1
+
                     else:
                         init['alfa_aux'] = prob['alfa_ini']
                         init['radius_aux'] = prob['radius_ini']
@@ -132,6 +136,7 @@ def post_objective_init_loop(state, ctl, prob, init, alg):
                                   init['radius_aux'], prob['Plist'],
                                   ctl['Flist'], prob['alfa'], prob['radius'],
                                   prob['active'], 0, [])
+
 
             ctl['i'] = ctl['i']+1
 
@@ -391,11 +396,11 @@ def end_processing(prob, ctl, run_ctl):
     prob['time'] = time.process_time()-prob['time']
 
     # variables needed for results: iter, iter_suc, sum(active),ctl.func_eval
-    print("Points:")
-    print(prob['Plist'])
-    print("Iterations:")
-    print(run_ctl['iter'])
-    print("Flist:")
-    print(ctl['Flist'])
-    print("Norm Flist:")
-    print(np.linalg.norm(ctl['Flist']))
+    logger.info("Points:")
+    logger.info(prob['Plist'])
+    logger.info("Iterations:")
+    logger.info(run_ctl['iter'])
+    logger.info("Flist:")
+    logger.info(ctl['Flist'])
+    logger.info("Norm Flist:")
+    logger.info(np.linalg.norm(ctl['Flist']))
