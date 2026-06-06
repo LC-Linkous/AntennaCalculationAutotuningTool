@@ -1,5 +1,10 @@
 # AntennaCAT
 
+##June 6th, 2026: AntennaCAT is getting an overhaul to keep up with python package development
+You may notice issues with the optimizers now that numpy is on version 2.X - this is priority one.
+Priority 2 is working out some of the (new?) Windows bugs that have been persistent across W11
+
+
 <p align="center">
  <img src="./src/media/antennaCAT-icons/transparent-antennaCAT-logo.png" height="200" >
 </p>
